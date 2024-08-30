@@ -91,33 +91,76 @@ const volunteerForm = asyncHandler(async (req, res) => {
     );
 });
 
-const getAllVolunteers = asyncHandler(async (req, res) => {
-  try {
-    const allVolunteers = await VolunteerOpportunity.find()
-      .populate("createdBy", "username fullName").populate("category", "categoryName description").populate("skills", "skillName description").exec();
+const getPosts = asyncHandler(async (req, res) => {
+  
+    const { postId, latitude, longitude, skillName, oppName, role, sort,page =1,limit =5 } = req.query;
+
+    let filter = {};
+    let sortOptions = {};
+
+    if (postId) {
+      filter._id = postId;
+    }
+    if (latitude && longitude) {
+      filter.location = {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: [parseFloat(longitude), parseFloat(latitude)],
+          },
+        },
+      };
+    }
+
+    if (skillName) {
+      filter.skills = { $elemMatch: { skillName } };
+    }
+
+    if (oppName) {
+      filter.category = { $elemMatch: { categoryName: oppName } };
+    }
+
+    if (role) {
+      filter.role = role;
+    }
+
+    // Handle sorting
+    if (sort) {
+      const [key, order] = sort.split(':');
+      sortOptions[key] = order === 'desc' ? -1 : 1;
+    } else {
+      sortOptions.createdAt = -1; 
+    }
+    if (dateFilter) {
+      const { startDate, endDate } = dateFilter;
+      if (startDate) filter.createdAt = { ...filter.createdAt, $gte: new Date(startDate) };
+      if (endDate) filter.createdAt = { ...filter.createdAt, $lte: new Date(endDate) };
+    }
+    
+   const skip = (page-1)*limit;
+
+    const posts = await VolunteerOpportunity.find(filter)
+    .sort(sortOptions).skip(skip).limit(limit)
+    .populate("createdBy", "username fullName")
+    .populate("category", "categoryName description")
+    .populate("skills", "skillName description")
+    .exec();
 
     return res
       .status(200)
       .json(
         new ApiResponse(
           200,
-          allVolunteers,
+          posts,
           "All volunteers fetched successfully"
         )
       );
-  } catch (error) {
-    console.error("Error fetching all volunteers:", error);
-    return res
-      .status(500)
-      .json(
-        new ApiResponse(500, null, "Internal Server Error:unable to fetch user")
-      );
-  }
+   
 });
 
 const getUserVolunteerData = asyncHandler(async (req, res) => {
   const userId = req.params.userId;
-  try {
+  
     const userData = await VolunteerOpportunity.find({ createdBy: userId })
       .populate("createdBy", "username fullName")
       .populate("skills", "skillName description");
@@ -129,54 +172,7 @@ const getUserVolunteerData = asyncHandler(async (req, res) => {
     }
 
     res.status(200).json(userData);
-  } catch (error) {
-    console.error("Error fetching volunteer opportunities:", error);
-    res.status(500).json(new ApiResponse(500, null, "Internal Server Error"));
-  }
-});
-
-const getNearestData = asyncHandler(async (req, res) => {
-  try {
-    const { latitude, longitude } = req.params;
-    console.log("Latitude:", parseFloat(latitude));
-    console.log("Longitude:", parseFloat(longitude));
-    const nearestVolunteerOpportunities = await VolunteerOpportunity.find({
-      location: {
-        $near: {
-          $geometry: {
-            type: "Point",
-            coordinates: [parseFloat(longitude), parseFloat(latitude)],
-          },
-        },
-      },
-    })
-      .populate("createdBy", "username fullName")
-      .populate("skills", "skillName description").populate("category", "categoryName description")
-      .exec();
-
-    console.log(nearestVolunteerOpportunities);
-
-    return res
-      .status(200)
-      .json(
-        new ApiResponse(
-          200,
-          nearestVolunteerOpportunities,
-          "Nearest volunteer opportunities retrieved successfully"
-        )
-      );
-  } catch (error) {
-    console.error("Error fetching nearest volunteer opportunities:", error);
-    return res
-      .status(500)
-      .json(
-        new ApiResponse(
-          500,
-          null,
-          "Internal Server Error: Unable to retrieve nearest volunteer opportunities"
-        )
-      );
-  }
+  
 });
 
 const getPostData = asyncHandler(async (req, res) => {
@@ -208,103 +204,6 @@ const getPostData = asyncHandler(async (req, res) => {
       );
   }
 });
-
-const getVolunteerDataBySkill = asyncHandler(async (req, res) => {
-  const skillName = req.query.skillName;
-  console.log(skillName);
-  const opportunities = await VolunteerOpportunity.find()
-    .populate("skills", "skillName description")
-    .populate("createdBy", "username fullName").populate("category", "categoryName description").exec();
-
-  if (!opportunities) {
-    throw new ApiError(400, "There was problem retrieving volunteer data");
-  }
-  const volData = opportunities.filter(
-    (opportunity) =>
-      opportunity.skills && opportunity.skills.skillName === skillName
-  );
-
-  console.log(volData);
-
-  if (!volData) {
-    throw new ApiError(400, "There was a problem fetching volunteer data");
-  }
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, volData, "Data retrieved successfully"));
-});
- 
-const getVolunteerDataByDate = asyncHandler(async (req, res) => {
-  const opportunities = await VolunteerOpportunity.find()
-    .sort({ createdAt: -1 })
-    .populate("skills", "skillName description")
-    .populate("createdBy", "username fullName").populate("category", "categoryName description").exec();
-
-  if (!opportunities) {
-    throw new ApiError(400, "There was a problem retrieving volunteer data");
-  }
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, opportunities, "Data retrieved successfully"));
-});
-
-const getOrganisationCategoryData = asyncHandler(async (req, res) => {
-  const oppName = req.query.oppName;
-  console.log(oppName);
-  const opportunities = await VolunteerOpportunity.find()
-    .populate("category", "categoryName description")
-    .populate("createdBy", "username fullName").exec();
-  console.log(opportunities);
-
-  if (!opportunities) {
-    throw new ApiError(400, "There was problem retrieving volunteer data");
-  }
-  const volData = opportunities.filter(
-    (opportunity) =>
-      opportunity.category && opportunity.category.categoryName === oppName
-  );
-
-  console.log(volData);
-
-  if (!volData) {
-    throw new ApiError(400, "There was a problem fetching volunteer data");
-  }
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, volData, "Data retrieved successfully"));
-});
-
-const getVolunteerDataOnly = asyncHandler(async (req, res) => {
-  const volunteerData = await VolunteerOpportunity.find({
-    role: "Volunteer",
-  }).populate("skills", "skillName description")
-  .populate("createdBy", "username fullName").exec();
-
-  if (!volunteerData) {
-    throw new ApiError(400, "There was a problem fetching volunteer data");
-  }
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, volunteerData, "Data retrieved successfully"));
-});
-
-const getOpportunityDataOnly = asyncHandler(async (req, res) => {
-  const oppData = await VolunteerOpportunity.find({
-    role: "Organization",
-  }).populate("createdBy", "username fullName").populate("category", "categoryName description").exec();
-
-  if (!oppData) {
-    throw new ApiError(400, "There was a problem fetching volunteer data");
-  }
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, oppData, "Data retrieved successfully"));
-});
  
 const deleteVolunteerData = asyncHandler(async (req, res) => {
   const deletedVolunteer = await VolunteerOpportunity.findByIdAndDelete(req.params.id);
@@ -316,14 +215,7 @@ const deleteVolunteerData = asyncHandler(async (req, res) => {
 
 export {
   volunteerForm,
-  getAllVolunteers,
   getUserVolunteerData,
-  getNearestData,
-  getPostData,
-  getVolunteerDataBySkill,
-  getVolunteerDataByDate,
-  getOrganisationCategoryData,
-  getOpportunityDataOnly,
-  getVolunteerDataOnly,
+  getPosts,
   deleteVolunteerData
 };

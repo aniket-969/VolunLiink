@@ -7,11 +7,9 @@ const skillForm = asyncHandler(async(req,res)=>{
     const {skillName,description} = req.body;
     console.log(req.body);
     
-//     console.log('lfsdfs fdfdf');
     
 //     console.log(req.body);
      
-// console.log('reached here');
  
     if (  
         [skillName,description].some(
