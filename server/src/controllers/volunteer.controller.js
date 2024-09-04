@@ -3,6 +3,8 @@ import { ApiError } from "../utils/ApiError.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { VolunteerOpportunity } from "./../models/volunteers.model.js";
+import { Skills } from "../models/skills.model.js";
+import { OpportunityCategory } from "../models/opportunityCategory.model.js";
 
 const volunteerForm = asyncHandler(async (req, res) => {
   const {
@@ -93,7 +95,7 @@ const volunteerForm = asyncHandler(async (req, res) => {
 
 const getPosts = asyncHandler(async (req, res) => {
   
-    const { postId, latitude, longitude, skillName, oppName, role, sort,page =1,limit =5 } = req.query;
+    const { postId, latitude, longitude, skillName, categoryName, role, sort,page =1,limit =5,dateFilter } = req.query;
 
     let filter = {};
     let sortOptions = {};
@@ -101,6 +103,7 @@ const getPosts = asyncHandler(async (req, res) => {
     if (postId) {
       filter._id = postId;
     }
+    
     if (latitude && longitude) {
       filter.location = {
         $near: {
@@ -113,24 +116,40 @@ const getPosts = asyncHandler(async (req, res) => {
     }
 
     if (skillName) {
-      filter.skills = { $elemMatch: { skillName } };
+      
+      const skills = await Skills.find({ skillName }).select('_id');
+      if (skills.length > 0) {
+        const skillIds = skills.map(skill => skill._id);
+        filter.skills = { $in: skillIds };
+      } else {
+       
+        return res.status(200).json(new ApiResponse(200, [], "No posts found for the given skillName"));
+      }
     }
 
-    if (oppName) {
-      filter.category = { $elemMatch: { categoryName: oppName } };
+    if (categoryName) {
+      const opportunity = await OpportunityCategory.find({categoryName}).select('_id');
+      console.log(opportunity)
+      if(opportunity.length>0){
+         const opportunityIds = opportunity.map(opp =>opp._id);
+         filter.category = {$in: opportunityIds};
+      }
+      else{
+        return res.status(200).json(new ApiResponse(200,[],"No posts found for the given Opportunity"))
+      }
     }
 
     if (role) {
       filter.role = role;
     }
 
-    // Handle sorting
     if (sort) {
       const [key, order] = sort.split(':');
       sortOptions[key] = order === 'desc' ? -1 : 1;
     } else {
       sortOptions.createdAt = -1; 
     }
+    
     if (dateFilter) {
       const { startDate, endDate } = dateFilter;
       if (startDate) filter.createdAt = { ...filter.createdAt, $gte: new Date(startDate) };
@@ -217,5 +236,6 @@ export {
   volunteerForm,
   getUserVolunteerData,
   getPosts,
-  deleteVolunteerData
+  deleteVolunteerData,
+  getPostData
 };
