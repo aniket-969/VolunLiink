@@ -6,6 +6,8 @@ import { VolunteerOpportunity } from "./../models/volunteers.model.js";
 import { Skills } from "../models/skills.model.js";
 import { OpportunityCategory } from "../models/opportunityCategory.model.js";
 
+const MAX_LIMIT = 50;
+
 const volunteerForm = asyncHandler(async (req, res) => {
   const {
     title,
@@ -82,116 +84,139 @@ const volunteerForm = asyncHandler(async (req, res) => {
     createdBy,
   });
 
-  return res
-    .status(201)
-    .json(
-      new ApiResponse(
-        200,
-        VolunteerData,
-        "Volunteer form submitted successfully"
-      )
-    );
+  return res.json(
+    new ApiResponse(201, VolunteerData, "Volunteer form submitted successfully")
+  );
 });
 
 const getPosts = asyncHandler(async (req, res) => {
-  
-    const { postId, latitude, longitude, skillName, categoryName, role, sort,page =1,limit =5,dateFilter } = req.query;
+  const {
+    postId,
+    latitude,
+    longitude,
+    skillName,
+    categoryName,
+    role,
+    sort,
+    dateFilter,
+  } = req.query;
+  let { page = 1, limit = 5 } = req.query;
 
-    let filter = {};
-    let sortOptions = {};
+  let filter = {};
+  let sortOptions = {};
 
-    if (postId) {
-      filter._id = postId;
-    }
-    
-    if (latitude && longitude) {
-      filter.location = {
-        $near: {
-          $geometry: {
-            type: "Point",
-            coordinates: [parseFloat(longitude), parseFloat(latitude)],
-          },
+  limit = Math.min(MAX_LIMIT, limit);
+
+  if (postId) {
+    filter._id = postId;
+  }
+
+  if (latitude && longitude) {
+    filter.location = {
+      $near: {
+        $geometry: {
+          type: "Point",
+          coordinates: [parseFloat(longitude), parseFloat(latitude)],
         },
-      };
-    }
+      },
+    };
+  }
 
-    if (skillName) {
-      
-      const skills = await Skills.find({ skillName }).select('_id');
-      if (skills.length > 0) {
-        const skillIds = skills.map(skill => skill._id);
-        filter.skills = { $in: skillIds };
-      } else {
-       
-        return res.status(200).json(new ApiResponse(200, [], "No posts found for the given skillName"));
-      }
-    }
-
-    if (categoryName) {
-      const opportunity = await OpportunityCategory.find({categoryName}).select('_id');
-      console.log(opportunity)
-      if(opportunity.length>0){
-         const opportunityIds = opportunity.map(opp =>opp._id);
-         filter.category = {$in: opportunityIds};
-      }
-      else{
-        return res.status(200).json(new ApiResponse(200,[],"No posts found for the given Opportunity"))
-      }
-    }
-
-    if (role) {
-      filter.role = role;
-    }
-
-    if (sort) {
-      const [key, order] = sort.split(':');
-      sortOptions[key] = order === 'desc' ? -1 : 1;
+  if (skillName) {
+    const skills = await Skills.find({ skillName }).select("_id");
+    if (skills.length > 0) {
+      const skillIds = skills.map((skill) => skill._id);
+      filter.skills = { $in: skillIds };
     } else {
-      sortOptions.createdAt = -1; 
+      return res
+        .status(200)
+        .json(
+          new ApiResponse(200, [], "No posts found for the given skillName")
+        );
     }
-    
-    if (dateFilter) {
-      const { startDate, endDate } = dateFilter;
-      if (startDate) filter.createdAt = { ...filter.createdAt, $gte: new Date(startDate) };
-      if (endDate) filter.createdAt = { ...filter.createdAt, $lte: new Date(endDate) };
-    }
-    
-   const skip = (page-1)*limit;
+  }
 
-    const posts = await VolunteerOpportunity.find(filter)
-    .sort(sortOptions).skip(skip).limit(limit)
+  if (categoryName) {
+    const opportunity = await OpportunityCategory.find({ categoryName }).select(
+      "_id"
+    );
+    console.log(opportunity);
+    if (opportunity.length > 0) {
+      const opportunityIds = opportunity.map((opp) => opp._id);
+      filter.category = { $in: opportunityIds };
+    } else {
+      return res
+        .status(200)
+        .json(
+          new ApiResponse(200, [], "No posts found for the given Opportunity")
+        );
+    }
+  }
+
+  if (role) {
+    filter.role = role;
+  }
+
+  if (sort) {
+    const [key, order] = sort.split(":");
+    sortOptions[key] = order === "desc" ? -1 : 1;
+  } else {
+    sortOptions.createdAt = -1;
+  }
+
+  if (dateFilter) {
+    const { startDate, endDate } = dateFilter;
+    if (startDate)
+      filter.createdAt = { ...filter.createdAt, $gte: new Date(startDate) };
+    if (endDate)
+      filter.createdAt = { ...filter.createdAt, $lte: new Date(endDate) };
+  }
+
+  const skip = (page - 1) * limit;
+
+  const posts = await VolunteerOpportunity.find(filter)
+    .sort(sortOptions)
+    .skip(skip)
+    .limit(limit)
     .populate("createdBy", "username fullName")
     .populate("category", "categoryName description")
     .populate("skills", "skillName description")
     .exec();
 
-    return res
-      .status(200)
-      .json(
-        new ApiResponse(
-          200,
-          posts,
-          "All volunteers fetched successfully"
-        )
-      );
-   
+  return res.json(
+    new ApiResponse(200, posts, "All volunteers fetched successfully")
+  );
 });
 
 const getUserVolunteerData = asyncHandler(async (req, res) => {
+  const { sort } = req.query;
+  let { page = 1, limit = 5 } = req.query;
+
+  let sortOptions = {};
+
+  limit = Math.min(MAX_LIMIT, limit);
+  if (sort) {
+    const [key, order] = sort.split(":");
+    sortOptions[key] = order === "desc" ? -1 : 1;
+  } else {
+    sortOptions.createdAt = -1;
+  }
   const userId = req.params.userId;
-  
-    const userData = await VolunteerOpportunity.find({ createdBy: userId })
-      .populate("createdBy", "username fullName")
-      .populate("skills", "skillName description");
+  const skip = (page - 1) * limit;
+  const userPosts = await VolunteerOpportunity.find({ createdBy: userId })
+    .skip(skip)
+    .populate("createdBy", "username fullName")
+    .populate("skills", "skillName description").sort(sortOptions);
 
-    if (!userData || userData.length == 0) {
-      return res.json({
-        message: "No volunteer opportunities found for the user",
-      });
-    }
+  if (!userPosts || userPosts.length == 0) {
+    return res.json({
+      message: "No volunteer opportunities found for the user",
+    });
+  }
 
-    res.status(200).json(userData);
-  
+  return res.json(
+    new ApiResponse(200, userPosts, "User posts fetched successfully")
+  );
 });
 
 const getPostData = asyncHandler(async (req, res) => {
@@ -201,31 +226,31 @@ const getPostData = asyncHandler(async (req, res) => {
 
     const postData = await VolunteerOpportunity.findOne({ _id: postId })
       .populate("createdBy", "username fullName")
-      .populate("skills", "skillName description").populate("category", "categoryName description").exec();
+      .populate("skills", "skillName description")
+      .populate("category", "categoryName description")
+      .exec();
 
     console.log(postData);
 
-    return res
-      .status(200)
-      .json(
-        new ApiResponse(200, postData, "Post details retrieved successfully")
-      );
+    return res.json(
+      new ApiResponse(200, postData, "Post details retrieved successfully")
+    );
   } catch (error) {
     console.log(error);
-    return res
-      .status(500)
-      .json(
-        new ApiResponse(
-          500,
-          null,
-          "Internal Server Error: Unable to retrieve nearest volunteer opportunities"
-        )
-      );
+    return res.json(
+      new ApiResponse(
+        500,
+        null,
+        "Internal Server Error: Unable to retrieve nearest volunteer opportunities"
+      )
+    );
   }
 });
- 
+
 const deleteVolunteerData = asyncHandler(async (req, res) => {
-  const deletedVolunteer = await VolunteerOpportunity.findByIdAndDelete(req.params.id);
+  const deletedVolunteer = await VolunteerOpportunity.findByIdAndDelete(
+    req.params.id
+  );
   if (!deletedVolunteer) {
     return res.status(404).json({ message: "Volunteer not found" });
   }
@@ -237,5 +262,5 @@ export {
   getUserVolunteerData,
   getPosts,
   deleteVolunteerData,
-  getPostData
+  getPostData,
 };

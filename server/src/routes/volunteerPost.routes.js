@@ -23,9 +23,9 @@ router.route("/volunteer-form").post(
 );
 
 router.route("/posts").get(getPosts)
-router.route("/volunteer/:userId").get(getUserVolunteerData);
+router.route("/userPost/:userId").get(getUserVolunteerData);
 
-router.route("/volunteer/post/:postId").get(getPostData);
+router.route("/post/:postId").get(getPostData);
 
 router.route("/skill-form").post(upload.none(), skillForm);
 
@@ -33,5 +33,5 @@ router
   .route("/opportunity-category")
   .post(upload.none(), OpportunityCategoryForm);
 
-router.delete("/volunteers/:id", deleteVolunteerData);
+router.delete("/:id", deleteVolunteerData);
 export default router
