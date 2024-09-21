@@ -87,7 +87,7 @@ eventModel.pre("save", async function (next) {
   }
 });
 
-eventModel.index({ location: "2dsphere" });
+eventModel.index({ "location.coordinates": "2dsphere" });
 
 eventModel.index({ role: 1 });
 
@@ -97,3 +97,4 @@ export const VolunteerOpportunity = mongoose.model(
   "VolunteerOpportunity",
   eventModel
 );
+ 

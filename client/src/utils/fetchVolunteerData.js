@@ -3,7 +3,7 @@ import axios from "axios";
 const fetchVolunteerData = async () => {
   try {
     const volunteerdata = await axios.get(
-      "http://localhost:9000/api/v1/users/volunteers"
+      "http://localhost:9000/api/v1/volunteers/posts?page=1&limit=5"
     );
     // console.log(volunteerdata);
 
