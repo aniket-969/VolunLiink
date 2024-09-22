@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-import VolunteerForm from './VolunteerForm';
-import OrgForm from './OrgForm';
+import VolunteerForm from '../../components/VolunteerForm';
+import OrgForm from '../../components/OrgForm';
 
 const CreatePost = () => {
 
@@ -29,9 +29,9 @@ const CreatePost = () => {
           Create post as a:
         </p>
         <input type="checkbox" id="volunteerCheckbox" value="true" onClick={updateRole} />
-        <label htmlFor="vehicle1"> Volunteer</label>
+        <label htmlFor="volunteerCheckbox"> Volunteer</label>
         <input type="checkbox" id="organisationCheckbox" value="false" onClick={updateRole} />
-        <label htmlFor="vehicle2"> Organisation</label>
+        <label htmlFor="organisationCheckbox"> Organisation</label>
       </div>
 
 <section className='flex justify-center'>

@@ -7,7 +7,7 @@ import SignupForm from "./pages/auth/form/SignupForm";
 import './App.css'
 import Profile from "./pages/root/Profile";
 import PostDetails from "./components/PostDetails";
-import CreatePost from "./components/CreatePost";
+import CreatePost from "./pages/root/CreatePost";
 import {Toaster} from 'react-hot-toast'
 import TokenChecker from "./components/TokenChecker";
 import NotFound from "./components/NotFound";

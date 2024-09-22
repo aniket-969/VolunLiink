@@ -26,10 +26,11 @@ const volunteerForm = asyncHandler(async (req, res) => {
     village,
     skills,
     category,
-    createdBy,
   } = req.body;
 
   console.log(req.body);
+  const createdBy = req.user?._id
+  
 
   if (
     [title, description, contactEmail, startDate, endDate, role].some(
@@ -201,7 +202,9 @@ const getUserVolunteerData = asyncHandler(async (req, res) => {
   } else {
     sortOptions.createdAt = -1;
   }
-  const userId = req.params.userId;
+
+const userId = req.user?._id
+
   const skip = (page - 1) * limit;
   const userPosts = await VolunteerOpportunity.find({ createdBy: userId })
     .skip(skip)

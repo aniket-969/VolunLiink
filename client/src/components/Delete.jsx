@@ -12,6 +12,6 @@ const Delete = ({props,setShow}) => {
         </div>
         }</>
   )
-}
+} 
 
 export default Delete

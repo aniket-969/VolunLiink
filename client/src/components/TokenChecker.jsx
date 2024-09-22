@@ -18,10 +18,10 @@ const TokenChecker = () => {
         return;
     }
     const decodedToken = jwtDecode(cookies.accessToken)
-    console.log(decodedToken.exp);
+    // console.log(decodedToken.exp);
     const userId = localStorage.getItem("userId")
-    console.log(userId);
-    console.log(decodedToken);
+    // console.log(userId);
+    // console.log(decodedToken);
 
 
     const checkAuthentation = async () => {
@@ -43,13 +43,13 @@ const TokenChecker = () => {
 
         else {
 
-            console.log("Not expired");
+            // console.log("Not expired");
         }
 
     }
 
     useEffect(() => {
-        console.log("in token");
+        // console.log("in token");
          if(!cookies.accessToken){
             navigate("/sign-up")
          }
