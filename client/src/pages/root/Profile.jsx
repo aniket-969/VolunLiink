@@ -4,7 +4,7 @@ import { formatDate, formatUpdatedAt } from '../../utils/fetchVolunteerData'
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import toast from 'react-hot-toast';
 import { useCookies } from 'react-cookie';
-import Posts from '../../components/Posts';
+import Card from '../../components/UI/Card';
 
 const Profile = () => {
 
@@ -78,7 +78,7 @@ const Profile = () => {
             <div>
               {
                 data.map(post => (
-                 <Posts post={post} handleDelete={handleDelete}/>
+                 <Card post={post} handleDelete={handleDelete}/>
                 ))
               }
             </div>

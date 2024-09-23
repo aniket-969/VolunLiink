@@ -1,9 +1,9 @@
 import React from 'react';
-import { formatDate, formatUpdatedAt } from '../utils/fetchVolunteerData';
+import { formatDate, formatUpdatedAt } from '../../utils/fetchVolunteerData';
 import { Link } from 'react-router-dom';
 import { MdOutlineDeleteOutline } from 'react-icons/md';
 
-const Posts = ({ post, handleDelete }) => {
+const Card = ({ post, handleDelete }) => {
 
     const {
         _id,
@@ -77,9 +77,9 @@ const Posts = ({ post, handleDelete }) => {
                     </p>
                 </div>
             </Link>
-            
+
         </div>
     );
 };
 
-export default Posts;
+export default Card;

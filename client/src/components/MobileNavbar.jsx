@@ -12,7 +12,6 @@ const MobileNavbar = (prop) => {
     const { setIsAuthenticated } = useUserContext()
   
     const userId = localStorage.getItem("userId")
-    console.log(userId); 
         
     const signOut = async () => { 
 

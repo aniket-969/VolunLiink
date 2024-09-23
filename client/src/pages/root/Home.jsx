@@ -5,7 +5,7 @@ import Location from '../../components/Location'
 
 import toast from 'react-hot-toast'
 import { useCookies } from 'react-cookie'
-import Posts from '../../components/Posts'
+import Card from '../../components/UI/Card'
 
 const Home = () => {
 
@@ -290,7 +290,7 @@ const Home = () => {
 
           data.map(post => (
 
-           <Posts key={post._id} post ={post}/>
+           <Card key={post._id} post ={post}/>
 
           ))
 
