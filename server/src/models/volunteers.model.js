@@ -3,7 +3,7 @@ import { User } from "../models/user.model.js";
 
 const eventModel = new mongoose.Schema(
   {
-    createdBy: {
+    createdBy: { 
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,

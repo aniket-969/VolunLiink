@@ -11,6 +11,8 @@ import {
 import { skillForm } from "../controllers/skills.controller.js";
 import { OpportunityCategoryForm } from "../controllers/organisation.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { validate } from './../middlewares/validator.middleware.js';
+import { formSchema } from "../../schema/FormSchema.js";
 
 const router = Router();
 
@@ -20,6 +22,7 @@ router.route("/volunteer-form").post(verifyJWT,
       name: "avatar",
     },
   ]),
+  validate(formSchema),
   volunteerForm
 );
 

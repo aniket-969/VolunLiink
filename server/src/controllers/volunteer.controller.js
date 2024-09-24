@@ -24,8 +24,8 @@ const volunteerForm = asyncHandler(async (req, res) => {
     road,
     state,
     village,
-    skills,
-    category,
+    skillId:skills,
+    categoryId:category,
   } = req.body;
 
   console.log(req.body); 
@@ -38,7 +38,7 @@ const createdBy =  req.user?._id
     throw new ApiError(400, "All fields are required");
   }
 
-  console.log(req.files);
+  console.log(req.files); 
   const volunteerLocalPaths = req.files?.avatar?.map((file) => file.path);
 
   if (!volunteerLocalPaths || volunteerLocalPaths.length === 0) {

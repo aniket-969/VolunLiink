@@ -11,13 +11,21 @@ const storage = multer.diskStorage({
   })
    
 export const upload = multer({ 
+  
     storage, 
+    limits:{fileSize:1*1024*1024},
     fileFilter: (req, file, cb) => {
+     
       console.log(file.fieldname);
-      if (file.fieldname === "avatar"  ) {
-        cb(null, true);
+      if (file.fieldname === "avatar") {
+       
+        if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+          cb(null, true);  
+        } else {
+          cb(new Error("Invalid file type. Only JPEG and PNG are allowed."), false);  // Reject the file
+        }
       } else {
-        cb(null, false);
+        cb(new Error("Invalid field. Expected 'avatar' field."), false);  // Reject if field name doesn't match
       }
-    },
+    }
 })
