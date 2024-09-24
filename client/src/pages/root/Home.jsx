@@ -4,7 +4,6 @@ import { useUserContext } from '../../context/AuthProvider'
 import Location from '../../components/Location'
 
 import toast from 'react-hot-toast'
-import { useCookies } from 'react-cookie'
 import Card from '../../components/UI/Card'
 
 const Home = () => {
@@ -13,8 +12,6 @@ const Home = () => {
   const [data, setData] = useState([])
   const { userLocation } = useUserContext()
  
-  // console.log(userLocation);
-
   useEffect(() => {
 
     fetchData();

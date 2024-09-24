@@ -86,15 +86,15 @@ const FormComponent = ({ formType }) => {
                         }
                     })}
                 />
-                
-<div className="flex gap-4">
-      <label htmlFor="file" className="custom-file-input" style={{ cursor: 'pointer', display: 'inline-block' }}>
-                    Choose File
 
-                </label>
-                <span>{selectedFileName}</span>
-</div>
-              
+                <div className="flex gap-4">
+                    <label htmlFor="file" className="custom-file-input" style={{ cursor: 'pointer', display: 'inline-block' }}>
+                        Choose File
+
+                    </label>
+                    <span>{selectedFileName}</span>
+                </div>
+
                 {errors.image && <p className="text-red-500">{errors.image.message}</p>}
 
                 <div className=" flex justify-center ">
@@ -138,12 +138,15 @@ const FormComponent = ({ formType }) => {
 
     return (
         <>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                {formType === 'volunteer' && volunteerFields}
-                {formType === 'organization' && organizationFields}
-                <button type="submit" className='bg-black text-white py-1' disabled={isSubmitting}>Add Post</button>
-            </form>
+            <div className="m-1 p-2 flex flex-col justify-center items-center sm:max-w-[710px] bb">
 
+ 
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    {formType === 'volunteer' && volunteerFields}
+                    {formType === 'organization' && organizationFields}
+                    <button type="submit" className='bg-black text-white py-1' disabled={isSubmitting}>Add Post</button>
+                </form>
+            </div>
 
         </>
     );

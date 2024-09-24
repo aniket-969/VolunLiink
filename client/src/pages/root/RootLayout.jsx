@@ -5,7 +5,6 @@ import Navbar from '../../components/Navbar'
 
 const RootLayout = () => {
   const [cookies, setCookies, removeCookie] = useCookies("accessToken")
-  // console.log("reacher here");
 
   return (
     <>
