@@ -7,7 +7,7 @@ import { Skills } from "../models/skills.model.js";
 import { OpportunityCategory } from "../models/opportunityCategory.model.js";
 
 const MAX_LIMIT = 50;
-
+ 
 const volunteerForm = asyncHandler(async (req, res) => {
   const {
     title,
@@ -26,11 +26,10 @@ const volunteerForm = asyncHandler(async (req, res) => {
     village,
     skills,
     category,
-    createdBy,
   } = req.body;
 
-  console.log(req.body);
-
+  console.log(req.body); 
+const createdBy =  req.user?._id
   if (
     [title, description, contactEmail, startDate, endDate, role].some(
       (field) => field?.trim() === ""
@@ -41,7 +40,6 @@ const volunteerForm = asyncHandler(async (req, res) => {
 
   console.log(req.files);
   const volunteerLocalPaths = req.files?.avatar?.map((file) => file.path);
-  // const volunteerLocalPaths = req.files?.avatar[0]?.path
 
   if (!volunteerLocalPaths || volunteerLocalPaths.length === 0) {
     throw new ApiError(400, "At least one volunteer local file is required");
@@ -51,8 +49,6 @@ const volunteerForm = asyncHandler(async (req, res) => {
     volunteerLocalPaths.map((path) => uploadOnCloudinary(path))
   );
   console.log("This is avatar here 37", avatar);
-
-  // const avatar = await uploadOnCloudinary(volunteerLocalPaths)
 
   if (!avatar) {
     throw new ApiError(400, "Avatar file is required");

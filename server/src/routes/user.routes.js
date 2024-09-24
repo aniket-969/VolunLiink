@@ -36,7 +36,6 @@ router.route("/update-account").patch(verifyJWT,updateAccountDetails)
 
 router.route("/avatar").patch(verifyJWT,upload.single("avatar"),updateUserAvatar)
 
-router.route("/user").get(getUserDetails);
-
+router.route("/user").get(verifyJWT,getUserDetails);
 
 export default router;

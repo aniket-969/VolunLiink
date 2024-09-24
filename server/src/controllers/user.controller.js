@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import jwt from 'jsonwebtoken';
 
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
@@ -38,15 +39,14 @@ let avatarUrl;
 
   if (existedUser) {
     throw new ApiError(409, "User with email or username alredy exists");
-  }
-  console.log(req, req.files);
+  } 
+  console.log( "This is request files",req.files);
 
   if(fullName === "Guest23@#$"){
     avatarUrl ="https://res.cloudinary.com/dgyduqoht/image/upload/v1708522002/guestf_zqgvly.png"
   }
   else{
     const avatarLocalPath = req.files?.avatar[0]?.path;
-  //   const coverImageLocalPath = req.files?.coverImage[0]?.path;
 
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar localfile is required");
@@ -158,7 +158,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     .clearCookie("refreshToken", options)
     .json(new ApiResponse(200, {}, "User logged out"));
 });
-
+ 
 const refreshTokens = asyncHandler(async(req,res)=>{
   const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
 
@@ -172,7 +172,7 @@ const refreshTokens = asyncHandler(async(req,res)=>{
 )
 const user = await User.findById(decodedToken?._id)
 
-if (!user) {
+if (!user) { 
   throw new ApiError(401, "Invalid refresh token")
 }
 
@@ -203,7 +203,7 @@ const {accessToken, refreshToken} = await generateAccessAndRefreshTokens(user._i
   );
 
 })
-
+ 
 const changePassword = asyncHandler(async(req,res)=>{
   const {oldPassword,newPassword} = req.body
 
@@ -244,6 +244,7 @@ const getUserDetails = asyncHandler(async (req, res) => {
 });
 
 const updateAccountDetails = asyncHandler(async(req, res) => {
+  console.log("this is request",req)
   const {fullName, email} = req.body
 
   if (!fullName || !email) {
@@ -261,7 +262,7 @@ const updateAccountDetails = asyncHandler(async(req, res) => {
       {new: true}
       
   ).select("-password")
-
+console.log("this is user",user)
   return res
   .status(200)
   .json(new ApiResponse(200, user, "Account details updated successfully"))
