@@ -46,7 +46,7 @@ const SignupForm = () => {
 
       <form onSubmit={handleSubmit(onsubmit)} className=" flex flex-col gap-4 w-[95%] lg:w-[90%]">
 
-        <CustomInputWithIcon register={register('fullName')} placeholder="Name" icon={FaUser} />
+        <CustomInputWithIcon register={register('fullName')} placeholder="Name" icon= {FaUser} />
         <CustomInputWithIcon register={register('username')} placeholder="Username" icon={FaImagePortrait} />
         <CustomInputWithIcon register={register('email')} placeholder="Email" icon={FaEnvelope} />
         <CustomInputWithIcon register={register('password')} type="password"  placeholder="Password" icon={FaRegKeyboard} />

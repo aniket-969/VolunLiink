@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import CustomInput from './CustomInput';
+import { FaEye, FaEyeSlash } from 'react-icons/fa6';
 
 const CustomInputWithIcon = ({
   icon: Icon,
@@ -10,6 +11,14 @@ const CustomInputWithIcon = ({
   className,
   onChange,
 }) => {
+
+
+  const[passwordVisibility,setPasswordVisibility] = useState(false)
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisibility(prev => !prev);
+  };
+
   return (
     <div className="flex items-center gap-2 bglight p-2">
       <Icon />
@@ -20,8 +29,18 @@ const CustomInputWithIcon = ({
         isTextarea={isTextarea}
         className={className}
         onChange={onChange}
+        passwordVisibility={passwordVisibility}
       />
-    </div>
+      {type=="password" && (
+        <span
+          onClick={togglePasswordVisibility}
+         
+        >
+          {passwordVisibility ? <FaEyeSlash /> : <FaEye />} 
+        </span>
+      ) }
+    </div> 
+   
   );
 };
 
