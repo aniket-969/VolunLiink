@@ -17,7 +17,7 @@ import * as z from "zod";
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const FormComponent = ({ formType }) => {
-
+ 
     const schema = formType === "volunteer" ? skillFormSchema : opportunityCategoryFormSchema
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({ resolver: zodResolver(schema) })
@@ -132,7 +132,7 @@ const FormComponent = ({ formType }) => {
                     <option key={index} value={option.value}>{option.label}</option>
                 ))}
             </select>
-            <CustomInputWithIcon icon={FaWrench} register={register('categoryDescription')} isTextarea placeholder="Description" />
+            <CustomInputWithIcon icon={FaWrench} register={register('categoryDescription')} isTextarea ={true} placeholder="Description" />
         </>
     );
 
