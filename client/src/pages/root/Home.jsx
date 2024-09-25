@@ -5,6 +5,7 @@ import Location from '../../components/Location'
 
 import toast from 'react-hot-toast'
 import Card from '../../components/UI/Card'
+import Navbar from '../../components/Navbar'
 
 const Home = () => {
 
@@ -159,7 +160,9 @@ const Home = () => {
   console.log(data);
 
   return (
-    <section className='flex flex-col items-center'>
+    <>
+    <Navbar/>
+      <section className='flex flex-col items-center'>
 
       <div className='flex flex-col gap-2  md:max-w-[710px] '>
 
@@ -293,6 +296,8 @@ const Home = () => {
 
         }
       </div></section>
+    </>
+  
   )
 }
 

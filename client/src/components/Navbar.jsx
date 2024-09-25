@@ -52,19 +52,20 @@ const Navbar = () => {
 
             </Link>
 
-            <Link to={`/profile/${userData._id}`} className='hidden sm:flex items-center gap-4'>
+
+            <Link to={`/profile/${userData?userData._id:'123'}`} className='hidden sm:flex items-center gap-4'>
                 <div className=' '>
-                    <img src={userData.avatar} alt="" className='image--cover  w-[60px] h-[60px] ' />
+                    <img src={userData?userData.avatar:"https://res.cloudinary.com/dgyduqoht/image/upload/v1708522002/guestf_zqgvly.png"} alt="" className='image--cover  w-[60px] h-[60px] ' />
                 </div>
 
-                <h3 className='font-medium'>{userData.fullName}</h3>
+                <h3 className='font-medium'>{userData?userData.fullName:"Guest"}</h3>
             </Link>
 
             <nav className="hidden md:flex md:items-center md:justify-between  md:gap-4 font-medium lg:gap-6 ">
 
                 <Link to='/' className='relative w-fit block after:block after:absolute after:h-[2px] after:bg-blue-500 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left '>Home</Link>
                 <Link className='relative w-fit block after:block after:absolute after:h-[2px] after:bg-blue-500 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left ' to='/create-post' >Create</Link>
-                <Link className='relative w-fit block after:block after:absolute after:h-[2px] after:bg-blue-500 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left ' to={`/profile/${userData._id}`}>Profile</Link>
+                <Link className='relative w-fit block after:block after:absolute after:h-[2px] after:bg-blue-500 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left ' to={`/profile/${userData?userData._id:'123'}`}>Profile</Link>
 
 
             </nav>
