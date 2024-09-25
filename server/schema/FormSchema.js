@@ -1,20 +1,6 @@
 import { z } from 'zod';
 import { isValidObjectId } from 'mongoose';
 
-const MAX_IMAGE_SIZE = 1 * 1024 * 1024;
-const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png'];
-
-// Image validation
-const imageValidation = z.object({
-  fileName: z.string(),
-  mimeType: z.string().refine((type) => ALLOWED_IMAGE_TYPES.includes(type), {
-    message: 'Invalid file type. Only JPEG and PNG are allowed.',
-  }),
-  size: z.number().refine((size) => size <= MAX_IMAGE_SIZE, {
-    message: `File size should be less than ${MAX_IMAGE_SIZE / 1024 / 1024} MB.`,
-  }),
-});
-
 // Latitude and Longitude validation
 const latitudeValidation = z.string().refine((value) => value >= -90 && value <= 90, {
   message: "Latitude must be between -90 and 90",
@@ -30,6 +16,7 @@ const objectIdValidation = z
   .refine((value) => isValidObjectId(value), {
     message: "Invalid ObjectId format",
   });
+
 
 const commonSchema = z.object({
   title: z.string().min(1),
@@ -51,3 +38,4 @@ export const formSchema = commonSchema.extend({
 }).refine((data) => !(data.skillId && data.categoryId), {
   message: 'You cannot provide both skillId and categoryId',
 });
+

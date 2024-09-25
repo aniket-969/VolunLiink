@@ -11,6 +11,8 @@ import {
 } from "../controllers/user.controller.js";
 import { upload } from "./../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { validate } from "../middlewares/validator.middleware.js";
+  import { loginSchema, userSchema } from "../../schema/UserSchema.js"; 
 
 const router = Router();
 
@@ -21,10 +23,11 @@ router.route("/register").post(
       maxCount: 1,
     },
   ]),
+  validate(userSchema),
   registerUser
 );
 
-router.route("/login").post(loginUser);
+router.route("/login").post(validate(loginSchema),loginUser);
 
 router.route("/logout").post(verifyJWT, logoutUser);
 

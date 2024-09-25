@@ -1,6 +1,6 @@
 
 export const validate = (schema) => async (req, res, next) => {
-  console.log('Request Body:', req.body); 
+  console.log('Validate:', req.body); 
   
   try {
     await schema.parseAsync(req.body);  
