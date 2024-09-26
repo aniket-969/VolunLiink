@@ -141,7 +141,7 @@ const getPosts = asyncHandler(async (req, res) => {
     const opportunity = await OpportunityCategory.find({ categoryName }).select(
       "_id"
     );
-    console.log(opportunity);
+    
     if (opportunity.length > 0) {
       const opportunityIds = opportunity.map((opp) => opp._id);
       filter.category = { $in: opportunityIds };
