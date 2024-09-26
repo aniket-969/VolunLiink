@@ -1,8 +1,21 @@
 import express from 'express'
 import cors from 'cors'
+import rateLimit from 'express-rate-limit'
 import cookieParser from 'cookie-parser'
 
 const app = express()
+
+const limiter = rateLimit({
+    windowMs:5*60*1000,
+    max:100, 
+    handler: (req, res) => {
+        res.status(429).json({
+            message: "Too many requests, please try again later."
+        });
+    }
+})
+
+app.use(limiter)
 
 app.use(cors({ 
     origin:process.env.CORS_ORIGIN,
