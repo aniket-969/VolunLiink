@@ -5,6 +5,7 @@ import Location from '../../components/Location'
 import Card from '../../components/UI/Card'
 import Navbar from '../../components/Navbar'
 import { useInView } from 'react-intersection-observer'
+import Filter from '../../components/Filter'
 
 const Home = () => {
 
@@ -14,6 +15,7 @@ const Home = () => {
   const [page, setPage] = useState(1)
   const [filter, setFilter] = useState({})
   const { userLocation } = useUserContext()
+  const [location,setLocation] = useState()
   const latitude = 12.9716;
   const longitude = 77.5946;
 
@@ -72,6 +74,7 @@ const Home = () => {
 
         <div className='flex flex-col gap-2  md:max-w-[710px] '>
 
+
           {loading && (
             <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-500 bg-opacity-50 z-50 gap-3">
               <p>Loading...</p>
@@ -80,17 +83,8 @@ const Home = () => {
             </div>
           )}
 
-          <div className='flex mt-5 b justify-center items-center gap-3'>
-            <label >Filter by :</label>
-            <select className='bl p-1.5 text-sm bg-white w-[50%] ' >
-              <option >Default</option>
-              <option >Nearest to you</option>
-              <option >Volunteers only</option>
-              <option > Opportunity only</option>
-              <option >Latest</option>
+          <Filter filter={filter} setFilter={setFilter} />
 
-            </select>
-          </div>
 
           {/* Search */}
           <div className='flex m-3 justify-center items-center gap-3 mx-6 '>
@@ -192,7 +186,7 @@ const Home = () => {
 
           </div>
 
-          {/* <Location /> */}
+          <Location location={location} setLocation={setLocation}/>
           {loading ? <p></p> :
 
             posts.map(post => (
