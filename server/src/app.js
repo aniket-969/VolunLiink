@@ -23,5 +23,4 @@ import volunteerRouter from './routes/volunteerPost.routes.js'
 app.use("/api/v1/users",userRouter)
 app.use("/api/v1/volunteers",volunteerRouter)
 
-
 export {app}
