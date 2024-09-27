@@ -69,8 +69,8 @@ const SignupForm = () => {
             })}
           />
 
-          <div className="flex gap-4">
-            <label htmlFor="file" className="custom-file-input" style={{ cursor: 'pointer', display: 'inline-block' }}>
+          <div className="flex gap-4 ">
+            <label htmlFor="file" className="custom-file-input bl p-1" style={{ cursor: 'pointer', display: 'inline-block' }}>
               Choose File
 
             </label>

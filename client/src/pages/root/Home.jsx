@@ -14,14 +14,14 @@ const Home = () => {
   const [ref, inView] = useInView()
   const [page, setPage] = useState(1)
   const [filter, setFilter] = useState({})
-  const [location,setLocation] = useState()
-  const latitude = 12.9716;
-  const longitude = 77.5946;
+  const [location, setLocation] = useState()
+  const latitude = location?.latitude
+  const longitude = location?.longitude
 
-  const fetchPosts = async (page = 1, limit = 5, filter = {}, latitude, longitude) => {
+  const fetchPosts = async (page = 1, limit = 5, filter = {}) => {
 
-    const postData = await getPosts(page, limit, filter, latitude, longitude)
-
+    const postData = await getPosts(page, limit, filter)
+    console.log(postData)
     setPosts(postData)
     setLoading(false)
   }
@@ -52,9 +52,8 @@ const Home = () => {
   useEffect(() => {
 
     const fetchFilteredPosts = async () => {
-      const filteredPosts = await fetchPosts(1, 5, filter, latitude, longitude)
-      console.log(filteredPosts)
-      setPosts(filteredPosts)
+     
+      await fetchPosts(1, 5, filter)
       setPage(1)
     }
     if (Object.keys(filter).length > 0) {
@@ -85,10 +84,10 @@ const Home = () => {
           <Filter filter={filter} setFilter={setFilter} />
 
 
-          {/* Search */} 
-         <Search/>
+          {/* Search */}
+          <Search />
 
-          <Location location={location} setLocation={setLocation}/>
+          <Location location={location} setLocation={setLocation} />
           {loading ? <p></p> :
 
             posts.map(post => (
