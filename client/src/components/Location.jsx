@@ -35,7 +35,6 @@ const Location = ({location,setLocation}) => {
 
   };
 
-
   async function getLocationDetails(latitude, longitude) {
     try {
 
@@ -59,9 +58,9 @@ const Location = ({location,setLocation}) => {
       setError("Error fetching location details")
     }
   }
-console.log(location)
+
   return (
-    <div className=''>
+    <div>
       {location ? (
         <div className='text-xs flex flex-col items-center justify-center'>
           <p >

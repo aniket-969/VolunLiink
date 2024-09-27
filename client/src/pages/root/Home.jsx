@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { getPosts } from '../../utils/fetchVolunteerData'
-import { useUserContext } from '../../context/AuthProvider'
 import Location from '../../components/Location'
 import Card from '../../components/UI/Card'
 import Navbar from '../../components/Navbar'
 import { useInView } from 'react-intersection-observer'
 import Filter from '../../components/Filter'
+import Search from '../../components/Search'
 
 const Home = () => {
 
@@ -14,7 +14,6 @@ const Home = () => {
   const [ref, inView] = useInView()
   const [page, setPage] = useState(1)
   const [filter, setFilter] = useState({})
-  const { userLocation } = useUserContext()
   const [location,setLocation] = useState()
   const latitude = 12.9716;
   const longitude = 77.5946;
@@ -86,105 +85,8 @@ const Home = () => {
           <Filter filter={filter} setFilter={setFilter} />
 
 
-          {/* Search */}
-          <div className='flex m-3 justify-center items-center gap-3 mx-6 '>
-
-            <label >Search by:</label>
-
-            <select id="skills" className="p-1.5  w-[40%] text-sm bg-white bl truncate"  >
-              <option value="">Skills</option>
-              <optgroup label="Technical Skills">
-                <option value="programming">Programming</option>
-                <option value="webDevelopment">Web Development</option>
-                <option value="graphicDesign">Graphic Design</option>
-              </optgroup>
-
-              <optgroup label="Communication Skills">
-                <option value="writing">Writing</option>
-                <option value="editing">Editing</option>
-                <option value="publicSpeaking">Public Speaking</option>
-              </optgroup>
-
-              <optgroup label="Administrative Skills">
-                <option value="projectManagement">Project Management</option>
-                <option value="eventPlanning">Event Planning</option>
-              </optgroup>
-
-              <optgroup label="Creative Skills">
-                <option value="artisticAbilities">Artistic Abilities</option>
-                <option value="photography">Photography</option>
-              </optgroup>
-
-              <optgroup label="Language Skills">
-                <option value="fluencyInLanguages">
-                  Fluency in Multiple Languages
-                </option>
-              </optgroup>
-
-              <optgroup label="Interpersonal Skills">
-                <option value="teamwork">Teamwork</option>
-                <option value="leadership">Leadership</option>
-              </optgroup>
-
-              <optgroup label="Organizational Skills">
-                <option value="timeManagement">Time Management</option>
-                <option value="planningAndCoordination">
-                  Planning and Coordination
-                </option>
-              </optgroup>
-
-              <optgroup label="Education and Training">
-                <option value="tutoring">Tutoring</option>
-                <option value="mentoring">Mentoring</option>
-              </optgroup>
-
-              <optgroup label="Healthcare Skills">
-                <option value="firstAidAndCPR">First Aid and CPR</option>
-                <option value="medicalAssistance">Medical Assistance</option>
-              </optgroup>
-
-              <optgroup label="Environmental Skills">
-                <option value="conservation">Conservation</option>
-                <option value="sustainability">Sustainability</option>
-              </optgroup>
-
-              <optgroup label="Specialized Skills">
-                <option value="legal">Legal</option>
-                <option value="financeAndAccounting">Finance and Accounting</option>
-              </optgroup>
-
-              <optgroup label="Manual Skills">
-                <option value="carpentry">Carpentry</option>
-                <option value="plumbing">Plumbing</option>
-              </optgroup>
-
-              <optgroup label="Other">
-                <option value="otherSkills">Other Skills</option>
-              </optgroup>
-            </select>
-            <select id="opportunityCategory" className='w-[40%] p-1.5 text-sm bl bg-white truncate' >
-              <option value="">Opportunity</option>
-              <option value="fundraising">Fundraising</option>
-              <option value="eventPlanning">Event Planning</option>
-              <option value="socialMediaManagement">Social Media Management</option>
-              <option value="webDevelopment">Web Development</option>
-              <option value="graphicDesign">Graphic Design</option>
-              <option value="volunteerCoordination">Volunteer Coordination</option>
-              <option value="marketing">Marketing</option>
-              <option value="dataEntry">Data Entry</option>
-              <option value="tutoring">Tutoring or Mentoring</option>
-              <option value="environmentalConservation">Environmental Conservation</option>
-              <option value="communityOutreach">Community Outreach</option>
-              <option value="healthcare">Healthcare Services</option>
-              <option value="legalAssistance">Legal Assistance</option>
-              <option value="foodDistribution">Food Distribution</option>
-              <option value="educationalPrograms">Educational Programs</option>
-              <option value="marathon">Marathon</option>
-              <option value="other">Other</option>
-
-            </select>
-
-          </div>
+          {/* Search */} 
+         <Search/>
 
           <Location location={location} setLocation={setLocation}/>
           {loading ? <p></p> :
