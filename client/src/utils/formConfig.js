@@ -20,7 +20,7 @@ export const opportunityCategories = [
   
  export const skills = [
     { label: "Technical Skills", options: [
-      { value: "", label: "Default:" },
+      
       { value: "programming", label: "Programming" },
       { value: "webDevelopment", label: "Web Development" },
       { value: "graphicDesign", label: "Graphic Design" }

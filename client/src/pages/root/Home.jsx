@@ -85,7 +85,7 @@ const Home = () => {
 
 
           {/* Search */}
-          <Search />
+          <Search filter={filter} setFilter={setFilter}/>
 
           <Location location={location} setLocation={setLocation} />
           {loading ? <p></p> :
