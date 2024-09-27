@@ -7,13 +7,13 @@ const Filter = ({ filter, setFilter }) => {
 
     switch (selectedFilter) {
       case 'Latest':
-        setFilter({ ...filter, sort: 'createdAt:desc' });
+        setFilter({ sort: 'createdAt:desc' });
         break;
       case 'Volunteers Only':
-        setFilter({ ...filter, role: 'Volunteer' });
+        setFilter({  role: 'Volunteer' });
         break;
       case 'Organization Only':
-        setFilter({ ...filter, role: 'Organization' });
+        setFilter({  role: 'Organization' });
         break;
       case 'Nearest':
         const location = localStorage.getItem('location')
@@ -25,7 +25,7 @@ const Filter = ({ filter, setFilter }) => {
 
         break;
       default:
-        setFilter({});
+        setFilter({sort:'createdAt:desc'});
         break;
     }
   }

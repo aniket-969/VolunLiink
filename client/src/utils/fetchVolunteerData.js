@@ -1,7 +1,6 @@
 import axios from "axios";
 
 const getPosts = async (page =1,limit=5,filter={}) => {
-  console.log(filter)
   try {
     const params = new URLSearchParams({
       page,
@@ -10,7 +9,8 @@ const getPosts = async (page =1,limit=5,filter={}) => {
     });
    console.log(params.toString())
     const response = await axios.get(`http://localhost:9000/api/v1/volunteers/posts?${params.toString()}`)
-console.log(response)
+    console.log(response.data);
+    
     return response.data.data || [];
   } catch (error) {
     console.log(error, "Error fetching posts");

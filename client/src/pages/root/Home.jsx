@@ -21,7 +21,7 @@ const Home = () => {
   const fetchPosts = async (page = 1, limit = 5, filter = {}) => {
 
     const postData = await getPosts(page, limit, filter)
-    console.log(postData)
+    // console.log(postData)
     setPosts(postData)
     setLoading(false)
   }
@@ -57,13 +57,13 @@ const Home = () => {
       setPage(1)
     }
     if (Object.keys(filter).length > 0) {
-      console.log("in filter")
+      
       fetchFilteredPosts()
     }
 
   }, [filter])
 
-  console.log(posts);
+  // console.log(posts);
 
   return (
     <>
