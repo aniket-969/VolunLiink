@@ -58,14 +58,6 @@ userSchema.pre("save", async function (next) {
   next();
 });
  
-userSchema.pre("save", function (next) {
-  // Check if username is 'guest123@'
-  if (this.fullName === "Guest23@#$") {
-    // Set expiresAt field to current time plus 10 minutes
-    this.expiresAt = new Date(Date.now() + 10 * 60 * 1000);
-  }
-  next();
-});
 userSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 userSchema.methods.isPasswordCorrect = async function (password) {
