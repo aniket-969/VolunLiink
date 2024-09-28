@@ -7,7 +7,6 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useCookies } from "react-cookie";
 import { useUserContext } from "../../../context/AuthProvider";
-import Guest from "./Guest";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { loginSchema } from "../../../schema/UserSchema";
@@ -19,21 +18,16 @@ const SigninForm = () => {
 
   const navigate = useNavigate();
 
-  const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({ resolver: zodResolver(loginSchema) })
+  const { register, handleSubmit,formState: { errors } } = useForm({ resolver: zodResolver(loginSchema) })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { user, setUser } = useUserContext();
   console.log(errors)
   const onSubmit = async (data) => {
     console.log(data)
-    const formData = new FormData()
-    formData.append('identifier', data.identifier)
-    formData.append('password', data.password)
-   for(let pair of formData.entries()) {
-      console.log(pair[0] + ', ' + pair[1]);
-    }
+  
     try {
-      const user = await axios.post("http://localhost:9000/api/v1/users/login", formData)
+      const user = await axios.post("http://localhost:9000/api/v1/users/login", data)
       console.log(user)
     } catch (error) {
       console.log(error)
