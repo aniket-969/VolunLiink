@@ -4,6 +4,7 @@ import { formatDate, formatUpdatedAt } from '../../utils/fetchVolunteerData'
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import toast from 'react-hot-toast';
 import { useCookies } from 'react-cookie';
+import Card from '../../components/UI/Card';
 
 const Profile = () => {
 
@@ -77,64 +78,7 @@ const Profile = () => {
             <div>
               {
                 data.map(post => (
-                  <div key={post._id} className='pop1 flex flex-col gap-4 mx-5 my-2 px-5 py-4 rounded-2xl '>
-
-                    {/* post name and username */}
-                    <div className='flex items-center gap-5 justify-between'>
-
-                      {/* post name and username */}
-                      <div className='flex flex-col'>
-
-                        <div className='flex items-center text-sm md:text-lg max-w-[12rem]'>
-                          <p>{post.createdBy.fullName.split(' ')[0]}
-                          </p>
-                          <span className="mx-2 h-4 w-[2.5px] bg-dark"></span>
-                          <p className='truncate'>@{post.createdBy.username}</p>
-                        </div>
-
-                        <p className='text-xs'>{`${formatUpdatedAt(post.updatedAt)}`}</p>
-                      </div>
-
-                      {/* post availaibility */}
-                      <div className='text-xs flex flex-col gap-1 items-center'>
-                        <button onClick={() => handleDelete(post._id)} className='text-red-500 text-xl'><MdOutlineDeleteOutline /></button>
-                        {`${formatDate(post.startDate)} - ${formatDate(post.endDate)}`}
-                      </div>
-
-                    </div>
-
-                    {/* post image */}
-                    <div className=' '>
-                      <img src={post.images[0]} className="w-full max-h-[16rem] my-2 rounded-xl" alt="" />
-                    </div>
-
-                    {/* post description */}
-                    <div className=''>
-
-                      <div>
-
-                        <p className='text-base md:text-lg'>{post.title}</p>
-                        <p className='line-clamp-2 text-sm md:text-base'>{post.description}</p>
-
-                      </div>
-
-                      <div className='text-sm md:text-base'>
-                        <p >Email: {post.contactEmail}</p>
-                        <p>Phone: {post.contactPhone}</p>
-                      </div>
-                      {post.skills ? (
-                        <p className='text-sm md:text-base'>Skills -{post.skills.skillName}</p>
-                      ) : post.category ? (
-                        <p className='text-sm md:text-base'>Category-{post.category.categoryName}</p>
-                      ) : (
-                        <></>
-                      )}
-
-
-                    </div>
-
-
-                  </div>
+                 <Card post={post} handleDelete={handleDelete}/>
                 ))
               }
             </div>

@@ -1,363 +1,131 @@
 import React, { useEffect, useState } from 'react'
-import { fetchDataBySkill, fetchLatestData, fetchNearestData, fetchOnlyOpportunityData, fetchOnlyVolunteerData, fetchVolunteerData, formatDate, formatUpdatedAt } from '../../utils/fetchVolunteerData'
-import { useUserContext } from '../../context/AuthProvider'
+import { getPosts } from '../../utils/fetchVolunteerData'
 import Location from '../../components/Location'
-import { Link } from 'react-router-dom'
-import toast from 'react-hot-toast'
-import { useCookies } from 'react-cookie'
+import Card from '../../components/UI/Card'
+import Navbar from '../../components/Navbar'
+import { useInView } from 'react-intersection-observer'
+import Filter from '../../components/Filter'
+import Search from '../../components/Search'
 
 const Home = () => {
 
-  const [loading, setLoading] = useState(true) 
-  const [data, setData] = useState([])
-  const { userLocation } = useUserContext()
- 
-  // console.log(userLocation);
+  const [loading, setLoading] = useState(true)
+  const [posts, setPosts] = useState([])
+  const [ref, inView] = useInView()
+  const [page, setPage] = useState(1)
+  const [filter, setFilter] = useState({})
+  const [location, setLocation] = useState()
+  const latitude = location?.latitude
+  const longitude = location?.longitude
+
+  const fetchPosts = async (page = 1, limit = 5, filter = {}) => {
+
+    const postData = await getPosts(page, limit, filter)
+    // console.log(postData)
+    setPosts(postData)
+    setLoading(false)
+  }
 
   useEffect(() => {
-
-    fetchData();
+    fetchPosts()
 
   }, [])
 
-  const fetchData = async () => {
-    try {
-      const volData = await fetchVolunteerData();
+  const loadMorePosts = async () => {
+    const next = page + 1
 
-      setData(volData)
-      if (volData) setLoading(false)
-    } catch (error) {
-      console.error("Error fetching data:", error);
+    const newPosts = await getPosts(next, 5, filter, latitude, longitude)
 
-    }
-  };
-
-  const handleLatestData = async () => {
-    try {
-
-      setLoading(true)
-      const latestData = await fetchLatestData()
-      console.log(latestData);
-      setData(latestData.data)
-      setLoading(false);
-
-
-    } catch (error) {
-      console.log(error);
+    if (newPosts?.length) {
+      setPage(next)
+      setPosts((prev) => [...prev, ...newPosts])
     }
   }
 
-  const handleFetchDataBySkill = async (skill) => {
-
-    try {
-
-      if (skill == "Skills") {
-
-        return;
-      }
-
-      setLoading(true)
-      const skillData = await fetchDataBySkill(skill)
-      if (skillData.data.length === 0) {
-
-        fetchData();
-        toast("No data found")
-      }
-      else {
-        console.log(skillData);
-        setData(skillData.data)
-      }
-
-
-      setLoading(false)
-
-    } catch (error) {
-      console.log(error);
+  useEffect(() => {
+    if (inView) {
+      console.log("in view")
+      loadMorePosts()
     }
-  }
+  }, [inView])
 
-  const handleFetchDataByOpp = async (opportunity) => {
-    try {
+  useEffect(() => {
 
-      if (opportunity == "Opportunity") return;
-      setLoading(true)
-      const oppData = await fetchDataBySkill(opportunity)
-      if (oppData.data.length === 0) {
-        fetchData()
-        toast("No data found")
-      }
-      else {
-        console.log(oppData);
-        setData(oppData.data)
-      }
-
-      setLoading(false)
-
-    } catch (error) {
-
+    const fetchFilteredPosts = async () => {
+     
+      await fetchPosts(1, 5, filter)
+      setPage(1)
     }
-  }
-
-  const handleFetchOnlyVolunteerData = async () => {
-    try {
-      setLoading(true)
-      const volData = await fetchOnlyVolunteerData();
-      setData(volData.data)
-      setLoading(false)
-      console.log(volData);
-    } catch (error) {
-      console.error("Error fetching volunteer data:", error);
-    }
-  };
-
-  const handleFetchOnlyOpportunityData = async () => {
-    try {
-      setLoading(true)
-      const oppData = await fetchOnlyOpportunityData();
-      setData(oppData.data)
-
-      console.log(oppData);
-      setLoading(false)
-    } catch (error) {
-      console.error("Error fetching volunteer data:", error);
-    }
-  };
-
-  const handleNearestData = async () => {
-    try {
-      setLoading(true)
-      const nearestData = await fetchNearestData(userLocation.latitude, userLocation.longitude)
-      console.log(nearestData);
-      // setData(nearestData)
-      setLoading(false)
-    } catch (error) {
-      console.log(error);
+    if (Object.keys(filter).length > 0) {
+      
+      fetchFilteredPosts()
     }
 
-  }
+  }, [filter])
 
-  const handleFilterData = (option) => {
-
-    console.log(option);
-    switch (option) {
-      case 'Volunteers only':
-        handleFetchOnlyVolunteerData()
-        break;
-      case 'Default':
-        fetchData()
-        break;
-      case 'Nearest to you':
-        handleNearestData()
-        break;
-      case 'Opportunity only':
-        handleFetchOnlyOpportunityData()
-        break;
-      case 'Latest':
-        handleLatestData()
-        break;
-    }
-
-  };
-  console.log(data);
+  // console.log(posts);
 
   return (
-    <section className='flex flex-col items-center'>
+    <>
+      <Navbar />
+      <section className='flex flex-col items-center'>
 
-      <div className='flex flex-col gap-2  md:max-w-[710px] '>
-
-        {loading && (
-          <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-500 bg-opacity-50 z-50 gap-3">
-            <p>Loading...</p>
-            <div className=" border-4 border-t-4 border-gray-200 h-12 w-12 rounded-full animate-spin text-2xl  ">....</div>
-
-          </div>
-        )}
-
-        <div className='flex mt-5 b justify-center items-center gap-3'>
-          <label >Filter by :</label>
-          <select className='bl p-1.5 text-sm bg-white w-[50%] ' onChange={(e) => handleFilterData(e.target.value)}>
-            <option >Default</option>
-            <option >Nearest to you</option>
-            <option >Volunteers only</option>
-            <option > Opportunity only</option>
-            <option >Latest</option>
-
-          </select>
-        </div>
-
-        <div className='flex m-3 justify-center items-center gap-3 mx-6 '>
-
-          <label >Search by:</label>
-
-          <select id="skills" className="p-1.5  w-[40%] text-sm bg-white bl truncate" onChange={(e) => { handleFetchDataBySkill(e.target.value) }} >
-            <option value="">Skills</option>
-            <optgroup label="Technical Skills">
-              <option value="programming">Programming</option>
-              <option value="webDevelopment">Web Development</option>
-              <option value="graphicDesign">Graphic Design</option>
-            </optgroup>
-
-            <optgroup label="Communication Skills">
-              <option value="writing">Writing</option>
-              <option value="editing">Editing</option>
-              <option value="publicSpeaking">Public Speaking</option>
-            </optgroup>
-
-            <optgroup label="Administrative Skills">
-              <option value="projectManagement">Project Management</option>
-              <option value="eventPlanning">Event Planning</option>
-            </optgroup>
-
-            <optgroup label="Creative Skills">
-              <option value="artisticAbilities">Artistic Abilities</option>
-              <option value="photography">Photography</option>
-            </optgroup>
-
-            <optgroup label="Language Skills">
-              <option value="fluencyInLanguages">
-                Fluency in Multiple Languages
-              </option>
-            </optgroup>
-
-            <optgroup label="Interpersonal Skills">
-              <option value="teamwork">Teamwork</option>
-              <option value="leadership">Leadership</option>
-            </optgroup>
-
-            <optgroup label="Organizational Skills">
-              <option value="timeManagement">Time Management</option>
-              <option value="planningAndCoordination">
-                Planning and Coordination
-              </option>
-            </optgroup>
-
-            <optgroup label="Education and Training">
-              <option value="tutoring">Tutoring</option>
-              <option value="mentoring">Mentoring</option>
-            </optgroup>
-
-            <optgroup label="Healthcare Skills">
-              <option value="firstAidAndCPR">First Aid and CPR</option>
-              <option value="medicalAssistance">Medical Assistance</option>
-            </optgroup>
-
-            <optgroup label="Environmental Skills">
-              <option value="conservation">Conservation</option>
-              <option value="sustainability">Sustainability</option>
-            </optgroup>
-
-            <optgroup label="Specialized Skills">
-              <option value="legal">Legal</option>
-              <option value="financeAndAccounting">Finance and Accounting</option>
-            </optgroup>
-
-            <optgroup label="Manual Skills">
-              <option value="carpentry">Carpentry</option>
-              <option value="plumbing">Plumbing</option>
-            </optgroup>
-
-            <optgroup label="Other">
-              <option value="otherSkills">Other Skills</option>
-            </optgroup>
-          </select>
-          <select id="opportunityCategory" className='w-[40%] p-1.5 text-sm bl bg-white truncate' onChange={(e) => { handleFetchDataByOpp(e.target.value) }}>
-            <option value="">Opportunity</option>
-            <option value="fundraising">Fundraising</option>
-            <option value="eventPlanning">Event Planning</option>
-            <option value="socialMediaManagement">Social Media Management</option>
-            <option value="webDevelopment">Web Development</option>
-            <option value="graphicDesign">Graphic Design</option>
-            <option value="volunteerCoordination">Volunteer Coordination</option>
-            <option value="marketing">Marketing</option>
-            <option value="dataEntry">Data Entry</option>
-            <option value="tutoring">Tutoring or Mentoring</option>
-            <option value="environmentalConservation">Environmental Conservation</option>
-            <option value="communityOutreach">Community Outreach</option>
-            <option value="healthcare">Healthcare Services</option>
-            <option value="legalAssistance">Legal Assistance</option>
-            <option value="foodDistribution">Food Distribution</option>
-            <option value="educationalPrograms">Educational Programs</option>
-            <option value="marathon">Marathon</option>
-            <option value="other">Other</option>
-
-          </select>
-
-        </div>
-
-        <Location />
-        {loading ? <p></p> :
-
-          data.map(post => (
-
-            <div key={post._id} className='pop1 flex flex-col gap-4 mx-5 my-2 px-5 py-4 rounded-2xl  '>
-
-              <div className='flex items-center gap-5 justify-between'>
-
-                {/* post name and username */}
-                <div className='flex flex-col '>
-
-                  <div className='flex items-center text-sm md:text-lg max-w-[12rem]'>
-                    <p className=''>{post.createdBy.fullName.split(' ')[0]}
-                    </p>
-                    <span className="mx-2 h-4 w-[2.5px] bg-dark"></span>
-                    <p className='truncate'>@{post.createdBy.username}</p>
-                  </div>
-
-                  <p className='text-xs'>{`${formatUpdatedAt(post.updatedAt)}`}</p>
-                </div>
-
-                {/* post availaibility */}
-                <div className='text-xs'>
-
-                  {`${formatDate(post.startDate)} - ${formatDate(post.endDate)}`}
-                </div>
-
-              </div>
-              <Link to={`/posts/${post._id}`} >
-                <div className=' '>
-                  {/* post image */}
-                  <img src={post.images[0]} className="w-full max-h-[16rem] my-2 rounded-xl sm:max-h-[25rem] " alt="" />
-                </div>
-
-                {/* post description */}
-                <div className='mt-6'>
-
-                  <div className=''>
-                    <p className='text-base md:text-lg'>{post.title}</p>
-                    <p className='line-clamp-2 text-sm md:text-base'>{post.description}</p>
-
-                  </div>
-
-                  <div className='text-sm md:text-base'>
-                    <p >Email: {post.contactEmail}</p>
-                    <p>Phone: {post.contactPhone}</p>
-                  </div>
-
-                </div>
-                {post.skills ? (
-                  <p className='text-sm md:text-base'>Skills -{post.skills.skillName}</p>
-                ) : post.category ? (
-                  <p className='text-sm md:text-base'>Category-{post.category.categoryName}</p>
-                ) : (
-                  <></>
-                )}
-                <div className='flex justify-center items-center mt-3'>
-                   <p className='text-xs flex items-center justify-center w-[19rem]'>
-                  Posted from:{post.location.road} , {post.location.village} , {post.location.county},{post.location.state} , {post.location.country}
-                </p>
-                </div>
-               
+        <div className='flex flex-col gap-2  md:max-w-[710px] '>
 
 
-              </Link>
-
+          {loading && (
+            <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-500 bg-opacity-50 z-50 gap-3">
+              <p>Loading...</p>
+              <div className=" border-4 border-t-4 border-gray-200 h-12 w-12 rounded-full animate-spin text-2xl  ">....</div>
 
             </div>
+          )}
 
-          ))
+          <Filter filter={filter} setFilter={setFilter} />
 
+
+          {/* Search */}
+          <Search filter={filter} setFilter={setFilter}/>
+
+          <Location location={location} setLocation={setLocation} />
+          {loading ? <p></p> :
+
+            posts.map(post => (
+
+              <Card key={post._id} post={post} />
+
+            ))
+
+          }
+        </div>
+
+        {!loading && <div
+          ref={ref}
+          className='col-span-1 mt-16 flex items-center justify-center sm:col-span-2 md:col-span-3 lg:col-span-4'
+        >
+          <svg
+            aria-hidden='true'
+            className='h-10 w-10 animate-spin fill-sky-600 text-gray-200 dark:text-gray-600'
+            viewBox='0 0 100 101'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+          >
+            <path
+              d='M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z'
+              fill='currentColor'
+            />
+            <path
+              d='M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z'
+              fill='currentFill'
+            />
+          </svg>
+          <span className='sr-only'>Loading...</span>
+        </div>
         }
-      </div></section>
+
+      </section>
+    </>
+
   )
 }
 

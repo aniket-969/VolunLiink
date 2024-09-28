@@ -18,8 +18,6 @@ export const AuthProvider = ({ children }) => {
 
     const [user, setUser] = useState({})
     const [isAuthenticated, setIsAuthenticated] = useState(false)
-    const [locationDetails, setLocationDetails] = useState([])
-    const [userLocation, setUserLocation] = useState()
     const navigate = useNavigate()
 
     let loginTime = localStorage.getItem('loginTime');
@@ -47,7 +45,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     const value = {
-        user, setUser, isAuthenticated, setIsAuthenticated, userLocation, setUserLocation, locationDetails, setLocationDetails
+        user, setUser, isAuthenticated, setIsAuthenticated
     }
 
     return (

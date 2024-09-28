@@ -28,8 +28,8 @@ const volunteerForm = asyncHandler(async (req, res) => {
     categoryId:category,
   } = req.body;
 
-  console.log(req.body); 
-const createdBy =  req.user?._id
+  console.log(req.body);
+
   if (
     [title, description, contactEmail, startDate, endDate, role].some(
       (field) => field?.trim() === ""
@@ -136,7 +136,7 @@ const getPosts = asyncHandler(async (req, res) => {
     const opportunity = await OpportunityCategory.find({ categoryName }).select(
       "_id"
     );
-    console.log(opportunity);
+
     if (opportunity.length > 0) {
       const opportunityIds = opportunity.map((opp) => opp._id);
       filter.category = { $in: opportunityIds };
@@ -170,6 +170,7 @@ const getPosts = asyncHandler(async (req, res) => {
 
   const skip = (page - 1) * limit;
 
+
   const posts = await VolunteerOpportunity.find(filter)
     .sort(sortOptions)
     .skip(skip)
@@ -178,7 +179,6 @@ const getPosts = asyncHandler(async (req, res) => {
     .populate("category", "categoryName description")
     .populate("skills", "skillName description")
     .exec();
-
   return res.json(
     new ApiResponse(200, posts, "All volunteers fetched successfully")
   );
@@ -197,12 +197,15 @@ const getUserVolunteerData = asyncHandler(async (req, res) => {
   } else {
     sortOptions.createdAt = -1;
   }
-  const userId = req.params.userId;
+
+  const userId = req.user?._id;
+
   const skip = (page - 1) * limit;
   const userPosts = await VolunteerOpportunity.find({ createdBy: userId })
     .skip(skip)
     .populate("createdBy", "username fullName")
-    .populate("skills", "skillName description").sort(sortOptions);
+    .populate("skills", "skillName description")
+    .sort(sortOptions);
 
   if (!userPosts || userPosts.length == 0) {
     return res.json({

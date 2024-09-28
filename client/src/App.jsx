@@ -7,34 +7,33 @@ import SignupForm from "./pages/auth/form/SignupForm";
 import './App.css'
 import Profile from "./pages/root/Profile";
 import PostDetails from "./components/PostDetails";
-import CreatePost from "./components/CreatePost";
-import {Toaster} from 'react-hot-toast'
+import CreatePost from "./pages/root/CreatePost";
+import { Toaster } from 'react-hot-toast'
 import TokenChecker from "./components/TokenChecker";
 import NotFound from "./components/NotFound";
 
 function App() {
 
   return (
-    <> 
-     <TokenChecker/>
+    <>
+      {/* <TokenChecker /> */}
       <Routes>
-      
+
         <Route element={<AuthLayout />}>
           <Route path="/sign-in" element={<SigninForm />} />
           <Route path="/sign-up" element={<SignupForm />} />
         </Route>
-  
+        <Route index element={<Home />} />
         <Route element={<RootLayout />}>
-          <Route index element={<Home />} />
+
           <Route path="/profile/:id/*" element={<Profile />} />
           <Route path="/create-post" element={<CreatePost />} />
-          <Route path="/posts/:postId" element={<PostDetails />} />
-      
-        </Route>
 
-        <Route path="*" element={<NotFound />}/>
+        </Route>
+        <Route path="/posts/:postId" element={<PostDetails />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
-      <Toaster position="top-right"/>
+      <Toaster position="top-right" />
     </>
   )
 }

@@ -7,36 +7,39 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Guest from "./Guest";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { userSchema } from "../../../schema/UserSchema";
+import CustomInputWithIcon from "../../../components/UI/CustomInputWithIcon";
 
 const SignupForm = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [file, setFile] = useState("");
+
+  const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({ resolver: zodResolver(userSchema) })
+
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [selectedFileName, setSelectedFileName] = useState("No file chosen");
+  const [imagePreview, setImagePreview] = useState(null);
+  const [file, setFile] = useState(null)
+  // console.log(errors, getValues('image'))
+
 
   const navigate = useNavigate();
 
-  const onSubmitForm = async (e) => {
-    e.preventDefault();
-    try {
-      const formData = new FormData();
-      formData.append("username", username);
-      formData.append("password", password);
-      formData.append("fullName", name);
-      formData.append("email", email);
-      formData.append("avatar", file);
+  const onSubmit = async (data) => {
 
-      const user = await axios.post(
-        "http://localhost:9000/api/v1/users/register",
-        formData
-      );
-      console.log(user);
-      toast.success("User registered successfully");
-      navigate("/sign-in");
+    console.log(data)
+    const formData = new FormData()
+    formData.append('username', data.username);
+    formData.append('password', data.password);
+    formData.append('email', data.email);
+    formData.append('fullName', data.fullName);
+    formData.append('avatar', data.avatar);
+
+    try {
+      const userData = await axios.post("http://localhost:9000/api/v1/users/register", formData)
+      console.log(userData)
     } catch (error) {
-      toast.error("error");
-      console.log(error);
+      console.log(error)
     }
   };
 
@@ -48,71 +51,50 @@ const SignupForm = () => {
         <h1 className="text-[#4361ee] text-3xl font-semibold md:text-blac lg:text-red">Sign Up</h1>
         <p className="text-md">Create your account</p>
       </div>
- 
-      <form onSubmit={onSubmitForm} className=" flex flex-col gap-4 w-[95%] lg:w-[90%]">
 
-        <div className="flex bg-[#F0F8FF] w-[100%] p-2 gap-4 items-center">
+      <form onSubmit={handleSubmit(onSubmit)} className=" flex flex-col gap-4 w-[95%] lg:w-[90%]">
 
-          <div className="text-xl" >
-            <FaUser />
-          </div>
+        <CustomInputWithIcon register={register('fullName')} placeholder="Name" icon={FaUser} />
+        {errors.fullName && <p className="text-red-500 text-sm">{errors.fullName.message}</p>}
+        <CustomInputWithIcon register={register('username')} placeholder="Username" icon={FaImagePortrait} />
+        {errors.username && <p className="text-red-500 text-sm">{errors.username.message}</p>}
+        <CustomInputWithIcon register={register('email')} placeholder="Email" icon={FaEnvelope} />
+        {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+        <CustomInputWithIcon register={register('password')} type="password" placeholder="Password" icon={FaRegKeyboard} />
+        {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+
+        <div>
 
           <input
-            className="bg-[#F0F8FF]  text-lg w-[100%]"
-            type="text" id="name" name="name"
-            placeholder=" Name"
-            onChange={(e) => setName(e.target.value)}
+            type="file"
+            id="file"
+            style={{ display: 'none' }}
+            {...register('avatar', {
+              onChange: (e) => {
+                const selectedFile = e.target.files?.[0];
+                if (selectedFile) {
+                  setValue('avatar', selectedFile);
+                  setSelectedFileName(selectedFile.name);
+                  setImagePreview(URL.createObjectURL(selectedFile));
+                }
+              }
+            })}
           />
-        </div>
 
-        <div>
-          <div className="flex bg-[#F0F8FF] w-[100%] p-2 gap-4 items-center">
-            {" "}
-            <div className="text-xl" >
-              <FaImagePortrait />
-            </div>
+          <div className="flex gap-4 ">
+            <label htmlFor="file" className="custom-file-input bl p-1" style={{ cursor: 'pointer', display: 'inline-block' }}>
+              Choose File
 
-            <input
-              className="bg-[#F0F8FF] w-[100%] text-lg"
-              type="text" id="username" name="username"
-              placeholder=" Username"
-              onChange={(e) => setUsername(e.target.value)}
-            />
+            </label>
+            <span>{selectedFileName}</span>
           </div>
-        </div>
 
-        <div>
-          <div className="flex bg-[#F0F8FF] w-[100%] p-2 gap-4 items-center">
-            <div className="text-xl" >
-              <FaEnvelope />
-            </div>
+          {errors.avatar && <p className="text-red-500 text-sm">{errors.avatar.message}</p>}
 
-            <input
-              type="email"
-              placeholder=" Email" id="email" name="email"
-              className="bg-[#F0F8FF] text-lg w-[100%]"
-              onChange={(e) => setEmail(e.target.value)}
-            />
+          <div className=" flex justify-center ">
+            {imagePreview && <img className="  w-[20rem] max-h-[16rem] my-2 rounded-xl sm:max-h-[25rem]" src={imagePreview} alt="Selected file" style={{ maxWidth: '100%' }} />}
           </div>
-        </div>
 
-        <div>
-          <div className="flex bg-[#F0F8FF] w-[100%] p-2 gap-4 items-center">
-            <div className="text-xl" >
-              <FaRegKeyboard />
-            </div>
-            <input
-              type="password"
-              placeholder=" Password"
-              className="bg-[#F0F8FF] text-lg w-[100%]"
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-3">
-          <label>Select profle picture</label>
-          <input type="file" className="" onChange={(e) => setFile(e.target.files[0])} />
         </div>
 
         <button type="submit" className="bg-[#4361ee] text-white text-xl p-3 my-2">Sign Up</button>
@@ -125,7 +107,6 @@ const SignupForm = () => {
         </Link>
       </div>
 
-      <Guest/>
     </>
   );
 };

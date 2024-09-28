@@ -35,6 +35,7 @@ const PostDetails = () => {
   const { postId } = useParams()
   console.log(postId);
   console.log(data);
+  
   return (
     <section className='flex justify-center my-5'>
       {loading ? <p>Loading...</p> :

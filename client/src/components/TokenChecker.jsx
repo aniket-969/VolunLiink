@@ -9,20 +9,15 @@ const TokenChecker = () => {
     const navigate = useNavigate()
     const [cookies, setCookie, removeCookie] = useCookies("accessToken")
 
-    // console.log(cookies.accessToken);
-    // console.log(cookies);
-
     if (!cookies.accessToken) {
         console.log("No token found");
         
         return;
     }
     const decodedToken = jwtDecode(cookies.accessToken)
-    console.log(decodedToken.exp);
+   
     const userId = localStorage.getItem("userId")
-    console.log(userId);
-    console.log(decodedToken);
-
+    
 
     const checkAuthentation = async () => {
 
@@ -43,13 +38,13 @@ const TokenChecker = () => {
 
         else {
 
-            console.log("Not expired");
+            // console.log("Not expired");
         }
 
     }
 
     useEffect(() => {
-        console.log("in token");
+       
          if(!cookies.accessToken){
             navigate("/sign-up")
          }

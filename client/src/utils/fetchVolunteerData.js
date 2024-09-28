@@ -1,84 +1,20 @@
 import axios from "axios";
 
-const fetchVolunteerData = async () => {
+const getPosts = async (page =1,limit=5,filter={}) => {
   try {
-    const volunteerdata = await axios.get(
-      "http://localhost:9000/api/v1/volunteers/posts?page=1&limit=5"
-    );
-    // console.log(volunteerdata);
-
-    return volunteerdata.data.data;
+    const params = new URLSearchParams({
+      page,
+      limit,
+      ...filter 
+    });
+   console.log(params.toString())
+    const response = await axios.get(`http://localhost:9000/api/v1/volunteers/posts?${params.toString()}`)
+    console.log(response.data);
+    
+    return response.data.data || [];
   } catch (error) {
-    console.log(error, "Error getting data");
-  }
-};
-// 6599830f52054fed27171e33
-
-const fetchNearestData = async (latitude, longitude) => {
-  try {
-    const nearestData = await axios.get(
-      `http://localhost:9000/api/v1/users/volunteer/location/${latitude}/${longitude}`
-    );
-    return nearestData.data;
-  } catch (error) {
-    console.log(error.message);
-  }
-};
-
-const fetchDataBySkill = async (skill) => {
-  try {
-    const skillData = await axios.get(
-      `http://localhost:9000/api/v1/users/skillData/?skillName=${skill}`
-    );
-
-    return skillData.data;
-  } catch (error) {
-    console.log(error.message);
-  }
-};
-
-const fetchOnlyVolunteerData = async () => {
-  try {
-    const volData = await axios.get(
-      `http://localhost:9000/api/v1/users/volunteerDataOnly`
-    );
-    return volData.data;
-  } catch (error) {
-    console.log(error.message);
-  }
-};
-
-const fetchOnlyOpportunityData = async () => {
-  try {
-    const oppData = await axios.get(
-      `http://localhost:9000/api/v1/users/opportunityDataOnly`
-    );
-    return oppData.data;
-  } catch (error) {
-    console.log(error.message);
-  }
-};
-
-const fetchDataByOpportunity = async (opp) => {
-  try {
-    const OpportunityData = await axios.get(
-      `http://localhost:9000/api/v1/users/opportunityData/?oppName=${opp}`
-    );
-
-    return OpportunityData.data;
-  } catch (error) {
-    console.log(error.message);
-  }
-}; 
-
-const fetchLatestData = async () => {
-  try {
-    const latestData = await axios.get(
-      "http://localhost:9000/api/v1/users/latestData"
-    );
-    return latestData.data;
-  } catch (error) {
-    console.log(error.message);
+    console.log(error, "Error fetching posts");
+    throw error
   }
 };
 
@@ -162,16 +98,10 @@ const handlePostDelete = async (postId) => {
 };
 
 export {
-  fetchVolunteerData,
+  getPosts,
   fetchUserData,
   fetchPostDetails,
   formatDate,
   formatUpdatedAt,
-  fetchNearestData,
-  fetchDataBySkill,
-  fetchLatestData,
-  fetchDataByOpportunity,
-  fetchOnlyOpportunityData,
-  fetchOnlyVolunteerData,
   handlePostDelete
 };
