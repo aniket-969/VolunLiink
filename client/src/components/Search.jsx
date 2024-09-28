@@ -17,6 +17,7 @@ const handleCategoryChange = (e)=>{
     return (
         <div className="flex m-3 justify-center items-center gap-3 mx-6">
         {/* Skills Dropdown */}
+        <label htmlFor="">Search:</label>
         <select id="skills" className="p-1.5 w-[40%] text-sm bg-white bl truncate" onChange={handleSkillChange}>
           <option value="">Skills</option>
           {skills.map((group) => (

@@ -20,19 +20,27 @@ const SignupForm = () => {
   const [selectedFileName, setSelectedFileName] = useState("No file chosen");
   const [imagePreview, setImagePreview] = useState(null);
   const [file, setFile] = useState(null)
-  console.log(errors, getValues('image'))
+  // console.log(errors, getValues('image'))
 
 
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
+
     console.log(data)
-    
-   try {
-    
-   } catch (error) {
-    
-   }
+    const formData = new FormData()
+    formData.append('username', data.username);
+    formData.append('password', data.password);
+    formData.append('email', data.email);
+    formData.append('fullName', data.fullName);
+    formData.append('avatar', data.avatar);
+
+    try {
+      const userData = await axios.post("http://localhost:9000/api/v1/users/register", formData)
+      console.log(userData)
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   return (
@@ -44,12 +52,16 @@ const SignupForm = () => {
         <p className="text-md">Create your account</p>
       </div>
 
-      <form onSubmit={handleSubmit(onsubmit)} className=" flex flex-col gap-4 w-[95%] lg:w-[90%]">
+      <form onSubmit={handleSubmit(onSubmit)} className=" flex flex-col gap-4 w-[95%] lg:w-[90%]">
 
-        <CustomInputWithIcon register={register('fullName')} placeholder="Name" icon= {FaUser} />
+        <CustomInputWithIcon register={register('fullName')} placeholder="Name" icon={FaUser} />
+        {errors.fullName && <p className="text-red-500 text-sm">{errors.fullName.message}</p>}
         <CustomInputWithIcon register={register('username')} placeholder="Username" icon={FaImagePortrait} />
+        {errors.username && <p className="text-red-500 text-sm">{errors.username.message}</p>}
         <CustomInputWithIcon register={register('email')} placeholder="Email" icon={FaEnvelope} />
-        <CustomInputWithIcon register={register('password')} type="password"  placeholder="Password" icon={FaRegKeyboard} />
+        {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+        <CustomInputWithIcon register={register('password')} type="password" placeholder="Password" icon={FaRegKeyboard} />
+        {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
 
         <div>
 
@@ -57,11 +69,11 @@ const SignupForm = () => {
             type="file"
             id="file"
             style={{ display: 'none' }}
-            {...register('image', {
+            {...register('avatar', {
               onChange: (e) => {
                 const selectedFile = e.target.files?.[0];
                 if (selectedFile) {
-                  setValue('image', selectedFile);
+                  setValue('avatar', selectedFile);
                   setSelectedFileName(selectedFile.name);
                   setImagePreview(URL.createObjectURL(selectedFile));
                 }
@@ -77,7 +89,7 @@ const SignupForm = () => {
             <span>{selectedFileName}</span>
           </div>
 
-          {errors.image && <p className="text-red-500">{errors.image.message}</p>}
+          {errors.avatar && <p className="text-red-500 text-sm">{errors.avatar.message}</p>}
 
           <div className=" flex justify-center ">
             {imagePreview && <img className="  w-[20rem] max-h-[16rem] my-2 rounded-xl sm:max-h-[25rem]" src={imagePreview} alt="Selected file" style={{ maxWidth: '100%' }} />}
@@ -95,7 +107,6 @@ const SignupForm = () => {
         </Link>
       </div>
 
-      <Guest />
     </>
   );
 };

@@ -11,7 +11,6 @@ import Guest from "./Guest";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { loginSchema } from "../../../schema/UserSchema";
-import CustomInput from "../../../components/UI/CustomInput";
 import CustomInputWithIcon from "../../../components/UI/CustomInputWithIcon";
 
 const SigninForm = () => {
@@ -25,13 +24,19 @@ const SigninForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { user, setUser } = useUserContext();
   console.log(errors)
-  const onsubmit = async (data) => {
+  const onSubmit = async (data) => {
     console.log(data)
+    const formData = new FormData()
+    formData.append('identifier', data.identifier)
+    formData.append('password', data.password)
+   for(let pair of formData.entries()) {
+      console.log(pair[0] + ', ' + pair[1]);
+    }
     try {
-
-
+      const user = await axios.post("http://localhost:9000/api/v1/users/login", formData)
+      console.log(user)
     } catch (error) {
-
+      console.log(error)
     }
   };
 
@@ -43,11 +48,13 @@ const SigninForm = () => {
       </div>
 
       <form
-        onSubmit={handleSubmit(onsubmit)}
+        onSubmit={handleSubmit(onSubmit)}
         className=" flex flex-col gap-4 w-[95%] lg:w-[90%]"
       >
         <CustomInputWithIcon register={register('identifier')} placeholder="Username or Email" icon={FaEnvelope} />
+        {errors.identifier && <p className="text-red-500 text-sm">{errors.identifier.message}</p>}
         <CustomInputWithIcon register={register('password')} type="password" placeholder="Password" icon={FaRegKeyboard} />
+        {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
 
         <button
           type="submit"
@@ -64,7 +71,6 @@ const SigninForm = () => {
         </Link>
       </div>
 
-      <Guest />
     </>
   );
 };

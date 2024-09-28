@@ -41,26 +41,26 @@ const passwordSchema = z
 export const userSchema = z.object({
   username: z
     .string()
-    .min(1)
-    .max(30, { message: "Username must not exceed 15 characters." }),
+    .min(1,{message:"Username can't be empty"})
+    .max(30, { message: "Username must not exceed 15 characters" }),
   password: passwordSchema,
   email: z
     .string()
     .email({ message: "Invalid email address" })
-    .max(254, { message: "Email must not exceed 254 characters." }),
+    .max(254, { message: "Email must not exceed 254 characters" }),
   fullName: z
     .string()
-    .min(1, { message: "Full name is required." })
-    .max(30, { message: "Username must not exceed 30 characters." })
+    .min(1, { message: "Full name is required" })
+    .max(30, { message: "Username must not exceed 30 characters" })
     .refine((value) => /^[A-Za-z\s]+$/.test(value), {
-      message: "Full name must contain only alphabets and spaces.",
+      message: "Full name must contain only alphabets and spaces",
     }),
-  image: imageValidation,
+  avatar: imageValidation,
 });
 
 export const loginSchema = z.object({
-  identifier: z.string().min(1).max(50, {
-    message: "Identifier must not exceed 128 characters.",
+  identifier: z.string().min(1,{message:"Identifier can't be empty"}).max(50, {
+    message: "Identifier must not exceed 128 characters",
   }),
   password: passwordSchema,
 });
