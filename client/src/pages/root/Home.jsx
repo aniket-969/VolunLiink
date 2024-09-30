@@ -6,6 +6,8 @@ import Navbar from '../../components/Navbar'
 import { useInView } from 'react-intersection-observer'
 import Filter from '../../components/Filter'
 import Search from '../../components/Search'
+import Map from '../../components/Map'
+import { useUserContext } from '../../context/AuthProvider'
 
 const Home = () => {
 
@@ -14,16 +16,17 @@ const Home = () => {
   const [ref, inView] = useInView()
   const [page, setPage] = useState(1)
   const [filter, setFilter] = useState({})
-  const [location, setLocation] = useState()
+
+  const { location, setLocation } = useUserContext()
+
   const latitude = location?.latitude
   const longitude = location?.longitude
-
   const fetchPosts = async (page = 1, limit = 5, filter = {}) => {
 
     const postData = await getPosts(page, limit, filter)
-    // console.log(postData)
     setPosts(postData)
     setLoading(false)
+
   }
 
   useEffect(() => {
@@ -52,12 +55,12 @@ const Home = () => {
   useEffect(() => {
 
     const fetchFilteredPosts = async () => {
-     
+
       await fetchPosts(1, 5, filter)
       setPage(1)
     }
     if (Object.keys(filter).length > 0) {
-      
+
       fetchFilteredPosts()
     }
 
@@ -68,6 +71,8 @@ const Home = () => {
   return (
     <>
       <Navbar />
+
+
       <section className='flex flex-col items-center'>
 
         <div className='flex flex-col gap-2  md:max-w-[710px] '>
@@ -85,9 +90,13 @@ const Home = () => {
 
 
           {/* Search */}
-          <Search filter={filter} setFilter={setFilter}/>
+          <Search filter={filter} setFilter={setFilter} />
 
-          <Location location={location} setLocation={setLocation} />
+          <Location />
+          <div className='bb z-0'>
+            <Map />
+          </div>
+
           {loading ? <p></p> :
 
             posts.map(post => (

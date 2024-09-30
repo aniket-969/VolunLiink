@@ -1,27 +1,29 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 import { fetchLocationDetails } from '../utils/fetchLocation';
+import { useUserContext } from '../context/AuthProvider';
 
-const Location = ({location,setLocation}) => {
+const Location = () => {
 
   const [error, setError] = useState(null);
-
-  useEffect(()=>{
+  const { location, setLocation } = useUserContext()
+  // console.log(location, "in location")
+  useEffect(() => {
     const savedLocation = localStorage.getItem('location');
-    if(savedLocation){
+    if (savedLocation) {
       setLocation(JSON.parse(savedLocation))
     }
-    else{
+    else {
       getLocation()
     }
-  },[])
+  }, [])
 
   const getLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          console.log(latitude,longitude)
+          console.log(latitude, longitude)
           getLocationDetails(latitude, longitude);
         },
         (error) => {
@@ -41,16 +43,16 @@ const Location = ({location,setLocation}) => {
       const data = await fetchLocationDetails(latitude, longitude, import.meta.env.VITE_LOCATIONKEY);
       console.log(data)
       console.log('Location Details:', data.components);
-      if('components' in data){
+      if ('components' in data) {
         const updatedLocation = {
           ...data.components,
           latitude,
           longitude,
         }
         setLocation(updatedLocation)
-        localStorage.setItem('location',JSON.stringify(updatedLocation))
+        localStorage.setItem('location', JSON.stringify(updatedLocation))
       }
-      else{
+      else {
         setError(data.error)
       }
     } catch (error) {

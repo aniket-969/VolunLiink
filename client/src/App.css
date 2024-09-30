@@ -2,8 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-body{
-  font-family: 'Montserrat', sans-serif;
+body {
+  font-family: "Montserrat", sans-serif;
 }
 
 .br {
@@ -18,7 +18,7 @@ body{
   }
 }
 
-.bb{
+.bb {
   border: 2px solid blue;
 }
 .by {
@@ -29,30 +29,31 @@ input[type="text"],
 input[type="password"],
 input[type="datetime"],
 input[type="date"],
-input[type="month"], 
+input[type="month"],
 input[type="time"],
-input[type="tel"] ,
+input[type="tel"],
 input[type="email"] {
   outline: none;
 }
 
- textarea{
+textarea {
   outline: none;
   resize: none;
- }
-.bglight{
-   background-color: #F0F8FF;
+}
+.bglight {
+  background-color: #f0f8ff;
 }
 
-.bg-dark{
-  background-color:#4361ee;
+.bg-dark {
+  background-color: #4361ee;
 }
 
-.pop{
-  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+.pop {
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+    rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
 }
 
-.pop1{
+.pop1 {
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }
 
@@ -64,6 +65,12 @@ input[type="email"] {
   object-position: center right;
 }
 
-.bl{
-  border: 2px solid black
+.bl {
+  border: 2px solid black;
+}
+
+/* Map */
+
+.leaflet-container {
+  height: 50vh;
 }

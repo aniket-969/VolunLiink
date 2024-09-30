@@ -1,7 +1,7 @@
 import React from 'react'
 import { useContext, createContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useCookies } from 'react-cookie'
+import Location from './../components/Location';
 
 const initialState = {
     user: {},
@@ -20,26 +20,26 @@ export const AuthProvider = ({ children }) => {
         const savedUser = localStorage.getItem('user')
         return savedUser ? JSON.parse(savedUser) : null;
     })
-    const [isAuthenticated, setIsAuthenticated] = useState(()=>{
-        return user?true:false
+    const[location,setLocation] = useState("")
+    const [isAuthenticated, setIsAuthenticated] = useState(() => {
+        return user ? true : false
     })
-    
+
     console.log(isAuthenticated)
     const navigate = useNavigate()
 
     useEffect(() => {
         if (user) {
             localStorage.setItem('user', JSON.stringify(user))
-            console.log("setting user local")
+
         }
         else {
             localStorage.removeItem('user')
-            console.log("removing user local")
         }
     }, [user])
 
     const value = {
-        user, setUser, isAuthenticated, setIsAuthenticated
+        user, setUser, isAuthenticated, setIsAuthenticated,location,setLocation
     }
 
     return (
