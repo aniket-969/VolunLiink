@@ -256,10 +256,37 @@ const deleteVolunteerData = asyncHandler(async (req, res) => {
   res.json({ message: "Volunteer deleted successfully" });
 });
 
+const getNearestCoordinates = asyncHandler(async(req,res)=>{
+  console.log(req.query)
+    const{latitude,longitude} = req.query
+    let filter = {}
+    filter.location = {
+      $near: {
+        $geometry: {
+          type: "Point",
+          coordinates: [parseFloat(longitude), parseFloat(latitude)],
+        },
+      },
+    };
+
+    const posts = await VolunteerOpportunity.find(filter)
+    
+    console.log("This is posts",posts)
+    const response = posts.map(post=>({
+      role:post.role,
+      geocode:[post.location.coordinates[0],post.location.coordinates[1]],
+      postId:post._id
+    }))
+
+    return res.json(new ApiResponse(200,response,"Data for map retrieved successfully"))
+
+})
+
 export {
   volunteerForm,
   getUserVolunteerData,
   getPosts,
   deleteVolunteerData,
   getPostData,
+  getNearestCoordinates
 };

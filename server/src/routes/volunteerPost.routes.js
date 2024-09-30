@@ -7,6 +7,7 @@ import {
   getUserVolunteerData,
   getPostData,
   volunteerForm,
+  getNearestCoordinates,
 } from "../controllers/volunteer.controller.js";
 import { skillForm } from "../controllers/skills.controller.js";
 import { OpportunityCategoryForm } from "../controllers/organisation.controller.js";
@@ -25,8 +26,8 @@ router.route("/volunteer-form").post(verifyJWT,
   validate(formSchema),
   volunteerForm
 );
-
-router.route("/posts").get( getPosts)
+router.route("/map-location").get(getNearestCoordinates)
+router.route("/posts").get(getPosts)
 router.route("/userPost/:userId").get(verifyJWT,getUserVolunteerData);
 
 router.route("/post/:postId").get(getPostData);
