@@ -95,9 +95,9 @@ const Home = () => {
           <Location />
           {
             latitude && longitude && (
-                <div className=' '>
+               
             <Map />
-          </div>
+          
             )
           }
         
