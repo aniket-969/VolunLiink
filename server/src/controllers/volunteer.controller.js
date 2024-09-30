@@ -269,7 +269,7 @@ const getNearestCoordinates = asyncHandler(async(req,res)=>{
       },
     };
 
-    const posts = await VolunteerOpportunity.find(filter)
+    const posts = await VolunteerOpportunity.find(filter) 
     
     console.log("This is posts",posts)
     const response = posts.map(post=>({
