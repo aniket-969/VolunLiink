@@ -16,33 +16,27 @@ const AuthContext = createContext(initialState)
 
 export const AuthProvider = ({ children }) => {
 
-    const [user, setUser] = useState({})
-    const [isAuthenticated, setIsAuthenticated] = useState(false)
+    const [user, setUser] = useState(() => {
+        const savedUser = localStorage.getItem('user')
+        return savedUser ? JSON.parse(savedUser) : null;
+    })
+    const [isAuthenticated, setIsAuthenticated] = useState(()=>{
+        return user?true:false
+    })
+    
+    console.log(isAuthenticated)
     const navigate = useNavigate()
 
-    let loginTime = localStorage.getItem('loginTime');
-
-    if (loginTime) {
-
-        const myFunction = () => {
-            console.log('Executing every 20 seconds');
-            const currentTime = new Date().getTime();
-            const elapsedTime = currentTime - parseInt(loginTime, 10);
-            const fiveMinutesInMillis = 1 * 60 * 1000;
-            if (elapsedTime >= fiveMinutesInMillis) {
-
-                removeCookie('accessToken');
-                removeCookie('userData');
-                localStorage.clear();
-                setIsAuthenticated(false);
-                navigate('/sign-up');
-                clearInterval(intervalId)
-            }
-        };
-
-        const intervalId = setInterval(myFunction, 20000);
-
-    }
+    useEffect(() => {
+        if (user) {
+            localStorage.setItem('user', JSON.stringify(user))
+            console.log("setting user local")
+        }
+        else {
+            localStorage.removeItem('user')
+            console.log("removing user local")
+        }
+    }, [user])
 
     const value = {
         user, setUser, isAuthenticated, setIsAuthenticated

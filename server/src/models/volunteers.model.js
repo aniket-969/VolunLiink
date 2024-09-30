@@ -3,7 +3,7 @@ import { User } from "../models/user.model.js";
 
 const eventModel = new mongoose.Schema(
   {
-    createdBy: { 
+    createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
@@ -77,17 +77,17 @@ const eventModel = new mongoose.Schema(
 eventModel.pre("save", async function (next) {
   try {
     const user = await User.findById(this.createdBy);
-    if (user.fullName === "Guest23@#$"){
+    if (user.fullName === "Guest23@#$") {
       this.expiresAt = user.expiresAt;
     }
-       
-    next(); 
+
+    next();
   } catch (error) {
-    next(error); 
+    next(error);
   }
 });
 
-eventModel.index({ "location.coordinates": "2dsphere" });
+eventModel.index({ location: "2dsphere" });
 
 eventModel.index({ role: 1 });
 
@@ -97,4 +97,3 @@ export const VolunteerOpportunity = mongoose.model(
   "VolunteerOpportunity",
   eventModel
 );
- 

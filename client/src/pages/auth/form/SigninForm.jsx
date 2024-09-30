@@ -14,23 +14,40 @@ import CustomInputWithIcon from "../../../components/UI/CustomInputWithIcon";
 
 const SigninForm = () => {
 
-  const [cookies, setCookies, removeCookie] = useCookies("accessToken")
-
   const navigate = useNavigate();
 
   const { register, handleSubmit,formState: { errors } } = useForm({ resolver: zodResolver(loginSchema) })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const { user, setUser } = useUserContext();
-  console.log(errors)
+  const { user, setUser,isAuthenticated,setIsAuthenticated } = useUserContext();
+  
   const onSubmit = async (data) => {
     console.log(data)
   
     try {
-      const user = await axios.post("http://localhost:9000/api/v1/users/login", data)
-      console.log(user)
+      setIsSubmitting(true)
+      const response = await axios.post("http://localhost:9000/api/v1/users/login", data,{
+        withCredentials:true,
+      })
+      if(response.data.success){
+         console.log(response.data)
+      const{user} = response.data.data
+      setUser(user)
+      toast.success(response.data.message)
+      setIsAuthenticated(true)
+      navigate('/')
+      }
+      else{
+        toast.error("Login failed please try again")
+      }
+     
     } catch (error) {
       console.log(error)
+      const errorMessage = error.response?.data?.message || "An error occured . Please try again"
+      toast.error(errorMessage)
+    }
+    finally{
+      setIsSubmitting(false)
     }
   };
 
@@ -52,7 +69,7 @@ const SigninForm = () => {
 
         <button
           type="submit"
-          className="bg-[#4361ee] text-white text-xl p-3 my-2"
+          className="bg-[#4361ee] text-white text-xl p-3 my-2" disabled={isSubmitting}
         >
           Sign In
         </button>

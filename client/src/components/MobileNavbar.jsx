@@ -9,7 +9,7 @@ const MobileNavbar = (prop) => {
 
   const navigate = useNavigate()
   const [cookies, setCookie, removeCookie] = useCookies("accessToken")
-  const { isAuthenticated, setIsAuthenticated } = useUserContext()
+  const { isAuthenticated, setIsAuthenticated,setUser } = useUserContext()
 
   const userId = localStorage.getItem("userId")
 
@@ -23,18 +23,16 @@ const MobileNavbar = (prop) => {
       const response = await axios.post("http://localhost:9000/api/v1/users/logout", {}, axiosConfig
       )
 
-      removeCookie("accessToken")
-      removeCookie("userData")
-      localStorage.clear()
-      toast.success(response.message)
-      navigate("/sign-up")
+      console.log(response)
+      toast.success(response.data.message)
+      setUser(null)
       setIsAuthenticated(false)
+      navigate("/")
     }
 
     catch (error) {
       if (error.response.status === 401) {
-        // removeCookie("accessToken")
-        // localStorage.clear()
+        
         toast.success("Unauthorized")
         // navigate("/sign-up")
         // setIsAuthenticated(false)

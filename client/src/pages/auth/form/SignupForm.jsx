@@ -19,13 +19,12 @@ const SignupForm = () => {
   const [selectedFileName, setSelectedFileName] = useState("No file chosen");
   const [imagePreview, setImagePreview] = useState(null);
   const [file, setFile] = useState(null)
-  // console.log(errors, getValues('image'))
-
 
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
 
+    setIsSubmitting(true)
     console.log(data)
     const formData = new FormData()
     formData.append('username', data.username);
@@ -33,12 +32,20 @@ const SignupForm = () => {
     formData.append('email', data.email);
     formData.append('fullName', data.fullName);
     formData.append('avatar', data.avatar);
-
+     
     try {
-      const userData = await axios.post("http://localhost:9000/api/v1/users/register", formData)
-      console.log(userData)
+      const response = await axios.post("http://localhost:9000/api/v1/users/register", formData)
+     
+      if(response.data.success){
+         console.log(response.data)
+         toast.success(response.data.message)
+         navigate('/sign-in')
+      }
     } catch (error) {
       console.log(error)
+    }
+    finally{
+      setIsSubmitting(false)
     }
   };
 

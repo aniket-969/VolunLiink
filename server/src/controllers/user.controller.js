@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
@@ -21,7 +21,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
       "Something went wrong while generating refresh and access token"
     );
   }
-};
+}; 
 
 const registerUser = asyncHandler(async (req, res) => {
   const { username, email, fullName, password } = req.body;
@@ -65,7 +65,7 @@ const registerUser = asyncHandler(async (req, res) => {
     password,
     username: username.toLowerCase(),
   });
-
+console.log("This is user data",user)
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
   );
@@ -78,15 +78,15 @@ const registerUser = asyncHandler(async (req, res) => {
     .status(201)
     .json(new ApiResponse(200, createdUser, "User registered successfully"));
 });
-
+ 
 const loginUser = asyncHandler(async (req, res) => {
-  console.log("This is body",req);
+  console.log("This is body", req.body);
   const { identifier, password } = req.body;
-
+  console.log(identifier, password);
   if (!identifier) {
     throw new ApiError(400, "username or email is required");
   }
- 
+
   const user = await User.findOne({
     $or: [{ username: identifier }, { email: identifier }],
   });
@@ -157,9 +157,10 @@ const logoutUser = asyncHandler(async (req, res) => {
     .clearCookie("refreshToken", options)
     .json(new ApiResponse(200, {}, "User logged out"));
 });
- 
-const refreshTokens = asyncHandler(async(req,res)=>{
-  const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
+
+const refreshTokens = asyncHandler(async (req, res) => {
+  const incomingRefreshToken =
+    req.cookies.refreshToken || req.body.refreshToken;
 
   if (!incomingRefreshToken) {
     throw new ApiError(401, "unauthorized request");
@@ -202,7 +203,7 @@ const refreshTokens = asyncHandler(async(req,res)=>{
       )
     );
 });
- 
+
 const changePassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
 
@@ -243,10 +244,8 @@ const getUserDetails = asyncHandler(async (req, res) => {
 });
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
+  console.log("this is request", req);
   const { fullName, email } = req.body;
-const updateAccountDetails = asyncHandler(async(req, res) => {
-  console.log("this is request",req)
-  const {fullName, email} = req.body
 
   if (!fullName || !email) {
     throw new ApiError(400, "All fields are required");
@@ -262,7 +261,7 @@ const updateAccountDetails = asyncHandler(async(req, res) => {
     },
     { new: true }
   ).select("-password");
-console.log("this is user",user)
+  console.log("this is user", user);
   return res
     .status(200)
     .json(new ApiResponse(200, user, "Account details updated successfully"));

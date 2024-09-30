@@ -26,7 +26,7 @@ router.route("/register").post(
   validate(userSchema),
   registerUser
 );
-
+ 
 router.route("/login").post(validate(loginSchema),loginUser);
 
 router.route("/logout").post(verifyJWT, logoutUser);
