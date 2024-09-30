@@ -17,7 +17,7 @@ const Home = () => {
   const [page, setPage] = useState(1)
   const [filter, setFilter] = useState({})
 
-  const { location, setLocation } = useUserContext()
+  const { location } = useUserContext()
 
   const latitude = location?.latitude
   const longitude = location?.longitude
@@ -93,9 +93,14 @@ const Home = () => {
           <Search filter={filter} setFilter={setFilter} />
 
           <Location />
-          <div className='bb z-0'>
+          {
+            latitude && longitude && (
+                <div className=' '>
             <Map />
           </div>
+            )
+          }
+        
 
           {loading ? <p></p> :
 

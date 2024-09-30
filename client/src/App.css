@@ -72,5 +72,6 @@ textarea {
 /* Map */
 
 .leaflet-container {
-  height: 50vh;
+  height: 500px;
+  width: 100%;
 }
