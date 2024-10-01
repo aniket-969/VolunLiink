@@ -16,7 +16,7 @@ const Home = () => {
   const [ref, inView] = useInView()
   const [page, setPage] = useState(1)
   const [filter, setFilter] = useState({})
-
+ 
   const { location } = useUserContext()
 
   const latitude = location?.latitude

@@ -22,7 +22,7 @@ const Map = () => {
   useEffect(() => {
     fetchMapData()
   }, [latitude, longitude])
-  console.log(markers)
+  // console.log(markers)
   const volunteerIcon = new Icon({
     iconUrl: "https://cdn-icons-png.flaticon.com/128/10744/10744646.png", // URL for volunteer icon
     iconSize: [26, 26],

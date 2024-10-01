@@ -4,7 +4,7 @@ const Filter = ({ filter, setFilter }) => {
 
   const handleChange = (e) => {
     const selectedFilter = e.target.value;
-
+ 
     switch (selectedFilter) {
       case 'Latest':
         setFilter({ sort: 'createdAt:desc' });

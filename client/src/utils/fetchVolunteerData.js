@@ -8,9 +8,12 @@ const getPosts = async (page =1,limit=5,filter={}) => {
       ...filter 
     });
     const response = await axios.get(`http://localhost:9000/api/v1/volunteers/posts?${params.toString()}`)
-    console.log(response.data);
+    if(response.data.success){
+       console.log(response.data);
     
-    return response.data.data || [];
+    return response.data.data
+    }
+    return [];
   } catch (error) {
     console.log(error, "Error fetching posts");
     throw error
@@ -45,18 +48,6 @@ const fetchUserData = async (userId) => {
     return userData.data;
   } catch (error) {
     console.log(error, "There was an error fetching user data");
-  }
-};
-  
-const fetchPostDetails = async (postId) => {
-  try {
-    const postData = await axios.get(
-      `http://localhost:9000/api/v1/users/volunteer/post/${postId}`
-    );
-
-    return postData.data;
-  } catch (error) {
-    console.log(error, "There was an error fetching post data");
   }
 };
 
@@ -116,7 +107,6 @@ export {
   getPosts,
   getMapData,
   fetchUserData,
-  fetchPostDetails,
   formatDate,
   formatUpdatedAt,
   handlePostDelete
