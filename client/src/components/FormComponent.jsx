@@ -45,7 +45,7 @@ const FormComponent = ({ formType }) => {
             <CustomInputWithIcon register={register('email')} placeholder="Email" icon={FaEnvelope} />
             {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
             <CustomInputWithIcon register={register('phone')} placeholder="Phone" icon={FaPhoneAlt} />
-            {errors.contactPhone && <p className="text-red-500 text-sm">{errors.contactPhone.message}</p>}
+            {errors.phone && <p className="text-red-500 text-sm">{errors.phone.message}</p>}
             <div className=" flex items-center justify-start gap-2" >
 
                 <label >Available from:</label>
