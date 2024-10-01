@@ -17,7 +17,7 @@ import * as z from "zod";
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const FormComponent = ({ formType }) => {
- 
+
     const schema = formType === "volunteer" ? skillFormSchema : opportunityCategoryFormSchema
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({ resolver: zodResolver(schema) })
@@ -28,25 +28,24 @@ const FormComponent = ({ formType }) => {
     const [file, setFile] = useState(null)
     console.log(errors, getValues('image'))
 
-    const onSubmit = (data) => {
-
+    const onSubmit = async (data) => {
 
         setIsSubmitting(true)
         console.log(data)
-        try {
-
-        } catch (error) {
-
-        }
+        setIsSubmitting(false)
     }
 
 
     const commonFields = (
         <>
             <CustomInputWithIcon register={register('title')} placeholder="Title" icon={FaCommentDots} />
+            {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
             <CustomInputWithIcon register={register('description')} placeholder="Description" icon={MdKeyboardAlt} isTextarea />
+            {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
             <CustomInputWithIcon register={register('email')} placeholder="Email" icon={FaEnvelope} />
+            {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
             <CustomInputWithIcon register={register('phone')} placeholder="Phone" icon={FaPhoneAlt} />
+            {errors.contactPhone && <p className="text-red-500 text-sm">{errors.contactPhone.message}</p>}
             <div className=" flex items-center justify-start gap-2" >
 
                 <label >Available from:</label>
@@ -55,8 +54,9 @@ const FormComponent = ({ formType }) => {
                     className="bglight p-2"
                     register={register("availableFrom")}
                 />
-            </div>
 
+            </div>
+            {errors.availableFrom && <p className="text-red-500 text-sm">{errors.availableFrom.message}</p>}
 
             <div className=" flex items-center justify-start gap-6" >
 
@@ -67,8 +67,9 @@ const FormComponent = ({ formType }) => {
                     register={register("availableTill")}
 
                 />
-            </div>
 
+            </div>
+            {errors.availableTill && <p className="text-red-500 text-sm">{errors.availableTill.message}</p>}
             <div>
 
                 <input
@@ -120,6 +121,7 @@ const FormComponent = ({ formType }) => {
                 ))}
             </select>
             <CustomInputWithIcon icon={FaWrench} register={register('skillDescription')} isTextarea placeholder="Skill Description" />
+            {errors.skillDescription && <p className="text-red-500 text-sm">{errors.skillDescription.message}</p>}
         </>
     );
 
@@ -132,7 +134,8 @@ const FormComponent = ({ formType }) => {
                     <option key={index} value={option.value}>{option.label}</option>
                 ))}
             </select>
-            <CustomInputWithIcon icon={FaWrench} register={register('categoryDescription')} isTextarea ={true} placeholder="Description" />
+            <CustomInputWithIcon icon={FaWrench} register={register('categoryDescription')} isTextarea={true} placeholder="Description" />
+            {errors.categoryDescription && <p className="text-red-500 text-sm">{errors.categoryDescription.message}</p>}
         </>
     );
 
@@ -140,7 +143,7 @@ const FormComponent = ({ formType }) => {
         <>
             <div className="m-1 p-2 flex flex-col justify-center items-center sm:max-w-[710px] bb">
 
- 
+
                 <form onSubmit={handleSubmit(onSubmit)}>
                     {formType === 'volunteer' && volunteerFields}
                     {formType === 'organization' && organizationFields}

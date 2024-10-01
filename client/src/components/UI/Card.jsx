@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { MdOutlineDeleteOutline } from 'react-icons/md';
 
 const Card = ({ post, handleDelete }) => {
-console.log(post)
+
     const {
         _id,
         createdBy,
@@ -20,7 +20,6 @@ console.log(post)
         category,
         location,
     } = post
-console.log(createdBy,skills,category)
     return (
         <div className='pop1 flex flex-col gap-4 mx-5 my-2 px-5 py-4 rounded-2xl'>
 
@@ -68,6 +67,7 @@ console.log(createdBy,skills,category)
 
                 {/* Skills and Category */}
                 {skills && <p className='text-sm md:text-base'>Skills - {skills.skillName}</p>}
+                
                 {category && <p className='text-sm md:text-base'>Category - {category.categoryName}</p>}
 
                 {/* Post location */}
