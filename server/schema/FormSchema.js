@@ -28,6 +28,11 @@ const commonSchema = z.object({
   role: z.enum(["Volunteer", "Organization"]),
   latitude: latitudeValidation,
   longitude: longitudeValidation,
+  country:z.string().optional(),
+  county:z.string().optional(),
+  road:z.string().optional(),
+  state:z.string().optional(),
+  village:z.string().optional(),
 });
 
 export const formSchema = commonSchema.extend({

@@ -28,9 +28,10 @@ const volunteerForm = asyncHandler(async (req, res) => {
     categoryId:category,
   } = req.body;
 
-  console.log(req.body);
+  console.log("This is vol body",req.body);
 
   const createdBy = req.user?._id;
+  console.log("user id",createdBy)
   if (
     [title, description, contactEmail, startDate, endDate, role].some(
       (field) => field?.trim() === ""
