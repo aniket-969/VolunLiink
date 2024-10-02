@@ -18,16 +18,16 @@ const FormComponent = ({ formType }) => {
 
     const schema = formType === "volunteer" ? skillFormSchema : opportunityCategoryFormSchema
     const { location } = useUserContext()
-    console.log(location)
+    
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({ resolver: zodResolver(schema) })
 
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [selectedFileName, setSelectedFileName] = useState("No file chosen");
     const [imagePreview, setImagePreview] = useState(null);
     const [file, setFile] = useState(null)
-    console.log(errors, getValues('image'))
-
+ const navigate = useNavigate()
     const onSubmit = async (data) => {
+        setIsSubmitting(true)
         const formData = new FormData();
 
         // Handle skill submission if skillName and skillDescription are provided
@@ -60,11 +60,15 @@ const FormComponent = ({ formType }) => {
             }
         });
 
-        for (let [key, value] of formData.entries()) {
-            console.log(`${key}: ${value}`);
-        }
+        // for (let [key, value] of formData.entries()) {
+        //     console.log(`${key}: ${value}`);
+        // }
         const response = await submitForm(formData)
         console.log(response)
+        if(response.success){
+             toast.success(response.message || "Post added successfully")
+             navigate("/")
+        }
         setIsSubmitting(false)
     }
 

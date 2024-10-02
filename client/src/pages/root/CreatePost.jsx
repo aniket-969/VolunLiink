@@ -1,12 +1,9 @@
 import { useState } from "react";
 import FormComponent from "../../components/FormComponent";
+import Location from "../../components/Location";
 
 const page = () => {
   const[formType,setFormType] = useState("volunteer")
-
-  const handleToggle = ()=>{
-    setFormType((prev)=>(prev==="volunteer"?"organization":"volunteer"))
-  }
 
   return (
     <section className="flex items-center flex-col my-2 gap-4">
@@ -31,6 +28,7 @@ const page = () => {
           Organization
         </label>
       </div>
+      <Location/>
       <div className="pop">
         <FormComponent formType={formType} />
       </div>
