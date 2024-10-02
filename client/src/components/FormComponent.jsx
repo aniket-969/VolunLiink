@@ -72,11 +72,11 @@ const FormComponent = ({ formType }) => {
             <CustomInputWithIcon register={register('description')} placeholder="Description" icon={MdKeyboardAlt} isTextarea />
             {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
             <CustomInputWithIcon register={register('contactEmail')} placeholder="Email" icon={FaEnvelope} />
-            {errors.email && <p className="text-red-500 text-sm">{errors.contactEmail.message}</p>}
+            {errors.contactEmail && <p className="text-red-500 text-sm">{errors.contactEmail.message}</p>}
             <CustomInputWithIcon register={register('contactPhone')} placeholder="Phone" icon={FaPhoneAlt} />
-            {errors.phone && <p className="text-red-500 text-sm">{errors.contactPhone.message}</p>}
+            {errors.contactPhone && <p className="text-red-500 text-sm">{errors.contactPhone.message}</p>}
             <div className=" flex items-center justify-start gap-2" >
-
+ 
                 <label >Available from:</label>
                 <CustomInput
                     type="date"
