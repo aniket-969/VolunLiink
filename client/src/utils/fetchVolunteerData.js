@@ -18,9 +18,11 @@ const submitForm = async (data) => {
 
 const submitSkillForm = async (skillName, skillDescription) => {
  try {
-   const formData = new FormData();
-   formData.append('skillName', skillName);
-   formData.append('description', skillDescription);
+   
+   const formData ={
+    'skillName':skillName,
+    'description': skillDescription
+   }
    
    const response = await axios.post("http://localhost:9000/api/v1/volunteers/skill-form", formData, {
        withCredentials: true

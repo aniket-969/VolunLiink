@@ -18,6 +18,7 @@ const FormComponent = ({ formType }) => {
 
     const schema = formType === "volunteer" ? skillFormSchema : opportunityCategoryFormSchema
     const { location } = useUserContext()
+    console.log(location)
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({ resolver: zodResolver(schema) })
 
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -59,7 +60,9 @@ const FormComponent = ({ formType }) => {
             }
         });
 
-        console.log(data)
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+        }
         const response = await submitForm(formData)
         console.log(response)
         setIsSubmitting(false)
