@@ -6,20 +6,18 @@ import { useForm } from "react-hook-form"
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import axios, { AxiosError } from "axios";
 import { FaEnvelope, FaWrench } from "react-icons/fa6";
-import { FaImagePortrait } from "react-icons/fa6";
-import { FaRegKeyboard } from "react-icons/fa6";
 import { FaPhoneAlt } from "react-icons/fa"
 import { MdKeyboardAlt } from "react-icons/md";
 import { FaCommentDots } from "react-icons/fa"
-import * as z from "zod";
 import { zodResolver } from '@hookform/resolvers/zod';
+import { submitCategoryForm, submitForm, submitSkillForm } from "../utils/fetchVolunteerData";
+import { useUserContext } from "../context/AuthProvider";
 
 const FormComponent = ({ formType }) => {
 
     const schema = formType === "volunteer" ? skillFormSchema : opportunityCategoryFormSchema
-
+    const { location } = useUserContext()
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({ resolver: zodResolver(schema) })
 
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -29,12 +27,43 @@ const FormComponent = ({ formType }) => {
     console.log(errors, getValues('image'))
 
     const onSubmit = async (data) => {
+        const formData = new FormData();
 
-        setIsSubmitting(true)
+        // Handle skill submission if skillName and skillDescription are provided
+        if (data.skillName && data.skillDescription) {
+            const skillId = await submitSkillForm(data.skillName, data.skillDescription);
+            formData.append('skillId', skillId);
+            formData.append('role', 'Volunteer');
+        }
+
+        // Handle category submission if categoryName and categoryDescription are provided
+        if (data.categoryName && data.categoryDescription) {
+            const categoryId = await submitCategoryForm(data.categoryName, data.categoryDescription);
+            console.log(categoryId)
+            formData.append('categoryId', categoryId);
+            formData.append('role', 'Organization');
+        }
+        const { latitude, longitude, country, state, road, county, village } = location;
+
+        formData.append('latitude', latitude);
+        formData.append('longitude', longitude);
+        formData.append('country', country);
+        formData.append('state', state);
+        formData.append('road', road);
+        formData.append('county', county);
+        formData.append('village', village);
+
+        Object.entries(data).forEach(([key, value]) => {
+            if (key !== "skillName" && key !== "skillDescription" && key !== "categoryName" && key !== "categoryDescription") {
+                formData.append(key, value);
+            }
+        });
+
         console.log(data)
+        const response = await submitForm(formData)
+        console.log(response)
         setIsSubmitting(false)
     }
-
 
     const commonFields = (
         <>
@@ -42,21 +71,21 @@ const FormComponent = ({ formType }) => {
             {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
             <CustomInputWithIcon register={register('description')} placeholder="Description" icon={MdKeyboardAlt} isTextarea />
             {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
-            <CustomInputWithIcon register={register('email')} placeholder="Email" icon={FaEnvelope} />
-            {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
-            <CustomInputWithIcon register={register('phone')} placeholder="Phone" icon={FaPhoneAlt} />
-            {errors.phone && <p className="text-red-500 text-sm">{errors.phone.message}</p>}
+            <CustomInputWithIcon register={register('contactEmail')} placeholder="Email" icon={FaEnvelope} />
+            {errors.email && <p className="text-red-500 text-sm">{errors.contactEmail.message}</p>}
+            <CustomInputWithIcon register={register('contactPhone')} placeholder="Phone" icon={FaPhoneAlt} />
+            {errors.phone && <p className="text-red-500 text-sm">{errors.contactPhone.message}</p>}
             <div className=" flex items-center justify-start gap-2" >
 
                 <label >Available from:</label>
                 <CustomInput
                     type="date"
                     className="bglight p-2"
-                    register={register("availableFrom")}
+                    register={register("startDate")}
                 />
 
             </div>
-            {errors.availableFrom && <p className="text-red-500 text-sm">{errors.availableFrom.message}</p>}
+            {errors.startDate && <p className="text-red-500 text-sm">{errors.startDate.message}</p>}
 
             <div className=" flex items-center justify-start gap-6" >
 
@@ -64,23 +93,23 @@ const FormComponent = ({ formType }) => {
                 <CustomInput
                     type="date"
                     className="bglight p-2"
-                    register={register("availableTill")}
+                    register={register("endDate")}
 
                 />
 
             </div>
-            {errors.availableTill && <p className="text-red-500 text-sm">{errors.availableTill.message}</p>}
+            {errors.endDate && <p className="text-red-500 text-sm">{errors.endDate.message}</p>}
             <div>
 
                 <input
                     type="file"
                     id="file"
                     style={{ display: 'none' }}
-                    {...register('image', {
+                    {...register('avatar', {
                         onChange: (e) => {
                             const selectedFile = e.target.files?.[0];
                             if (selectedFile) {
-                                setValue('image', selectedFile);
+                                setValue('avatar', selectedFile);
                                 setSelectedFileName(selectedFile.name);
                                 setImagePreview(URL.createObjectURL(selectedFile));
                             }

@@ -43,23 +43,23 @@ const phoneSchema = z
 export const skillFormSchema = z.object({
   title: z.string().min(1),
   description: z.string().min(10),
-  email: z.string().email({ message: "Invalid email address" }),
-  phone: phoneSchema,
+  contactEmail: z.string().email({ message: "Invalid email address" }),
+  contactPhone: phoneSchema,
   skillName: z.string().min(1),
   skillDescription: z.string().min(10),
-  availableFrom: z.string().date().optional(),
-  availableTill: z.string().date().optional(),
-  image: imageValidation,
+  startDate: z.string().date().optional(),
+  endDate: z.string().date().optional(),
+  avatar: imageValidation,
 });
 
 export const opportunityCategoryFormSchema = z.object({
   title: z.string().min(1),
   description: z.string().min(10),
-  email: z.string().email({ message: "Invalid email address" }),
-  phone: phoneSchema,
+  contactEmail: z.string().email({ message: "Invalid email address" }),
+  contactPhone: phoneSchema,
   categoryName: z.string().min(1),
   categoryDescription: z.string().min(10),
-  availableFrom: z.string().date().optional(),
-  availableTill: z.string().date().optional(),
-  image: imageValidation,
+  startDate: z.string().date().optional(),
+  endDate: z.string().date().optional(),
+  avatar: imageValidation,
 });

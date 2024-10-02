@@ -1,40 +1,97 @@
 import axios from "axios";
 
-const getPosts = async (page =1,limit=5,filter={}) => {
+const submitForm = async (data) => {
+  console.log(data);
+  try {
+    const response = await axios.post(
+      "http://localhost:9000/api/v1/volunteers/volunteer-form",
+      data,{
+        withCredentials:true
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.log(error.response.data);
+    throw error.response;
+  }
+};
+
+const submitSkillForm = async (skillName, skillDescription) => {
+ try {
+   const formData = new FormData();
+   formData.append('skillName', skillName);
+   formData.append('description', skillDescription);
+   
+   const response = await axios.post("http://localhost:9000/api/v1/volunteers/skill-form", formData, {
+       withCredentials: true
+   });
+   
+   return response.data.data._id; // Adjust according to your API response structure
+ } catch (error) {
+  console.error(error.response.data.message)
+  throw error.response
+ }
+};
+
+const submitCategoryForm = async (categoryName, categoryDescription) => {
+  try {
+    
+   
+    const formData = {
+      'categoryName': categoryName,
+      'description': categoryDescription
+    }
+    
+    console.log(formData)
+    const response = await axios.post("http://localhost:9000/api/v1/volunteers/opportunity-category", formData, {
+        withCredentials: true
+    });
+    
+    return response.data.data._id; // Adjust according to your API response structure
+  } catch (error) {
+    console.error(error.response.data.message)
+    throw error.response
+   }
+};
+
+const getPosts = async (page = 1, limit = 5, filter = {}) => {
   try {
     const params = new URLSearchParams({
       page,
       limit,
-      ...filter 
+      ...filter,
     });
-    const response = await axios.get(`http://localhost:9000/api/v1/volunteers/posts?${params.toString()}`)
-    if(response.data.success){
-       console.log(response.data);
-    
-    return response.data.data
+    const response = await axios.get(
+      `http://localhost:9000/api/v1/volunteers/posts?${params.toString()}`
+    );
+    if (response.data.success) {
+      console.log(response.data);
+
+      return response.data.data;
     }
     return [];
   } catch (error) {
     console.log(error, "Error fetching posts");
-    throw error
+    throw error;
   }
 };
 
-const getMapData = async(latitude,longitude)=>{
+const getMapData = async (latitude, longitude) => {
   try {
-    const params = new URLSearchParams({latitude,longitude})
-     const response = await axios.get(`http://localhost:9000/api/v1/volunteers/map-location?${params.toString()}`)
-     console.log(response)
-     if(response.data.success){
-       return response.data.data || []
-     }
-      return []
+    const params = new URLSearchParams({ latitude, longitude });
+    const response = await axios.get(
+      `http://localhost:9000/api/v1/volunteers/map-location?${params.toString()}`
+    );
+    console.log(response);
+    if (response.data.success) {
+      return response.data.data || [];
+    }
+    return [];
   } catch (error) {
-    console.error("Error fetching map data",error)
-    throw error
+    console.error("Error fetching map data", error);
+    throw error;
   }
- 
-}
+};
 
 const fetchUserData = async (userId) => {
   try {
@@ -91,23 +148,26 @@ function formatUpdatedAt(updatedAt) {
 const handlePostDelete = async (postId) => {
   try {
     console.log(postId);
-    
+
     const data = await axios.delete(
       `http://localhost:9000/api/v1/users/volunteers/${postId}`
     );
     console.log(data);
-    
-    return data.data
+
+    return data.data;
   } catch (error) {
     console.log(error);
   }
 };
 
 export {
+  submitForm,
+  submitSkillForm,
+  submitCategoryForm,
   getPosts,
   getMapData,
   fetchUserData,
   formatDate,
   formatUpdatedAt,
-  handlePostDelete
+  handlePostDelete,
 };
