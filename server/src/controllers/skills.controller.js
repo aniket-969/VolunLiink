@@ -3,36 +3,23 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
-const skillForm = asyncHandler(async(req,res)=>{
-    const {skillName,description} = req.body;
-    console.log(req.body);
-    
-     
- 
-    if (  
-        [skillName,description].some(
-          (field) => field?.trim() === ""
-        )
-      ) {
-        throw new ApiError(400, "All fields are required");
-      }
+const skillForm = asyncHandler(async (req, res) => {
+  const { skillName, description } = req.body;
+  console.log(req.body);
 
-      console.log(req.body);
+  if ([skillName, description].some((field) => field?.trim() === "")) {
+    throw new ApiError(400, "All fields are required");
+  }
 
-      const skillData = await Skills.create({
-        skillName,
-        description
-      })
+  console.log(req.body);
 
-      
+  const skillData = await Skills.create({
+    skillName,
+    description,
+  });
+
   return res
-  .status(201)
-  .json(
-    new ApiResponse(
-      200,
-      skillData,
-      "Skill form submitted successfully"
-    )
-  );
-}) 
-export {skillForm}
+    .status(201)
+    .json(new ApiResponse(200, skillData, "Skill form submitted successfully"));
+});
+export { skillForm };
