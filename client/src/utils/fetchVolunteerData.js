@@ -108,7 +108,6 @@ const getUserPosts = async () => {
       { withCredentials: true }
     );
 
-    console.log(response);
     if (response.data.success) {
       return response.data.data;
     }
@@ -161,13 +160,15 @@ const handlePostDelete = async (postId) => {
     console.log(postId);
 
     const data = await axios.delete(
-      `http://localhost:9000/api/v1/users/volunteers/${postId}`
+      `http://localhost:9000/api/v1/volunteers/${postId}`,
+      {
+        withCredentials: true,
+      }
     );
-    console.log(data);
-
     return data.data;
   } catch (error) {
     console.log(error);
+    throw error;
   }
 };
 

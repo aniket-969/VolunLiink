@@ -12,22 +12,18 @@ const Profile = () => {
 
   const handleDelete = async (postId) => {
 
-    try {
-      const data = await handlePostDelete(postId)
-      console.log(data.message);
-      toast.success(data.message)
-      fetchData()
-    } catch (error) {
-      console.log(error);
-      toast.error(error.message)
-    }
+    const data = await handlePostDelete(postId)
+    console.log(data.message);
+    toast.success(data.message)
+    fetchData()
+
   }
 
   const fetchData = async () => {
     const userPosts = await getUserPosts()
     setPosts(userPosts)
     setLoading(false)
-    
+
   };
 
   useEffect(() => {
@@ -36,8 +32,8 @@ const Profile = () => {
 
   }, [])
 
-  console.log(posts);
-  
+  // console.log(posts);
+
   return (
     <>
       {loading ? (
@@ -62,7 +58,7 @@ const Profile = () => {
             <div>
               {
                 posts.map(post => (
-                  <Card post={post} handleDelete={handleDelete} />
+                  <Card post={post} key={post._id} handleDelete={handleDelete} />
                 ))
               }
             </div>
