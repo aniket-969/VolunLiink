@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { fetchUserData, handlePostDelete } from '../../utils/fetchVolunteerData';
+import { getUserPosts, handlePostDelete } from '../../utils/fetchVolunteerData';
 import toast from 'react-hot-toast';
 import { useUserContext } from '../../context/AuthProvider';
 import Card from '../../components/UI/Card';
@@ -8,9 +8,8 @@ const Profile = () => {
 
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
- 
-  const {user} = useUserContext() 
-  
+  const { user } = useUserContext()
+
   const handleDelete = async (postId) => {
 
     try {
@@ -25,15 +24,10 @@ const Profile = () => {
   }
 
   const fetchData = async () => {
-    try {
-     
-
-      if (volData) setLoading(false)
-
-    } catch (error) {
-      console.error("Error fetching data:", error);
-
-    }
+    const userPosts = await getUserPosts()
+    setPosts(userPosts)
+    setLoading(false)
+    
   };
 
   useEffect(() => {
@@ -42,24 +36,24 @@ const Profile = () => {
 
   }, [])
 
-  console.log(data);
-
+  console.log(posts);
+  
   return (
     <>
       {loading ? (
         <p>Loading...</p>
       ) : (
-        !message ? (
+        posts.length ? (
 
           <section className='my-5'>
 
             <div className='flex flex-col items-center gap-3 my-6 justify-center'>
 
-              <img src={userData.avatar} className=' image--cover h-[100px] w-[100px] bg-black' />
+              <img src={user.avatar} className=' image--cover h-[100px] w-[100px] bg-black' />
 
               <div className='flex justify-center items-center flex-col'>
-                <p>{userData.fullName}</p>
-                <p>@{userData.username}</p>
+                <p>{user.fullName}</p>
+                <p>@{user.username}</p>
 
               </div>
 
@@ -67,7 +61,7 @@ const Profile = () => {
 
             <div>
               {
-                data.map(post => (
+                posts.map(post => (
                   <Card post={post} handleDelete={handleDelete} />
                 ))
               }
