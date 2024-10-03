@@ -3,21 +3,30 @@ import { getUserPosts, handlePostDelete } from '../../utils/fetchVolunteerData';
 import toast from 'react-hot-toast';
 import { useUserContext } from '../../context/AuthProvider';
 import Card from '../../components/UI/Card';
+import ConfirmationModal from '../../components/ConfirmationModal';
 
 const Profile = () => {
 
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const { user } = useUserContext()
+  const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false);
+  const [postIdToDelete, setPostIdToDelete] = useState(null);
 
-  const handleDelete = async (postId) => {
+  const handleDelete = (postId) => {
+    setPostIdToDelete(postId);
+    setConfirmDeleteModalOpen(true);
+  };
 
-    const data = await handlePostDelete(postId)
-    console.log(data.message);
-    toast.success(data.message)
-    fetchData()
-
-  }
+  const confirmDeletePost = async () => {
+    if (postIdToDelete) {
+      const data = await handlePostDelete(postIdToDelete);
+      console.log(data.message);
+      toast.success(data.message);
+      fetchData();
+      setConfirmDeleteModalOpen(false); // Close the modal after deletion
+    }
+  };
 
   const fetchData = async () => {
     const userPosts = await getUserPosts()
@@ -68,7 +77,12 @@ const Profile = () => {
         ) : (
           <p>You have no posts to show</p>
         )
-      )}</>
+      )}
+      <ConfirmationModal
+        isOpen={confirmDeleteModalOpen}
+        onClose={() => setConfirmDeleteModalOpen(false)}
+        onConfirm={confirmDeletePost} />
+    </>
   )
 }
 
