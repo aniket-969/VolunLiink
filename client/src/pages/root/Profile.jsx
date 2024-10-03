@@ -1,21 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { fetchUserData, handlePostDelete } from '../../utils/fetchVolunteerData';
-import { formatDate, formatUpdatedAt } from '../../utils/fetchVolunteerData'
-import { MdOutlineDeleteOutline } from "react-icons/md";
 import toast from 'react-hot-toast';
-import { useCookies } from 'react-cookie';
+import { useUserContext } from '../../context/AuthProvider';
 import Card from '../../components/UI/Card';
 
 const Profile = () => {
 
-  const [data, setData] = useState([])
+  const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
-  const [message, setMessage] = useState([])
-  const [cookies, setCookie, removeCookie] = useCookies("accessToken")
-  const userData  = cookies.userData
-  console.log(userData);
-  console.log(cookies.accessToken);
-
+ 
+  const {user} = useUserContext() 
+  
   const handleDelete = async (postId) => {
 
     try {
@@ -31,12 +26,7 @@ const Profile = () => {
 
   const fetchData = async () => {
     try {
-      const userId = localStorage.getItem("userId")
-      console.log(userId);
-      const volData = await fetchUserData(userId);
-      // console.log(volData);
-      setData(volData)
-      setMessage(volData.message)
+     
 
       if (volData) setLoading(false)
 
@@ -78,7 +68,7 @@ const Profile = () => {
             <div>
               {
                 data.map(post => (
-                 <Card post={post} handleDelete={handleDelete}/>
+                  <Card post={post} handleDelete={handleDelete} />
                 ))
               }
             </div>
