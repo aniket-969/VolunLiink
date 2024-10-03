@@ -28,7 +28,7 @@ router.route("/volunteer-form").post(verifyJWT,
 );
 router.route("/map-location").get(getNearestCoordinates)
 router.route("/posts").get(getPosts)
-router.route("/userPost/:userId").get(verifyJWT,getUserVolunteerData);
+router.route("/userPost").get(verifyJWT,getUserVolunteerData);
 
 router.route("/post/:postId").get(getPostData);
 
