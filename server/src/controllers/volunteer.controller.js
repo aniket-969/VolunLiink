@@ -249,13 +249,13 @@ const getPostData = asyncHandler(async (req, res) => {
 });
 
 const deleteVolunteerData = asyncHandler(async (req, res) => {
-  const deletedVolunteer = await VolunteerOpportunity.findByIdAndDelete(
+  const deletedPost = await VolunteerOpportunity.findByIdAndDelete(
     req.params.id
   );
-  if (!deletedVolunteer) {
-    return res.status(404).json({ message: "Volunteer not found" });
+  if (!deletedPost) {
+    return res.status(404).json({ message: "Post not found" });
   }
-  res.json({ message: "Volunteer deleted successfully" });
+  res.json({ message: "Post deleted successfully" });
 });
 
 const getNearestCoordinates = asyncHandler(async(req,res)=>{
