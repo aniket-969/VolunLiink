@@ -24,7 +24,7 @@ const Profile = () => {
       console.log(data.message);
       toast.success(data.message);
       fetchData();
-      setConfirmDeleteModalOpen(false); // Close the modal after deletion
+      setConfirmDeleteModalOpen(false);
     }
   };
 
@@ -45,26 +45,26 @@ const Profile = () => {
 
   return (
     <>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        posts.length ? (
 
-          <section className='my-5'>
+      <section className='my-5 flex flex-col items-center'>
 
-            <div className='flex flex-col items-center gap-3 my-6 justify-center'>
+        <div className='flex flex-col items-center gap-3 my-6 justify-center'>
 
-              <img src={user.avatar} className=' image--cover h-[100px] w-[100px] bg-black' />
+          <img src={user.avatar} className=' image--cover h-[100px] w-[100px] bg-black' />
 
-              <div className='flex justify-center items-center flex-col'>
-                <p>{user.fullName}</p>
-                <p>@{user.username}</p>
+          <div className='flex justify-center items-center flex-col'>
+            <p>{user.fullName}</p>
+            <p>@{user.username}</p>
 
-              </div>
+          </div>
 
-            </div>
+        </div>
 
-            <div>
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          posts.length ? (
+            <div className='flex flex-col gap-2  md:max-w-[710px]'>
               {
                 posts.map(post => (
                   <Card post={post} key={post._id} handleDelete={handleDelete} />
@@ -72,12 +72,12 @@ const Profile = () => {
               }
             </div>
 
-          </section>
 
-        ) : (
-          <p>You have no posts to show</p>
-        )
-      )}
+
+          ) : (
+            <p>You have no posts to show</p>
+          )
+        )}</section>
       <ConfirmationModal
         isOpen={confirmDeleteModalOpen}
         onClose={() => setConfirmDeleteModalOpen(false)}
