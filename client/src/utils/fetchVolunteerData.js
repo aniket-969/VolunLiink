@@ -118,6 +118,16 @@ const getUserPosts = async () => {
   }
 };
 
+const updateUserProfile = async(data)=>{
+  try {
+    const response = await axios.patch("http://localhost:9000/api/v1/users/update-account",{withCredentials:true}) 
+    console.log(response) 
+  } catch (error) {
+    console.log(error)
+    throw error
+  }
+}
+
 function formatDate(dateString) {
   const date = new Date(dateString);
   const day = date.getDate().toString().padStart(2, "0");
