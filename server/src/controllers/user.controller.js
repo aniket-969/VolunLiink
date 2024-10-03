@@ -21,7 +21,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
       "Something went wrong while generating refresh and access token"
     );
   }
-}; 
+};
 
 const registerUser = asyncHandler(async (req, res) => {
   const { username, email, fullName, password } = req.body;
@@ -65,7 +65,7 @@ const registerUser = asyncHandler(async (req, res) => {
     password,
     username: username.toLowerCase(),
   });
-console.log("This is user data",user)
+  console.log("This is user data", user);
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
   );
@@ -78,7 +78,7 @@ console.log("This is user data",user)
     .status(201)
     .json(new ApiResponse(200, createdUser, "User registered successfully"));
 });
- 
+
 const loginUser = asyncHandler(async (req, res) => {
   console.log("This is body", req.body);
   const { identifier, password } = req.body;
@@ -245,9 +245,9 @@ const getUserDetails = asyncHandler(async (req, res) => {
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
   console.log("this is request", req);
-  const { fullName, email } = req.body;
+  const { fullName, username } = req.body;
 
-  if (!fullName || !email) {
+  if (!fullName || !username) {
     throw new ApiError(400, "All fields are required");
   }
 
@@ -256,7 +256,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     {
       $set: {
         fullName,
-        email: email,
+        username,
       },
     },
     { new: true }
