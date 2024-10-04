@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
         const savedUser = localStorage.getItem('user')
         return savedUser ? JSON.parse(savedUser) : null;
     })
-    const[location,setLocation] = useState("")
+    const [location, setLocation] = useState("")
     const [isAuthenticated, setIsAuthenticated] = useState(() => {
         return user ? true : false
     })
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
     }, [user])
 
     const value = {
-        user, setUser, isAuthenticated, setIsAuthenticated,location,setLocation
+        user, setUser, isAuthenticated, setIsAuthenticated, location, setLocation
     }
 
     return (

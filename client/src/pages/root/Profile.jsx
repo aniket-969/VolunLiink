@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getUserPosts, handlePostDelete } from "../../utils/fetchVolunteerData";
+import { getUserPosts, handlePostDelete, updateUserProfile } from "../../utils/fetchVolunteerData";
 import toast from "react-hot-toast";
 import { useUserContext } from "../../context/AuthProvider";
 import Card from "../../components/UI/Card";
@@ -21,9 +21,16 @@ const Profile = () => {
     setIsEditing((prev) => !prev);
   };
 
-const handleSaveChanges = ()=>{
-
-}
+  const handleSaveChanges = async () => {
+    const updatedUser = {
+      fullName: editedFullName,
+      username: editedUsername
+    }
+    const user = await updateUserProfile(updatedUser)
+    console.log(user)
+    setIsEditing(false)
+    toast.success("Profile Updated")
+  }
 
   const handleDelete = (postId) => {
     setPostIdToDelete(postId);

@@ -125,9 +125,13 @@ const updateUserProfile = async (data) => {
       { withCredentials: true }
     );
     console.log(response);
+    if(response.data.success){
+      return response.data.data
+    }
+    return []
   } catch (error) {
-    console.log(error);
-    throw error;
+    console.error(error.response.data);
+    throw error.response;
   }
 };
 
