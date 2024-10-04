@@ -135,6 +135,20 @@ const updateUserProfile = async (data) => {
   }
 };
 
+const updateUserAvatar = async(data)=>{
+    try {
+      const response = await axios.patch("http://localhost:9000/api/v1/users/avatar",data,{withCredentials:true})
+      console.log(response)
+      if(response.data.success){
+        return response.data.data
+      }
+      return []
+    } catch (error) {
+      console.error(error.response.data)
+      throw error.response
+    }
+}
+
 function formatDate(dateString) {
   const date = new Date(dateString);
   const day = date.getDate().toString().padStart(2, "0");
@@ -199,5 +213,6 @@ export {
   formatDate,
   formatUpdatedAt,
   handlePostDelete,
-  updateUserProfile
+  updateUserProfile,
+  updateUserAvatar
 };

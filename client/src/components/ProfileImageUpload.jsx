@@ -17,8 +17,8 @@ const ProfileImageUpload = ({ user }) => {
             const formData = new FormData();
             formData.append('avatar', file);
 
-            await updateUserAvatar(formData);
-
+            // await updateUserAvatar(formData);
+            console.log(file)
             setIsUploading(false)
         }
     };
