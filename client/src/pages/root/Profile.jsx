@@ -9,6 +9,7 @@ import { useUserContext } from "../../context/AuthProvider";
 import Card from "../../components/UI/Card";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import ProfileImageUpload from "../../components/ProfileImageUpload";
+import ChangePasswordModal from "../../components/ChangePasswordModal";
 
 const Profile = () => {
   const [posts, setPosts] = useState([]);
@@ -16,6 +17,7 @@ const Profile = () => {
   const { user, updateUser } = useUserContext();
   const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false);
   const [postIdToDelete, setPostIdToDelete] = useState(null);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
   // Edit state
   const [isEditing, setIsEditing] = useState(false);
@@ -80,9 +82,9 @@ const Profile = () => {
     <>
       <section className="my-5 flex flex-col items-center">
         <div className="flex flex-col items-center gap-3 my-6 justify-center ">
-         
-         <ProfileImageUpload user ={user} updateUser={updateUser}/>
-          <div className="flex justify-center items-center flex-col">
+
+          <ProfileImageUpload user={user} updateUser={updateUser} />
+          <div className="flex justify-center items-center flex-col gap-2">
             {isEditing ? (
               <>
                 <input
@@ -100,10 +102,14 @@ const Profile = () => {
               </>
             ) : (
               <>
+              <div>
                 <p>{user.fullName}</p>
                 <p>@{user.username}</p>
+              </div>
+                
               </>
             )}
+           
             {isEditing ? (
               <div>
                 <button
@@ -127,6 +133,13 @@ const Profile = () => {
                 Edit
               </button>
             )}
+             <p className="text-[#4361ee] font-semibold text-sm cursor-pointer" onClick={() => setIsChangePasswordOpen(true)}>
+              Change Password?
+            </p>
+            <ChangePasswordModal
+              isOpen={isChangePasswordOpen}
+              onClose={() => setIsChangePasswordOpen(false)}
+            />
           </div>
         </div>
 

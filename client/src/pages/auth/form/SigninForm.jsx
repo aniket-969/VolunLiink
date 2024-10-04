@@ -18,7 +18,7 @@ const SigninForm = () => {
   const navigate = useNavigate();
 
   const { register, handleSubmit,formState: { errors } } = useForm({ resolver: zodResolver(loginSchema) })
-  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { user, setUser,isAuthenticated,setIsAuthenticated } = useUserContext();
   
@@ -75,13 +75,7 @@ const SigninForm = () => {
           Sign In
         </button>
       </form>
-      <p className="text-[#4361ee] font-semibold text-sm cursor-pointer" onClick={() => setIsChangePasswordOpen(true)}>
-        Change Password?
-      </p>
-      <ChangePasswordModal 
-        isOpen={isChangePasswordOpen} 
-        onClose={() => setIsChangePasswordOpen(false)} 
-      />
+      
       <div className="flex gap-5">
         <p>Don't have an account ?</p>
         <Link to="/sign-up" className="text-[#4361ee] font-semibold ">
