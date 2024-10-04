@@ -25,7 +25,7 @@ const imageValidation = z
     }
   );
 
-export const passwordSchema = z
+const passwordSchema = z
   .string()
   .min(6, { message: "Password must be at least 6 characters long." })
   .max(20, {
@@ -41,7 +41,7 @@ export const passwordSchema = z
 export const userSchema = z.object({
   username: z
     .string()
-    .min(1,{message:"Username can't be empty"})
+    .min(1, { message: "Username can't be empty" })
     .max(30, { message: "Username must not exceed 15 characters" }),
   password: passwordSchema,
   email: z
@@ -59,13 +59,16 @@ export const userSchema = z.object({
 });
 
 export const loginSchema = z.object({
-  identifier: z.string().min(1,{message:"Identifier can't be empty"}).max(50, {
-    message: "Identifier must not exceed 128 characters",
-  }),
+  identifier: z
+    .string()
+    .min(1, { message: "Identifier can't be empty" })
+    .max(50, {
+      message: "Identifier must not exceed 128 characters",
+    }),
   password: passwordSchema,
 });
- 
+
 export const changePasswordSchema = z.object({
-  oldPassword:passwordSchema,
-  newPassword:passwordSchema
-})
+  oldPassword: passwordSchema,
+  newPassword: passwordSchema,
+});

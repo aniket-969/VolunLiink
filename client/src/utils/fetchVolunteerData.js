@@ -122,48 +122,57 @@ const getUserPosts = async () => {
 const updateUserProfile = async (data) => {
   try {
     const response = await axios.patch(
-      "http://localhost:9000/api/v1/users/update-account",data,
+      "http://localhost:9000/api/v1/users/update-account",
+      data,
       { withCredentials: true }
     );
     console.log(response);
-    if(response.data.success){
-      return response.data.data
+    if (response.data.success) {
+      return response.data.data;
     }
-    return []
+    return [];
   } catch (error) {
     console.error(error.response.data);
     throw error.response;
   }
 };
 
-const updateUserAvatar = async(data)=>{
-    try {
-      const response = await axios.patch("http://localhost:9000/api/v1/users/avatar",data,{withCredentials:true})
-      console.log(response)
-      if(response.data.success){
-        return response.data.data
-      }
-      return []
-    } catch (error) {
-      console.error(error.response.data)
-      throw error.response
+const updateUserAvatar = async (data) => {
+  try {
+    const response = await axios.patch(
+      "http://localhost:9000/api/v1/users/avatar",
+      data,
+      { withCredentials: true }
+    );
+    console.log(response);
+    if (response.data.success) {
+      return response.data.data;
     }
-}
+    return [];
+  } catch (error) {
+    console.error(error.response.data);
+    throw error.response;
+  }
+};
 
-const updateUserPassword = async(data)=>{
- try {
-   const response = await axios.post("http://localhost:9000/api/v1/users/change-password",data,{withCredentials:true})
-   console.log(response)
-   if(response.data.success){
-    toast.success(response.data.message)
-
-   }
-   
- } catch (error) {
-  console.error(error.response.data)
-  throw error.response
- }
-}
+const updateUserPassword = async (data) => {
+  try {
+    const response = await axios.post(
+      "http://localhost:9000/api/v1/users/change-password",
+      data,
+      { withCredentials: true }
+    );
+    console.log(response);
+    if (response.data.success) {
+      toast.success(response.data.message);
+    } 
+    return;
+  } catch (error) {
+    console.error(error.response.data);
+    toast.error(error.response.data.message || "Error updating password");
+    throw error.response;
+  }
+};
 
 function formatDate(dateString) {
   const date = new Date(dateString);
@@ -231,5 +240,5 @@ export {
   handlePostDelete,
   updateUserProfile,
   updateUserAvatar,
-  updateUserPassword
+  updateUserPassword,
 };
