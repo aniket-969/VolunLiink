@@ -8,7 +8,7 @@ import ConfirmationModal from "../../components/ConfirmationModal";
 const Profile = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useUserContext();
+  const { user, updateUser } = useUserContext();
   const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false);
   const [postIdToDelete, setPostIdToDelete] = useState(null);
 
@@ -28,6 +28,7 @@ const Profile = () => {
     }
     const user = await updateUserProfile(updatedUser)
     console.log(user)
+    updateUser(user)
     setIsEditing(false)
     toast.success("Profile Updated")
   }
