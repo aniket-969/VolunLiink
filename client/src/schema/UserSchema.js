@@ -25,7 +25,7 @@ const imageValidation = z
     }
   );
 
-const passwordSchema = z
+export const passwordSchema = z
   .string()
   .min(6, { message: "Password must be at least 6 characters long." })
   .max(20, {
@@ -64,4 +64,8 @@ export const loginSchema = z.object({
   }),
   password: passwordSchema,
 });
-
+ 
+export const changePasswordSchema = z.object({
+  oldPassword:passwordSchema,
+  newPassword:passwordSchema
+})

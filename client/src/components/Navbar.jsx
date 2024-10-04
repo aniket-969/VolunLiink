@@ -26,12 +26,12 @@ const Navbar = () => {
         try {
             const response = await axios.post("http://localhost:9000/api/v1/users/logout", {}, axiosConfig
             )
-            
+
             toast.success(response.message)
             setIsAuthenticated(false)
             setUser(null)
             navigate("/sign-up")
-          
+
         }
 
         catch (error) {
