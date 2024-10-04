@@ -1,7 +1,5 @@
 import React from 'react'
 import { useContext, createContext, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import Location from './../components/Location';
 
 const initialState = {
     user: {},
@@ -9,6 +7,7 @@ const initialState = {
     isAuthenticated: false,
     setUser: () => { },
     setIsAuthenticated: () => { },
+    updateUser: () => { }
 
 }
 
@@ -26,7 +25,12 @@ export const AuthProvider = ({ children }) => {
     })
 
     console.log(isAuthenticated)
-    const navigate = useNavigate()
+    const updateUser = (updatedUserData) => {
+        setUser(prevUser => ({
+            ...prevUser,
+            ...updatedUserData
+        }))
+    }
 
     useEffect(() => {
         if (user) {
@@ -39,7 +43,7 @@ export const AuthProvider = ({ children }) => {
     }, [user])
 
     const value = {
-        user, setUser, isAuthenticated, setIsAuthenticated, location, setLocation
+        user, setUser, isAuthenticated, setIsAuthenticated, location, setLocation, updateUser
     }
 
     return (
@@ -49,4 +53,4 @@ export const AuthProvider = ({ children }) => {
     )
 }
 
-export const useUserContext = () => useContext(AuthContext);
+export const useUserContext = () => useContext(AuthContext); 
