@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { getUserPosts, handlePostDelete, updateUserProfile } from "../../utils/fetchVolunteerData";
+import {
+  getUserPosts,
+  handlePostDelete,
+  updateUserProfile,
+} from "../../utils/fetchVolunteerData";
 import toast from "react-hot-toast";
 import { useUserContext } from "../../context/AuthProvider";
 import Card from "../../components/UI/Card";
 import ConfirmationModal from "../../components/ConfirmationModal";
+import {  FaCameraRetro } from "react-icons/fa6";
+import {AiOutlineLoading} from "react-icons/ai"
+import ProfileImageUpload from "../../components/ProfileImageUpload";
 
 const Profile = () => {
   const [posts, setPosts] = useState([]);
@@ -16,6 +23,7 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedFullName, setEditedFullName] = useState(user.fullName);
   const [editedUsername, setEditedUsername] = useState(user.username);
+  const [avatar, setAvatar] = useState(null);
 
   const handleEditToggle = () => {
     setIsEditing((prev) => !prev);
@@ -23,27 +31,26 @@ const Profile = () => {
 
   const handleSaveChanges = async () => {
     if (!editedFullName || !editedFullName) {
-      toast.error("Field can't be empty")
+      toast.error("Field can't be empty");
       return;
     }
 
     const hasChanges =
-      editedFullName !== user.fullName ||
-      editedUsername !== user.username;
+      editedFullName !== user.fullName || editedUsername !== user.username;
     if (!hasChanges) {
-      setIsEditing(false)
+      setIsEditing(false);
       return;
     }
     const updatedUser = {
       fullName: editedFullName,
-      username: editedUsername
-    }
-    const userResponse = await updateUserProfile(updatedUser)
-    console.log(userResponse)
-    updateUser(userResponse)
-    setIsEditing(false)
-    toast.success("Profile Updated")
-  }
+      username: editedUsername,
+    };
+    const userResponse = await updateUserProfile(updatedUser);
+    console.log(userResponse);
+    updateUser(userResponse);
+    setIsEditing(false);
+    toast.success("Profile Updated");
+  };
 
   const handleDelete = (postId) => {
     setPostIdToDelete(postId);
@@ -57,6 +64,20 @@ const Profile = () => {
       toast.success(data.message);
       fetchData();
       setConfirmDeleteModalOpen(false);
+    }
+  };
+
+  const handleAvatarChange = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Validate the file as per your requirements (size, type, etc.)
+      const formData = new FormData();
+      formData.append("avatar", file);
+
+      const updatedUser = await updateUserAvatar(formData);
+      updateUser(updatedUser);
+      toast.success("Avatar updated successfully!");
+
     }
   };
 
@@ -75,12 +96,9 @@ const Profile = () => {
   return (
     <>
       <section className="my-5 flex flex-col items-center">
-        <div className="flex flex-col items-center gap-3 my-6 justify-center">
-          <img
-            src={user.avatar}
-            className=" image--cover h-[100px] w-[100px] bg-black"
-          />
-
+        <div className="flex flex-col items-center gap-3 my-6 justify-center ">
+         
+         <ProfileImageUpload user ={user}  onUpload={handleAvatarChange}/>
           <div className="flex justify-center items-center flex-col">
             {isEditing ? (
               <>
