@@ -22,13 +22,25 @@ const Profile = () => {
   };
 
   const handleSaveChanges = async () => {
+    if (!editedFullName || !editedFullName) {
+      toast.error("Field can't be empty")
+      return;
+    }
+
+    const hasChanges =
+      editedFullName !== user.fullName ||
+      editedUsername !== user.username;
+    if (!hasChanges) {
+      setIsEditing(false)
+      return;
+    }
     const updatedUser = {
       fullName: editedFullName,
       username: editedUsername
     }
-    const user = await updateUserProfile(updatedUser)
-    console.log(user)
-    updateUser(user)
+    const userResponse = await updateUserProfile(updatedUser)
+    console.log(userResponse)
+    updateUser(userResponse)
     setIsEditing(false)
     toast.success("Profile Updated")
   }
