@@ -8,8 +8,6 @@ import toast from "react-hot-toast";
 import { useUserContext } from "../../context/AuthProvider";
 import Card from "../../components/UI/Card";
 import ConfirmationModal from "../../components/ConfirmationModal";
-import {  FaCameraRetro } from "react-icons/fa6";
-import {AiOutlineLoading} from "react-icons/ai"
 import ProfileImageUpload from "../../components/ProfileImageUpload";
 
 const Profile = () => {

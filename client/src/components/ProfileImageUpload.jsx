@@ -3,6 +3,7 @@ import { FaCameraRetro } from "react-icons/fa";
 import { AiOutlineLoading } from "react-icons/ai";
 import { updateUserAvatar } from "../utils/fetchVolunteerData";
 import toast from "react-hot-toast";
+import { validateImage } from "../utils/imageValidation";
 
 const ProfileImageUpload = ({ user, updateUser }) => {
     const [isUploading, setIsUploading] = useState(false);
@@ -15,6 +16,11 @@ const ProfileImageUpload = ({ user, updateUser }) => {
     const handleImageChange = async (event) => {
         const file = event.target.files[0];
         if (file) {
+
+if(!validateImage(file)){
+    return;
+}
+
             setIsUploading(true);
             const formData = new FormData();
             formData.append('avatar', file);

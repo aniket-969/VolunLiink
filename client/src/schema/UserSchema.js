@@ -64,3 +64,4 @@ export const loginSchema = z.object({
   }),
   password: passwordSchema,
 });
+
