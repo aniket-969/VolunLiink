@@ -260,7 +260,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
       },
     },
     { new: true }
-  ).select("-password");
+  ).select("username email fullName avatar");
   console.log("this is user", user);
   return res
     .status(200)
