@@ -118,15 +118,18 @@ const getUserPosts = async () => {
   }
 };
 
-const updateUserProfile = async(data)=>{
+const updateUserProfile = async (data) => {
   try {
-    const response = await axios.patch("http://localhost:9000/api/v1/users/update-account",{withCredentials:true}) 
-    console.log(response) 
+    const response = await axios.patch(
+      "http://localhost:9000/api/v1/users/update-account",data,
+      { withCredentials: true }
+    );
+    console.log(response);
   } catch (error) {
-    console.log(error)
-    throw error
+    console.log(error);
+    throw error;
   }
-}
+};
 
 function formatDate(dateString) {
   const date = new Date(dateString);
@@ -192,4 +195,5 @@ export {
   formatDate,
   formatUpdatedAt,
   handlePostDelete,
+  updateUserProfile
 };
