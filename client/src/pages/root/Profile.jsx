@@ -64,20 +64,6 @@ const Profile = () => {
     }
   };
 
-  const handleAvatarChange = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      // Validate the file as per your requirements (size, type, etc.)
-      const formData = new FormData();
-      formData.append("avatar", file);
-
-      const updatedUser = await updateUserAvatar(formData);
-      updateUser(updatedUser);
-      toast.success("Avatar updated successfully!");
-
-    }
-  };
-
   const fetchData = async () => {
     const userPosts = await getUserPosts();
     setPosts(userPosts);

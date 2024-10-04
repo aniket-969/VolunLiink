@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import toast from 'react-hot-toast'
-import { useCookies } from 'react-cookie'
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from '../context/AuthProvider';
 import { Link } from 'react-router-dom';
-import MobileNavbar from './mobileNavbar';
+import MobileNavbar from './MobileNavbar';
 import { IoReorderThree } from "react-icons/io5";
 import { ImCross } from "react-icons/im";
 import { FaConnectdevelop } from "react-icons/fa6";
@@ -73,7 +72,7 @@ const Navbar = () => {
                     <IoReorderThree className="text-3xl " onClick={() => setShow(false)} />
                 </div> :
 
-                <div className="shadow-xl bg-black text-white flex flex-col justify-center items-center opacity-80 h-[50%] w-[100%] p-1 absolute top-0 left-0 gap-4 md:hidden "><ImCross onClick={() => setShow(true)} className="text-xl " />  <MobileNavbar show={show} />
+                <div className="shadow-xl bg-black text-white flex flex-col justify-center items-center opacity-80 h-[50%] w-[100%] p-1 absolute top-0 left-0 gap-4 md:hidden z-[100]"><ImCross onClick={() => setShow(true)} className="text-xl " />  <MobileNavbar show={show} />
                 </div>
 
             }
