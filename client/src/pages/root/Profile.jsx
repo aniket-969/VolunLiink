@@ -23,7 +23,6 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedFullName, setEditedFullName] = useState(user.fullName);
   const [editedUsername, setEditedUsername] = useState(user.username);
-  const [avatar, setAvatar] = useState(null);
 
   const handleEditToggle = () => {
     setIsEditing((prev) => !prev);
@@ -98,7 +97,7 @@ const Profile = () => {
       <section className="my-5 flex flex-col items-center">
         <div className="flex flex-col items-center gap-3 my-6 justify-center ">
          
-         <ProfileImageUpload user ={user}  onUpload={handleAvatarChange}/>
+         <ProfileImageUpload user ={user} updateUser={updateUser}/>
           <div className="flex justify-center items-center flex-col">
             {isEditing ? (
               <>

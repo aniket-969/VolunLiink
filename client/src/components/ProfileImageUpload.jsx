@@ -1,8 +1,10 @@
 import React, { useRef, useState } from "react";
 import { FaCameraRetro } from "react-icons/fa";
 import { AiOutlineLoading } from "react-icons/ai";
+import { updateUserAvatar } from "../utils/fetchVolunteerData";
+import toast from "react-hot-toast";
 
-const ProfileImageUpload = ({ user }) => {
+const ProfileImageUpload = ({ user, updateUser }) => {
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef(null);
 
@@ -17,8 +19,10 @@ const ProfileImageUpload = ({ user }) => {
             const formData = new FormData();
             formData.append('avatar', file);
 
-            // await updateUserAvatar(formData);
-            console.log(file)
+            const userResponse = await updateUserAvatar(formData);
+            console.log(userResponse)
+            updateUser(userResponse)
+            toast.success("Profile image updated successfully")
             setIsUploading(false)
         }
     };
