@@ -1,4 +1,5 @@
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const submitForm = async (data) => {
   console.log(data);
@@ -149,6 +150,21 @@ const updateUserAvatar = async(data)=>{
     }
 }
 
+const updateUserPassword = async(data)=>{
+ try {
+   const response = await axios.post("http://localhost:9000/api/v1/users/change-password",data,{withCredentials:true})
+   console.log(response)
+   if(response.data.success){
+    toast.success(response.data.message)
+
+   }
+   
+ } catch (error) {
+  console.error(error.response.data)
+  throw error.response
+ }
+}
+
 function formatDate(dateString) {
   const date = new Date(dateString);
   const day = date.getDate().toString().padStart(2, "0");
@@ -214,5 +230,6 @@ export {
   formatUpdatedAt,
   handlePostDelete,
   updateUserProfile,
-  updateUserAvatar
+  updateUserAvatar,
+  updateUserPassword
 };
