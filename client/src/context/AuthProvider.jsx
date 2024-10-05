@@ -8,13 +8,15 @@ const initialState = {
     setUser: () => { },
     setIsAuthenticated: () => { },
     updateUser: () => { }
-
+    
 }
 
 const AuthContext = createContext(initialState)
 
 export const AuthProvider = ({ children }) => {
+    const[accessToken,setAccessToken] = useState(null)
 
+    console.log(cookies)
     const [user, setUser] = useState(() => {
         const savedUser = localStorage.getItem('user')
         return savedUser ? JSON.parse(savedUser) : null;
@@ -40,6 +42,9 @@ export const AuthProvider = ({ children }) => {
         else {
             localStorage.removeItem('user')
         }
+
+        
+
     }, [user])
 
     const value = {

@@ -5,13 +5,11 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { useCookies } from "react-cookie";
 import { useUserContext } from "../../../context/AuthProvider";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { loginSchema } from "../../../schema/UserSchema";
 import CustomInputWithIcon from "../../../components/UI/CustomInputWithIcon";
-import ChangePasswordModal from "../../../components/ChangePasswordModal";
 
 const SigninForm = () => {
 

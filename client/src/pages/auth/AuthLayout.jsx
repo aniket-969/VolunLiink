@@ -6,7 +6,7 @@ const AuthLayout = () => {
 
   const { isAuthenticated } = useUserContext();
   console.log(isAuthenticated);
-
+  
   return (
     <>
       

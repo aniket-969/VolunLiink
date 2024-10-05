@@ -74,7 +74,7 @@ const getPosts = async (page = 1, limit = 5, filter = {}) => {
       `http://localhost:9000/api/v1/volunteers/posts?${params.toString()}`
     );
     if (response.data.success) {
-      console.log(response.data);
+      // console.log(response.data);
 
       return response.data.data;
     }
@@ -91,10 +91,10 @@ const getMapData = async (latitude, longitude) => {
     const response = await axios.get(
       `http://localhost:9000/api/v1/volunteers/map-location?${params.toString()}`
     );
-    console.log(response);
+    // console.log(response);
     if (response.data.success) {
       return response.data.data || [];
-    }
+    } 
     return [];
   } catch (error) {
     console.error("Error fetching map data", error);
