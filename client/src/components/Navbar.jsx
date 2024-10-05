@@ -13,7 +13,7 @@ const Navbar = () => {
 
     const navigate = useNavigate()
     
-    const { isAuthenticated, setIsAuthenticated,user,setUser } = useUserContext() 
+    const { isAuthenticated, setAccessToken,user,setUser } = useUserContext() 
 
     const [show, setShow] = useState(true)
 
@@ -28,8 +28,9 @@ const Navbar = () => {
             )
 
             toast.success(response.message)
-            setIsAuthenticated(false)
+            setAccessToken(null)
             setUser(null)
+            localStorage.removeItem("user")
             navigate("/sign-up")
 
         }

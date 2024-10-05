@@ -2,16 +2,13 @@ import React from 'react'
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom'
-import { useCookies } from 'react-cookie';
 import { useUserContext } from '../context/AuthProvider';
 
 const MobileNavbar = (prop) => {
 
   const navigate = useNavigate()
-  const [cookies, setCookie, removeCookie] = useCookies("accessToken")
-  const { isAuthenticated, setIsAuthenticated,setUser } = useUserContext()
 
-  const userId = localStorage.getItem("userId")
+  const { user,isAuthenticated, setAccessToken,setUser } = useUserContext()
 
   const signOut = async () => {
 
@@ -26,16 +23,15 @@ const MobileNavbar = (prop) => {
       console.log(response)
       toast.success(response.data.message)
       setUser(null)
-      setIsAuthenticated(false)
+      setAccessToken(null)
       navigate("/")
     }
 
     catch (error) {
       if (error.response.status === 401) {
         
-        toast.success("Unauthorized")
-        // navigate("/sign-up")
-        // setIsAuthenticated(false)
+        toast.error("Unauthorized")
+       
       }
 
       console.log(error);
@@ -50,7 +46,7 @@ const MobileNavbar = (prop) => {
         <nav className=" flex flex-col justify-center items-center gap-3 w-full ">
           <Link to="/">Home</Link>
 
-          <Link to={`/profile/${userId}`} >
+          <Link to={`/profile/${user?._id}`} >
             Profile
           </Link>
 
