@@ -1,5 +1,7 @@
+import axios from "axios";
 import React from "react";
 import { useContext, createContext, useEffect, useState } from "react";
+import { refreshTokens } from "../utils/fetchUserDetails";
 
 const initialState = {
   user: {},
@@ -20,16 +22,20 @@ export const AuthProvider = ({ children }) => {
     return savedUser ? JSON.parse(savedUser) : null;
   });
   const [location, setLocation] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return user ? true : false;
-  });
 
+  const isAuthenticated = accessToken !== null;
   console.log(isAuthenticated);
   const updateUser = (updatedUserData) => {
     setUser((prevUser) => ({
       ...prevUser,
       ...updatedUserData,
     }));
+  };
+
+  const refreshAccessToken = async () => {
+    const response = await refreshTokens();
+    const newAccessToken = response.accessTokens;
+    setAccessToken(newAccessToken);
   };
 
   useEffect(() => {
@@ -39,12 +45,26 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem("user");
     }
   }, [user]);
+  console.log(accessToken);
+  // useEffect(()=>{
+  //   if (accessToken) {
+  //     const tokenExpiration = /* Calculate token expiration time based on the access token */;
+  //     const refreshTime = tokenExpiration - 300000; // Refresh 5 minutes before expiration
+
+  //     const timer = setTimeout(() => {
+  //         refreshAccessToken();
+  //     }, refreshTime);
+
+  //     return () => clearTimeout(timer);
+  // }
+  // },[accessToken])
 
   const value = {
     user,
+    accessToken,
+    setAccessToken,
     setUser,
     isAuthenticated,
-    setIsAuthenticated,
     location,
     setLocation,
     updateUser,

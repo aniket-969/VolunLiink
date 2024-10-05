@@ -16,12 +16,13 @@ const fetchUserDetails = async (userId) => {
 
 const refreshTokens = async()=>{
     try {
-      const response = await axios.post("http://localhost:9000/api/v1/users/refreshTokens",{
+      // const response = await axios.post("http://localhost:9000/api/v1/users/refreshTokens",{
         withCredentials:true
-      })
-      if(response.data.success){
-        return response.data.data
-      }
+      // })
+      // console.log(response)
+      // if(response.data.success){
+        // return response.data.data
+      // }
       return;
     } catch (error) {
       console.error(error.response.data)
