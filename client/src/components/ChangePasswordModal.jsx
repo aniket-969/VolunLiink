@@ -6,7 +6,7 @@ import { updateUserPassword } from '../utils/fetchVolunteerData';
 
 const ChangePasswordModal = ({ isOpen, onClose }) => {
   const { register, handleSubmit, formState: { errors } } = useForm({ resolver: zodResolver(changePasswordSchema) });
-  console.log(errors)
+  
   const onSubmit = async (data) => {
     console.log(data);
     await updateUserPassword(data)

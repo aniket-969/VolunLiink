@@ -1,7 +1,6 @@
-import axios from "axios";
-import React from "react";
 import { useContext, createContext, useEffect, useState } from "react";
 import { refreshTokens } from "../utils/fetchUserDetails";
+import { jwtDecode } from "jwt-decode";
 
 const initialState = {
   user: {},
@@ -35,7 +34,11 @@ export const AuthProvider = ({ children }) => {
   const refreshAccessToken = async () => {
     const response = await refreshTokens();
     const newAccessToken = response.accessTokens;
-    setAccessToken(newAccessToken);
+    if (newAccessToken) {
+      setAccessToken(newAccessToken);
+  } else {
+      signOut(); 
+  }
   };
 
   useEffect(() => {
@@ -45,19 +48,28 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem("user");
     }
   }, [user]);
+
   console.log(accessToken);
-  // useEffect(()=>{
-  //   if (accessToken) {
-  //     const tokenExpiration = /* Calculate token expiration time based on the access token */;
-  //     const refreshTime = tokenExpiration - 300000; // Refresh 5 minutes before expiration
+  useEffect(() => {
+    if (accessToken) {
+      const { exp } = jwtDecode(accessToken);
+      const tokenExpiration = exp * 1000;
+      const refreshTime = tokenExpiration - Date.now() - 300000;
+      console.log(jwtDecode(accessToken));
+      console.log(tokenExpiration, refreshTime);
+      const timer = setTimeout(() => {
+        refreshAccessToken();
+      }, refreshTime);
 
-  //     const timer = setTimeout(() => {
-  //         refreshAccessToken();
-  //     }, refreshTime);
+      return () => clearTimeout(timer);
+    }
+  }, [accessToken]);
 
-  //     return () => clearTimeout(timer);
-  // }
-  // },[accessToken])
+  const signOut = () => {
+    setAccessToken(null);
+    setUser(null);
+    localStorage.removeItem("user");
+  };
 
   const value = {
     user,
@@ -68,6 +80,7 @@ export const AuthProvider = ({ children }) => {
     location,
     setLocation,
     updateUser,
+    signOut
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
