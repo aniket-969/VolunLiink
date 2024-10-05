@@ -33,7 +33,8 @@ export const AuthProvider = ({ children }) => {
 
   const refreshAccessToken = async () => {
     const response = await refreshTokens();
-    const newAccessToken = response.accessTokens;
+    // console.log(response)
+    const newAccessToken = response.accessToken;
     if (newAccessToken) {
       setAccessToken(newAccessToken);
   } else {
@@ -62,6 +63,10 @@ export const AuthProvider = ({ children }) => {
       }, refreshTime);
 
       return () => clearTimeout(timer);
+    }
+    else{
+      // console.log('here')
+      refreshAccessToken()
     }
   }, [accessToken]);
 
