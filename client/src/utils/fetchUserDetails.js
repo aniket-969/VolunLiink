@@ -14,21 +14,20 @@ const fetchUserDetails = async (userId) => {
   }
 };
 
-const refresh = async (userId) => {
-  console.log('This is userId',userId);
-  
-  const response = await axios.post(
-    "http://localhost:9000/api/v1/users/refreshTokens",
-    { userId }
-  );
-
-  console.log("New token:", response.data.data);
-  return response.data.data.accessToken
-};
-
-const isTokenExpired = (expirationTime)=>{
-    const currentTime = Math.floor(Date.now() / 1000); 
-    return expirationTime <= currentTime;
+const refreshTokens = async()=>{
+    try {
+      const response = await axios.post("http://localhost:9000/api/v1/users/refreshTokens",{
+        withCredentials:true
+      })
+      if(response.data.success){
+        return response.data.data
+      }
+      return;
+    } catch (error) {
+      console.error(error.response.data)
+      throw error.response
+    }
 }
 
-export { fetchUserDetails,refresh ,isTokenExpired};
+
+export { fetchUserDetails,refreshTokens};
