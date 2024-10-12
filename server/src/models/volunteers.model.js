@@ -66,11 +66,10 @@ const eventModel = new mongoose.Schema(
       type: String,
       enum: ["Volunteer", "Organization"],
       required: true,
-    }, 
+    },
     expiresAt: {
       type: Date,
     },
-
   },
   {
     timestamps: true,
