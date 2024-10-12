@@ -128,11 +128,11 @@ const getPosts = asyncHandler(async (req, res) => {
   }
 
   if (skillName) {
-    filter['skills.skillName'] = skillName; 
+    filter["skills.skillName"] = skillName;
   }
 
   if (categoryName) {
-    filter['category.categoryName'] = categoryName; 
+    filter["category.categoryName"] = categoryName;
   }
 
   if (role) {
@@ -187,7 +187,6 @@ const getUserVolunteerData = asyncHandler(async (req, res) => {
   const userPosts = await VolunteerOpportunity.find({ createdBy: userId })
     .skip(skip)
     .populate("createdBy", "username fullName")
-    .populate("skills", "skillName description")
     .sort(sortOptions);
 
   if (!userPosts || userPosts.length == 0) {
@@ -202,31 +201,18 @@ const getUserVolunteerData = asyncHandler(async (req, res) => {
 });
 
 const getPostData = asyncHandler(async (req, res) => {
-  try {
-    const { postId } = req.params;
-    console.log(postId);
+  const { postId } = req.params;
+  console.log(postId);
 
-    const postData = await VolunteerOpportunity.findOne({ _id: postId })
-      .populate("createdBy", "username fullName")
-      .populate("skills", "skillName description")
-      .populate("category", "categoryName description")
-      .exec();
+  const postData = await VolunteerOpportunity.findOne({ _id: postId })
+    .populate("createdBy", "username fullName")
+    .exec();
+  if (!postData) throw new ApiError(400, "Post not found");
+  console.log(postData);
 
-    console.log(postData);
-
-    return res.json(
-      new ApiResponse(200, postData, "Post details retrieved successfully")
-    );
-  } catch (error) {
-    console.log(error);
-    return res.json(
-      new ApiResponse(
-        500,
-        null,
-        "Internal Server Error: Unable to retrieve nearest volunteer opportunities"
-      )
-    );
-  }
+  return res.json(
+    new ApiResponse(200, postData, "Post details retrieved successfully")
+  );
 });
 
 const deleteVolunteerData = asyncHandler(async (req, res) => {
@@ -234,7 +220,7 @@ const deleteVolunteerData = asyncHandler(async (req, res) => {
     req.params.id
   );
   if (!deletedPost) {
-    return res.status(404).json({ message: "Post not found" });
+    throw new ApiError(404,"Post not found")
   }
   res.json({ message: "Post deleted successfully" });
 });
