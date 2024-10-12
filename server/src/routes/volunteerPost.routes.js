@@ -32,11 +32,5 @@ router.route("/userPost").get(verifyJWT,getUserVolunteerData);
 
 router.route("/post/:postId").get(getPostData);
 
-router.route("/skill-form").post(verifyJWT, skillForm);
-
-router
-  .route("/opportunity-category")
-  .post(verifyJWT, OpportunityCategoryForm);
-
 router.delete("/:id",verifyJWT, deleteVolunteerData);
 export default router
