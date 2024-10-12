@@ -32,6 +32,16 @@ const eventModel = new mongoose.Schema(
       state: String,
       village: String,
     },
+    skills: [
+      {
+        skillName: String,
+        description: String,
+      },
+    ],
+    category: {
+      categoryName: String,
+      description: String,
+    },
 
     images: [
       {
@@ -56,37 +66,20 @@ const eventModel = new mongoose.Schema(
       type: String,
       enum: ["Volunteer", "Organization"],
       required: true,
-    },
-    skills: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Skills",
-    },
+    }, 
     expiresAt: {
       type: Date,
     },
-    category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "OpportunityCategory",
-    },
+
   },
   {
     timestamps: true,
   }
 );
 
-eventModel.pre("save", async function (next) {
-  try {
-    const user = await User.findById(this.createdBy);
-    if (user.fullName === "Guest23@#$") {
-      this.expiresAt = user.expiresAt;
-    }
-
-    next();
-  } catch (error) {
-    next(error);
-  }
-});
-
+eventModel.path("skills").validate(function (value) {
+  return this.skills || this.category;
+}, "Either skills or category is required");
 eventModel.index({ location: "2dsphere" });
 
 eventModel.index({ role: 1 });
