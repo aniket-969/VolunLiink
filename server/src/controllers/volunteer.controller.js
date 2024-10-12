@@ -128,34 +128,11 @@ const getPosts = asyncHandler(async (req, res) => {
   }
 
   if (skillName) {
-    const skills = await Skills.find({ skillName }).select("_id");
-    if (skills.length > 0) {
-      const skillIds = skills.map((skill) => skill._id);
-      filter.skills = { $in: skillIds };
-    } else {
-      return res
-        .status(200)
-        .json(
-          new ApiResponse(200, [], "No posts found for the given skillName")
-        );
-    }
+    filter['skills.skillName'] = skillName; 
   }
 
   if (categoryName) {
-    const opportunity = await OpportunityCategory.find({ categoryName }).select(
-      "_id"
-    );
-
-    if (opportunity.length > 0) {
-      const opportunityIds = opportunity.map((opp) => opp._id);
-      filter.category = { $in: opportunityIds };
-    } else {
-      return res
-        .status(200)
-        .json(
-          new ApiResponse(200, [], "No posts found for the given Opportunity")
-        );
-    }
+    filter['category.categoryName'] = categoryName; 
   }
 
   if (role) {
@@ -184,8 +161,6 @@ const getPosts = asyncHandler(async (req, res) => {
     .skip(skip)
     .limit(limit)
     .populate("createdBy", "username fullName")
-    .populate("category", "categoryName description")
-    .populate("skills", "skillName description")
     .exec();
   return res.json(
     new ApiResponse(200, posts, "All volunteers fetched successfully")
