@@ -7,7 +7,7 @@ import { Skills } from "../models/skills.model.js";
 import { OpportunityCategory } from "../models/opportunityCategory.model.js";
 
 const MAX_LIMIT = 50;
- 
+
 const volunteerForm = asyncHandler(async (req, res) => {
   const {
     title,
@@ -16,7 +16,7 @@ const volunteerForm = asyncHandler(async (req, res) => {
     description,
     contactEmail,
     contactPhone,
-    startDate, 
+    startDate,
     endDate,
     role,
     country,
@@ -24,14 +24,14 @@ const volunteerForm = asyncHandler(async (req, res) => {
     road,
     state,
     village,
-    skillId:skills,
-    categoryId:category,
+    skills,
+    category,
   } = req.body;
 
-  console.log("This is vol body",req.body);
+  console.log("This is vol body", req.body);
 
   const createdBy = req.user?._id;
-  console.log("user id",createdBy)
+  console.log("user id", createdBy);
   if (
     [title, description, contactEmail, startDate, endDate, role].some(
       (field) => field?.trim() === ""
@@ -40,7 +40,7 @@ const volunteerForm = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields are required");
   }
 
-  console.log(req.files); 
+  console.log(req.files);
   const volunteerLocalPaths = req.files?.avatar?.map((file) => file.path);
 
   if (!volunteerLocalPaths || volunteerLocalPaths.length === 0) {
@@ -77,8 +77,15 @@ const volunteerForm = asyncHandler(async (req, res) => {
     endDate,
     images: imageUrls,
     role,
-    skills,
-    category,
+    skills: skills
+      ? { skillName: skills.skillName, description: skills.description }
+      : undefined,
+    category: category
+      ? {
+          categoryName: category.categoryName,
+          description: category.description,
+        }
+      : undefined,
     createdBy,
   });
 
@@ -172,7 +179,6 @@ const getPosts = asyncHandler(async (req, res) => {
 
   const skip = (page - 1) * limit;
 
-
   const posts = await VolunteerOpportunity.find(filter)
     .sort(sortOptions)
     .skip(skip)
@@ -258,31 +264,32 @@ const deleteVolunteerData = asyncHandler(async (req, res) => {
   res.json({ message: "Post deleted successfully" });
 });
 
-const getNearestCoordinates = asyncHandler(async(req,res)=>{
-  console.log(req.query)
-    const{latitude,longitude} = req.query
-    let filter = {}
-    filter.location = {
-      $near: {
-        $geometry: {
-          type: "Point",
-          coordinates: [parseFloat(longitude), parseFloat(latitude)],
-        },
+const getNearestCoordinates = asyncHandler(async (req, res) => {
+  console.log(req.query);
+  const { latitude, longitude } = req.query;
+  let filter = {};
+  filter.location = {
+    $near: {
+      $geometry: {
+        type: "Point",
+        coordinates: [parseFloat(longitude), parseFloat(latitude)],
       },
-    };
+    },
+  };
 
-    const posts = await VolunteerOpportunity.find(filter) 
-    
-    console.log("This is posts",posts)
-    const response = posts.map(post=>({
-      role:post.role,
-      geocode:[post.location.coordinates[0],post.location.coordinates[1]],
-      postId:post._id
-    }))
+  const posts = await VolunteerOpportunity.find(filter);
 
-    return res.json(new ApiResponse(200,response,"Data for map retrieved successfully"))
+  console.log("This is posts", posts);
+  const response = posts.map((post) => ({
+    role: post.role,
+    geocode: [post.location.coordinates[0], post.location.coordinates[1]],
+    postId: post._id,
+  }));
 
-})
+  return res.json(
+    new ApiResponse(200, response, "Data for map retrieved successfully")
+  );
+});
 
 export {
   volunteerForm,
@@ -290,5 +297,5 @@ export {
   getPosts,
   deleteVolunteerData,
   getPostData,
-  getNearestCoordinates
+  getNearestCoordinates,
 };
