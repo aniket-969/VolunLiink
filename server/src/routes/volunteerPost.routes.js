@@ -9,23 +9,26 @@ import {
   getNearestCoordinates,
 } from "../controllers/volunteer.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { validate } from './../middlewares/validator.middleware.js';
+import { parseJsonFields, validate } from "./../middlewares/validator.middleware.js";
 import { formSchema } from "../../schema/FormSchema.js";
 
 const router = Router();
 
-router.route("/volunteer-form").post(verifyJWT,
+router.route("/volunteer-form").post(
+  verifyJWT,
   upload.fields([
     {
       name: "avatar",
     },
   ]),
-  validate(formSchema), 
+    parseJsonFields(["skills", "category"]),
+  validate(formSchema),
   volunteerForm
-); 
-router.route("/map-location").get(getNearestCoordinates)
-router.route("/posts").get(getPosts)
-router.route("/userPost").get(verifyJWT,getUserVolunteerData);
+);
+router.route("/map-location").get(getNearestCoordinates);
+router.route("/posts").get(getPosts);
+router.route("/userPost").get(verifyJWT, getUserVolunteerData);
 router.route("/post/:postId").get(getPostData);
-router.delete("/:id",verifyJWT, deleteVolunteerData);
-export default router
+router.delete("/:id", verifyJWT, deleteVolunteerData);
+
+export default router;

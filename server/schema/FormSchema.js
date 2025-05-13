@@ -42,7 +42,7 @@ const commonSchema = z.object({
 });
 
 export const formSchema = commonSchema
-  .extend({
+  .extend({ 
     skills: skillValidation.optional(),
     category: categoryValidation.optional(),
   })
