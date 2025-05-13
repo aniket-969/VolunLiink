@@ -31,59 +31,63 @@ console.log(errors)
   const [file, setFile] = useState(null);
   const navigate = useNavigate();
   const onSubmit = async (data) => {
-    setIsSubmitting(true);
-    const formData = new FormData();
-
-    // Handle skill submission
-console.log(data)
-    if (data.skillName && data.skillDescription) {
-      const skills = {
-        skillName: data.skillName,
-        description: data.skillDescription,
-      };
-      formData.append("skills", JSON.stringify(skills));
-      formData.append("role", "Volunteer");
-    }
-
-    // Handle category submission
-    if (data.categoryName && data.categoryDescription) {
-      const category = {
-        categoryName: data.categoryName,
-        description: data.categoryDescription,
-      };
-      formData.append("category", JSON.stringify(category));
-      formData.append("role", "Organization");
-    }
-    const { latitude, longitude, country, state, road, county, village } =
-      location;
-
-    formData.append("latitude", latitude);
-    formData.append("longitude", longitude);
-    formData.append("country", country);
-    formData.append("state", state);
-    formData.append("road", road);
-    formData.append("county", county);
-    formData.append("village", village);
-
-    Object.entries(data).forEach(([key, value]) => {
-      if (
-        key !== "skillName" &&
-        key !== "skillDescription" &&
-        key !== "categoryName" &&
-        key !== "categoryDescription"
-      ) {
-        formData.append(key, value);
-      }
-    });
-    console.log(formData);
-    return;
-    const response = await submitForm(formData);
-    console.log(response);
-    if (response.success) {
-      toast.success(response.message || "Post added successfully");
-      navigate("/");
-    }
+   try {
+     setIsSubmitting(true);
+     const formData = new FormData();
+ 
+     // Handle skill submission
+ console.log(data)
+     if (data.skillName && data.skillDescription) {
+       const skills = {
+         skillName: data.skillName,
+         description: data.skillDescription,
+       };
+       formData.append("skills", JSON.stringify(skills));
+       formData.append("role", "Volunteer");
+     }
+ 
+     // Handle category submission
+     if (data.categoryName && data.categoryDescription) {
+       const category = {
+         categoryName: data.categoryName,
+         description: data.categoryDescription,
+       };
+       formData.append("category", JSON.stringify(category));
+       formData.append("role", "Organization");
+     }
+     const { latitude, longitude, country, state, road, county, village } =
+       location;
+ 
+     formData.append("latitude", latitude);
+     formData.append("longitude", longitude);
+     formData.append("country", country);
+     formData.append("state", state);
+     formData.append("road", road);
+     formData.append("county", county);
+     formData.append("village", village);
+ 
+     Object.entries(data).forEach(([key, value]) => {
+       if (
+         key !== "skillName" &&
+         key !== "skillDescription" &&
+         key !== "categoryName" &&
+         key !== "categoryDescription"
+       ) {
+         formData.append(key, value);
+       }
+     });
+     // return;
+     const response = await submitForm(formData);
+     console.log(response);
+     if (response.success) {
+       toast.success(response.message || "Post added successfully");
+       navigate("/");
+     } 
+     setIsSubmitting(false);
+   } catch (error) {
+    console.log(error)
     setIsSubmitting(false);
+   }
   };
 
   const commonFields = (

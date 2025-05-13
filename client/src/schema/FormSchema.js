@@ -44,8 +44,16 @@ const commonSchema = z.object({
   description: z.string().min(10),
   contactEmail: z.string().email({ message: "Invalid email address" }),
   contactPhone: phoneSchema.optional(),
-  startDate: z.coerce.date().optional(),
-  endDate: z.coerce.date()optional(),
+ startDate: z
+  .string() 
+  .transform((val) => (val === "" ? undefined : new Date(val)))
+  .optional(),
+
+endDate: z
+  .string()
+  .transform((val) => (val === "" ? undefined : new Date(val)))
+  .optional(),
+
   avatar: imageValidation,
   country: z.string().optional(),
   county: z.string().optional(),
