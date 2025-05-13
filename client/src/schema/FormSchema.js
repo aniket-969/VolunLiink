@@ -30,9 +30,8 @@ const phoneSchema = z
   .optional()
   .refine(
     (value) => {
-      // Allow empty value for optional
       if (!value) return true;
-      // Check if the value is exactly 10 digits
+
       return /^\d{10}$/.test(value);
     },
     {
@@ -40,26 +39,31 @@ const phoneSchema = z
     }
   );
 
-export const skillFormSchema = z.object({
+const commonSchema = z.object({
   title: z.string().min(1),
   description: z.string().min(10),
   contactEmail: z.string().email({ message: "Invalid email address" }),
-  contactPhone: phoneSchema,
-  skillName: z.string().min(1),
-  skillDescription: z.string().min(10),
-  startDate: z.string().date().optional(),
-  endDate: z.string().date().optional(),
+  contactPhone: phoneSchema.optional(),
+  startDate: z.coerce.date().optional(),
+  endDate: z.coerce.date()optional(),
   avatar: imageValidation,
+  country: z.string().optional(),
+  county: z.string().optional(),
+  road: z.string().optional(),
+  state: z.string().optional(),
+  village: z.string().optional(),
 });
 
-export const opportunityCategoryFormSchema = z.object({
-  title: z.string().min(1),
-  description: z.string().min(10),
-  contactEmail: z.string().email({ message: "Invalid email address" }),
-  contactPhone: phoneSchema,
-  categoryName: z.string().min(1),
-  categoryDescription: z.string().min(10),
-  startDate: z.string().date().optional(),
-  endDate: z.string().date().optional(),
-  avatar: imageValidation,
-});
+export const formSchema = commonSchema
+  .extend({
+    skillName: z.string().min(1, "Skill name is required").optional(),
+    skillDescription: z.string().min(5, "Skill description is required").optional(),
+    categoryName: z.string().min(1, "Category name is required").optional(),
+    categoryDescription: z.string().min(5, "Category description is required").optional(),
+  })
+  .refine((data) => data.skillName || data.categoryName, {
+    message: "Either skill or category must be provided",
+  })
+  .refine((data) => !(data.skills && data.category), {
+    message: "You cannot provide both skill and category",
+  });

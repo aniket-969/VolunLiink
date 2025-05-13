@@ -18,50 +18,6 @@ const submitForm = async (data) => {
   }
 };
 
-const submitSkillForm = async (skillName, skillDescription) => {
-  try {
-    const formData = {
-      skillName: skillName,
-      description: skillDescription,
-    };
-
-    const response = await axios.post(
-      "http://localhost:9000/api/v1/volunteers/skill-form",
-      formData,
-      {
-        withCredentials: true,
-      }
-    );
-
-    return response.data.data._id; // Adjust according to your API response structure
-  } catch (error) {
-    console.error(error.response.data.message);
-    throw error.response;
-  }
-};
-
-const submitCategoryForm = async (categoryName, categoryDescription) => {
-  try {
-    const formData = {
-      categoryName: categoryName,
-      description: categoryDescription,
-    };
-
-    console.log(formData);
-    const response = await axios.post(
-      "http://localhost:9000/api/v1/volunteers/opportunity-category",
-      formData,
-      {
-        withCredentials: true,
-      }
-    );
-
-    return response.data.data._id; // Adjust according to your API response structure
-  } catch (error) {
-    console.error(error.response.data.message);
-    throw error.response;
-  }
-};
 
 const getPosts = async (page = 1, limit = 5, filter = {}) => {
   try {
@@ -230,8 +186,6 @@ const handlePostDelete = async (postId) => {
 
 export {
   submitForm,
-  submitSkillForm,
-  submitCategoryForm,
   getPosts,
   getMapData,
   getUserPosts,

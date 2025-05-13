@@ -24,7 +24,7 @@ const page = () => {
             value="organization"
             checked={formType === "organization"}
             onChange={() => setFormType("organization")}
-          />
+          /> 
           Organization
         </label>
       </div>
