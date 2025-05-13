@@ -14,8 +14,6 @@ export const validate = (schema) => async (req, res, next) => {
   }
 };
 
-// middlewares/parseJsonFields.js
-
 export const parseJsonFields = (fields = []) => {
   return (req, res, next) => {
     for (const field of fields) {

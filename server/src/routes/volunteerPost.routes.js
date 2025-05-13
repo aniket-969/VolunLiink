@@ -7,7 +7,7 @@ import {
   getPostData,
   volunteerForm,
   getNearestCoordinates,
-} from "../controllers/volunteer.controller.js";
+} from "../controllers/post.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { parseJsonFields, validate } from "./../middlewares/validator.middleware.js";
 import { formSchema } from "../../schema/FormSchema.js";

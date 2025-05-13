@@ -2,12 +2,12 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { VolunteerOpportunity } from "./../models/volunteers.model.js";
+import { Post } from "../models/post.model.js";
 
 const MAX_LIMIT = 50;
- 
-const volunteerForm = asyncHandler(async (req, res) => {try {
-  
+
+const volunteerForm = asyncHandler(async (req, res) => {
+  try {
     const {
       title,
       latitude,
@@ -26,9 +26,9 @@ const volunteerForm = asyncHandler(async (req, res) => {try {
       skills,
       category,
     } = req.body;
-  
+
     console.log("This is vol body", req.body);
-   
+
     const createdBy = req.user?._id;
     console.log("user id", createdBy);
     if (
@@ -38,27 +38,29 @@ const volunteerForm = asyncHandler(async (req, res) => {try {
     ) {
       throw new ApiError(400, "All fields are required");
     }
-  
+
     console.log(req.files);
     const volunteerLocalPaths = req.files?.avatar?.map((file) => file.path);
-  
+
     if (!volunteerLocalPaths || volunteerLocalPaths.length === 0) {
       throw new ApiError(400, "At least one volunteer local file is required");
     }
-  
+
     const avatar = await Promise.all(
       volunteerLocalPaths.map((path) => uploadOnCloudinary(path))
     );
     console.log("This is avatar here 37", avatar);
-  
+
     if (!avatar) {
       throw new ApiError(400, "Avatar file is required");
     }
-  
+
     const imageUrls = avatar.map((image) => image.url);
-    console.log("URL",imageUrls);
-  
-    const VolunteerData = await VolunteerOpportunity.create({
+    console.log("URL", imageUrls);
+const cleanedStartDate = req.body.startDate === "undefined" ? undefined : new Date(req.body.startDate);
+const cleanedEndDate = req.body.endDate === "undefined" ? undefined : new Date(req.body.endDate);
+
+    const VolunteerData = await Post.create({
       title,
       description,
       location: {
@@ -72,12 +74,12 @@ const volunteerForm = asyncHandler(async (req, res) => {try {
       },
       contactEmail,
       contactPhone,
-      startDate,
-      endDate,
+       startDate: cleanedStartDate,
+  endDate: cleanedEndDate,
       images: imageUrls,
       role,
       skills: skills
-        ? { skillName: skills.skillName, description: skills.description }
+        ? [{ skillName: skills.skillName, description: skills.description }]
         : undefined,
       category: category
         ? {
@@ -87,14 +89,18 @@ const volunteerForm = asyncHandler(async (req, res) => {try {
         : undefined,
       createdBy,
     });
-  console.log("Vol",VolunteerData)
+    console.log("Vol", VolunteerData);
     return res.json(
-      new ApiResponse(201, VolunteerData, "Volunteer form submitted successfully")
+      new ApiResponse(
+        201,
+        VolunteerData,
+        "Volunteer form submitted successfully"
+      )
     );
-} catch (error) {
-  console.log(error)
-  return res.json(new ApiError(401,error,"Error while creating post"))
-}
+  } catch (error) {
+    console.log(error);
+    return res.json(new ApiError(401, error, "Error while creating post"));
+  }
 });
 
 const getPosts = asyncHandler(async (req, res) => {
@@ -159,7 +165,7 @@ const getPosts = asyncHandler(async (req, res) => {
 
   const skip = (page - 1) * limit;
 
-  const posts = await VolunteerOpportunity.find(filter)
+  const posts = await Post.find(filter)
     .sort(sortOptions)
     .skip(skip)
     .limit(limit)
@@ -187,7 +193,7 @@ const getUserVolunteerData = asyncHandler(async (req, res) => {
   const userId = req.user?._id;
 
   const skip = (page - 1) * limit;
-  const userPosts = await VolunteerOpportunity.find({ createdBy: userId })
+  const userPosts = await Post.find({ createdBy: userId })
     .skip(skip)
     .populate("createdBy", "username fullName")
     .sort(sortOptions);
@@ -207,7 +213,7 @@ const getPostData = asyncHandler(async (req, res) => {
   const { postId } = req.params;
   console.log(postId);
 
-  const postData = await VolunteerOpportunity.findOne({ _id: postId })
+  const postData = await Post.findOne({ _id: postId })
     .populate("createdBy", "username fullName")
     .exec();
   if (!postData) throw new ApiError(400, "Post not found");
@@ -219,11 +225,9 @@ const getPostData = asyncHandler(async (req, res) => {
 });
 
 const deleteVolunteerData = asyncHandler(async (req, res) => {
-  const deletedPost = await VolunteerOpportunity.findByIdAndDelete(
-    req.params.id
-  );
+  const deletedPost = await Post.findByIdAndDelete(req.params.id);
   if (!deletedPost) {
-    throw new ApiError(404,"Post not found")
+    throw new ApiError(404, "Post not found");
   }
   res.json({ message: "Post deleted successfully" });
 });
@@ -241,7 +245,7 @@ const getNearestCoordinates = asyncHandler(async (req, res) => {
     },
   };
 
-  const posts = await VolunteerOpportunity.find(filter);
+  const posts = await Post.find(filter);
 
   console.log("This is posts", posts);
   const response = posts.map((post) => ({
