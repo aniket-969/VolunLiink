@@ -6,90 +6,95 @@ import { VolunteerOpportunity } from "./../models/volunteers.model.js";
 
 const MAX_LIMIT = 50;
  
-const volunteerForm = asyncHandler(async (req, res) => {
-  const {
-    title,
-    latitude,
-    longitude,
-    description,
-    contactEmail,
-    contactPhone,
-    startDate,
-    endDate,
-    role,
-    country,
-    county,
-    road,
-    state,
-    village,
-    skills,
-    category,
-  } = req.body;
-
-  console.log("This is vol body", req.body);
-
-  const createdBy = req.user?._id;
-  console.log("user id", createdBy);
-  if (
-    [title, description, contactEmail, startDate, endDate, role].some(
-      (field) => field?.trim() === ""
-    )
-  ) {
-    throw new ApiError(400, "All fields are required");
-  }
-
-  console.log(req.files);
-  const volunteerLocalPaths = req.files?.avatar?.map((file) => file.path);
-
-  if (!volunteerLocalPaths || volunteerLocalPaths.length === 0) {
-    throw new ApiError(400, "At least one volunteer local file is required");
-  }
-
-  const avatar = await Promise.all(
-    volunteerLocalPaths.map((path) => uploadOnCloudinary(path))
-  );
-  console.log("This is avatar here 37", avatar);
-
-  if (!avatar) {
-    throw new ApiError(400, "Avatar file is required");
-  }
-
-  const imageUrls = avatar.map((image) => image.url);
-  console.log(imageUrls);
-
-  const VolunteerData = await VolunteerOpportunity.create({
-    title,
-    description,
-    location: {
-      type: "Point",
-      coordinates: [parseFloat(longitude), parseFloat(latitude)],
+const volunteerForm = asyncHandler(async (req, res) => {try {
+  
+    const {
+      title,
+      latitude,
+      longitude,
+      description,
+      contactEmail,
+      contactPhone,
+      startDate,
+      endDate,
+      role,
       country,
       county,
       road,
       state,
       village,
-    },
-    contactEmail,
-    contactPhone,
-    startDate,
-    endDate,
-    images: imageUrls,
-    role,
-    skills: skills
-      ? { skillName: skills.skillName, description: skills.description }
-      : undefined,
-    category: category
-      ? {
-          categoryName: category.categoryName,
-          description: category.description,
-        }
-      : undefined,
-    createdBy,
-  });
-
-  return res.json(
-    new ApiResponse(201, VolunteerData, "Volunteer form submitted successfully")
-  );
+      skills,
+      category,
+    } = req.body;
+  
+    console.log("This is vol body", req.body);
+   
+    const createdBy = req.user?._id;
+    console.log("user id", createdBy);
+    if (
+      [title, description, contactEmail, startDate, endDate, role].some(
+        (field) => field?.trim() === ""
+      )
+    ) {
+      throw new ApiError(400, "All fields are required");
+    }
+  
+    console.log(req.files);
+    const volunteerLocalPaths = req.files?.avatar?.map((file) => file.path);
+  
+    if (!volunteerLocalPaths || volunteerLocalPaths.length === 0) {
+      throw new ApiError(400, "At least one volunteer local file is required");
+    }
+  
+    const avatar = await Promise.all(
+      volunteerLocalPaths.map((path) => uploadOnCloudinary(path))
+    );
+    console.log("This is avatar here 37", avatar);
+  
+    if (!avatar) {
+      throw new ApiError(400, "Avatar file is required");
+    }
+  
+    const imageUrls = avatar.map((image) => image.url);
+    console.log("URL",imageUrls);
+  
+    const VolunteerData = await VolunteerOpportunity.create({
+      title,
+      description,
+      location: {
+        type: "Point",
+        coordinates: [parseFloat(longitude), parseFloat(latitude)],
+        country,
+        county,
+        road,
+        state,
+        village,
+      },
+      contactEmail,
+      contactPhone,
+      startDate,
+      endDate,
+      images: imageUrls,
+      role,
+      skills: skills
+        ? { skillName: skills.skillName, description: skills.description }
+        : undefined,
+      category: category
+        ? {
+            categoryName: category.categoryName,
+            description: category.description,
+          }
+        : undefined,
+      createdBy,
+    });
+  console.log("Vol",VolunteerData)
+    return res.json(
+      new ApiResponse(201, VolunteerData, "Volunteer form submitted successfully")
+    );
+} catch (error) {
+  console.log(error)
+  return res.json(new ApiError(401,error,"Error while creating post"))
+}
 });
 
 const getPosts = asyncHandler(async (req, res) => {

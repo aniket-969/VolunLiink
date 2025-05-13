@@ -29,8 +29,16 @@ const commonSchema = z.object({
   description: z.string().min(10),
   contactEmail: z.string().email({ message: "Invalid email address" }),
   contactPhone: z.string().optional(),
-  startDate: z.string().optional(),
-  endDate: z.string().optional(),
+  startDate: z
+    .string()
+    .transform((val) => (val === "" ? undefined : new Date(val)))
+    .optional(),
+
+  endDate: z
+    .string()
+    .transform((val) => (val === "" ? undefined : new Date(val)))
+    .optional(),
+
   role: z.enum(["Volunteer", "Organization"]),
   latitude: latitudeValidation,
   longitude: longitudeValidation,
@@ -42,7 +50,7 @@ const commonSchema = z.object({
 });
 
 export const formSchema = commonSchema
-  .extend({ 
+  .extend({
     skills: skillValidation.optional(),
     category: categoryValidation.optional(),
   })
