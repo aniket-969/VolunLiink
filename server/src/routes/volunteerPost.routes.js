@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { upload } from "./../middlewares/multer.middleware.js";
-
 import {
   deleteVolunteerData,
   getPosts,
@@ -9,8 +8,6 @@ import {
   volunteerForm,
   getNearestCoordinates,
 } from "../controllers/volunteer.controller.js";
-import { skillForm } from "../controllers/skills.controller.js";
-import { OpportunityCategoryForm } from "../controllers/organisation.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { validate } from './../middlewares/validator.middleware.js';
 import { formSchema } from "../../schema/FormSchema.js";
@@ -23,9 +20,9 @@ router.route("/volunteer-form").post(verifyJWT,
       name: "avatar",
     },
   ]),
-  validate(formSchema),
+  validate(formSchema), 
   volunteerForm
-);
+); 
 router.route("/map-location").get(getNearestCoordinates)
 router.route("/posts").get(getPosts)
 router.route("/userPost").get(verifyJWT,getUserVolunteerData);

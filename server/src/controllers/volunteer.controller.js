@@ -3,8 +3,6 @@ import { ApiError } from "../utils/ApiError.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { VolunteerOpportunity } from "./../models/volunteers.model.js";
-import { Skills } from "../models/skills.model.js";
-import { OpportunityCategory } from "../models/opportunityCategory.model.js";
 
 const MAX_LIMIT = 50;
 
