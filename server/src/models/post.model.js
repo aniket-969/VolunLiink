@@ -38,10 +38,10 @@ const postSchema = new mongoose.Schema(
         description: String,
       },
     ],
-    category: {
+    category: [{
       categoryName: String,
       description: String,
-    },
+    }],
 
     images: [
       {

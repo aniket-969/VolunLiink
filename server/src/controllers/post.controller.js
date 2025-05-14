@@ -82,10 +82,10 @@ const cleanedEndDate = req.body.endDate === "undefined" ? undefined : new Date(r
         ? [{ skillName: skills.skillName, description: skills.description }]
         : undefined,
       category: category
-        ? {
+        ? [{
             categoryName: category.categoryName,
             description: category.description,
-          }
+          }]
         : undefined,
       createdBy,
     });
