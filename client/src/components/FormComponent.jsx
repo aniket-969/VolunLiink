@@ -1,105 +1,90 @@
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import {
+  FaEnvelope,
+  FaPhoneAlt,
+  FaCommentDots,FaWrench
+} from "react-icons/fa";
+import { MdKeyboardAlt } from "react-icons/md";
 import { formSchema } from "../schema/FormSchema";
 import CustomInput from "./UI/CustomInput";
 import CustomInputWithIcon from "./UI/CustomInputWithIcon";
-import { opportunityCategories, skills } from "./../utils/formConfig";
-import { useForm } from "react-hook-form";
-import { useState, useEffect } from "react";
-import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
-import { FaEnvelope, FaWrench } from "react-icons/fa6";
-import { FaPhoneAlt } from "react-icons/fa";
-import { MdKeyboardAlt } from "react-icons/md";
-import { FaCommentDots } from "react-icons/fa";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { opportunityCategories, skills } from "../utils/formConfig";
 import { submitForm } from "../utils/fetchVolunteerData";
 import { useUserContext } from "../context/AuthProvider";
 
 const FormComponent = ({ formType }) => {
   const { location } = useUserContext();
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fileName, setFileName] = useState("No file chosen");
+  const [preview, setPreview] = useState(null);
 
   const {
     register,
     handleSubmit,
     setValue,
-    getValues,
     formState: { errors },
   } = useForm({ resolver: zodResolver(formSchema) });
-console.log(errors)
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedFileName, setSelectedFileName] = useState("No file chosen");
-  const [imagePreview, setImagePreview] = useState(null);
-  const [file, setFile] = useState(null);
-  const navigate = useNavigate();
+
   const onSubmit = async (data) => {
-   try {
-     setIsSubmitting(true);
-     const formData = new FormData();
- 
-     // Handle skill submission
- console.log(data)
-     if (data.skillName && data.skillDescription) {
-       const skills = {
-         skillName: data.skillName,
-         description: data.skillDescription,
-       };
-       formData.append("skills", JSON.stringify(skills));
-       formData.append("role", "Volunteer");
-     }
- 
-     // Handle category submission
-     if (data.categoryName && data.categoryDescription) {
-       const category = {
-         categoryName: data.categoryName,
-         description: data.categoryDescription,
-       };
-       formData.append("category", JSON.stringify(category));
-       formData.append("role", "Organization");
-     }
-     const { latitude, longitude, country, state, road, county, village } =
-       location;
- 
-     formData.append("latitude", latitude);
-     formData.append("longitude", longitude);
-     formData.append("country", country);
-     formData.append("state", state);
-     formData.append("road", road);
-     formData.append("county", county);
-     formData.append("village", village);
- 
-     Object.entries(data).forEach(([key, value]) => {
-       if (
-         key !== "skillName" &&
-         key !== "skillDescription" &&
-         key !== "categoryName" &&
-         key !== "categoryDescription"
-       ) {
-         formData.append(key, value);
-       }
-     });
-     // return;
-     const response = await submitForm(formData);
-     console.log(response);
-     if (response.success) {
-       toast.success(response.message || "Post added successfully");
-       navigate("/");
-     } 
-     setIsSubmitting(false);
-   } catch (error) {
-    console.log(error)
-    setIsSubmitting(false);
-   }
+    try {
+      setIsSubmitting(true);
+      const formData = new FormData();
+      // Append role-based fields
+      formData.append("role", formType === "volunteer" ? "Volunteer" : "Organization");
+
+      // Append skills or category
+      if (formType === "volunteer" && data.skillName) {
+        formData.append("skills", JSON.stringify({
+          skillName: data.skillName,
+          description: data.skillDescription,
+        }));
+      }
+      if (formType === "organization" && data.categoryName) {
+        formData.append("category", JSON.stringify({
+          categoryName: data.categoryName,
+          description: data.categoryDescription,
+        }));
+      }
+
+      // Append location
+      Object.entries(location).forEach(([key, val]) => {
+        formData.append(key, val);
+      });
+
+      // Append other fields
+      Object.entries(data).forEach(([key, val]) => {
+        if (!["skillName", "skillDescription", "categoryName", "categoryDescription"].includes(key)) {
+          formData.append(key, val);
+        }
+      });
+
+      const res = await submitForm(formData);
+      if (res.success) {
+        toast.success(res.message || "Post created!");
+        navigate("/");
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("Submission failed.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const commonFields = (
-    <>
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <CustomInputWithIcon
         register={register("title")}
         placeholder="Title"
         icon={FaCommentDots}
       />
-      {errors.title && (
-        <p className="text-red-500 text-sm">{errors.title.message}</p>
-      )}
+      {errors.title && <p className="col-span-full text-red-500">{errors.title.message}</p>}
+
       <CustomInputWithIcon
         register={register("description")}
         placeholder="Description"
@@ -107,172 +92,146 @@ console.log(errors)
         isTextarea
       />
       {errors.description && (
-        <p className="text-red-500 text-sm">{errors.description.message}</p>
+        <p className="col-span-full text-red-500">{errors.description.message}</p>
       )}
+
       <CustomInputWithIcon
         register={register("contactEmail")}
         placeholder="Email"
         icon={FaEnvelope}
       />
-      {errors.contactEmail && (
-        <p className="text-red-500 text-sm">{errors.contactEmail.message}</p>
-      )}
+      {errors.contactEmail && <p className="text-red-500">{errors.contactEmail.message}</p>}
+
       <CustomInputWithIcon
         register={register("contactPhone")}
         placeholder="Phone"
         icon={FaPhoneAlt}
       />
-      {errors.contactPhone && (
-        <p className="text-red-500 text-sm">{errors.contactPhone.message}</p>
-      )}
-      <div className=" flex items-center justify-start gap-2">
-        <label>Available from:</label>
-        <CustomInput
-          type="date"
-          className="bglight p-2"
-          register={register("startDate")}
-        />
-      </div>
-      {errors.startDate && (
-        <p className="text-red-500 text-sm">{errors.startDate.message}</p>
-      )}
+      {errors.contactPhone && <p className="text-red-500">{errors.contactPhone.message}</p>}
 
-      <div className=" flex items-center justify-start gap-6">
-        <label>Available till:</label>
-        <CustomInput
-          type="date"
-          className="bglight p-2"
-          register={register("endDate")}
-        />
+      <div className="col-span-full grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium mb-1">Available From</label>
+          <input
+            type="date"
+            {...register("startDate")}
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+          {errors.startDate && <p className="text-red-500 text-sm">{errors.startDate.message}</p>}
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Available Till</label>
+          <input
+            type="date"
+            {...register("endDate")}
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+          {errors.endDate && <p className="text-red-500 text-sm">{errors.endDate.message}</p>}
+        </div>
       </div>
-      {errors.endDate && (
-        <p className="text-red-500 text-sm">{errors.endDate.message}</p>
-      )}
-      <div>
-        <input
-          type="file"
-          id="file"
-          style={{ display: "none" }}
-          {...register("avatar", {
-            onChange: (e) => {
-              const selectedFile = e.target.files?.[0];
-              if (selectedFile) {
-                setValue("avatar", selectedFile);
-                setSelectedFileName(selectedFile.name);
-                setImagePreview(URL.createObjectURL(selectedFile));
-              }
-            },
-          })}
-        />
 
-        <div className="flex gap-4">
+      <div className="col-span-full">
+        <label className="block text-sm font-medium mb-1">Upload Image</label>
+        <div className="flex items-center gap-4">
           <label
-            htmlFor="file"
-            className="custom-file-input"
-            style={{ cursor: "pointer", display: "inline-block" }}
+            htmlFor="avatar"
+            className="px-4 py-2 bg-gray-100 border border-gray-300 rounded cursor-pointer hover:bg-gray-200"
           >
             Choose File
-          </label>
-          <span>{selectedFileName}</span>
-        </div>
-
-        {errors.image && <p className="text-red-500">{errors.image.message}</p>}
-
-        <div className=" flex justify-center ">
-          {imagePreview && (
-            <img
-              className="  w-[20rem] max-h-[16rem] my-2 rounded-xl sm:max-h-[25rem]"
-              src={imagePreview}
-              alt="Selected file"
-              style={{ maxWidth: "100%" }}
+            <input
+              id="avatar"
+              type="file"
+              accept="image/*"
+              {...register("avatar", {
+                onChange: (e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    setFileName(file.name);
+                    setPreview(URL.createObjectURL(file));
+                    setValue("avatar", file);
+                  }
+                },
+              })}
+              className="hidden"
             />
-          )}
+          </label>
+          <span className="text-sm text-gray-600">{fileName}</span>
         </div>
+        {preview && (
+          <img
+            src={preview}
+            alt="Preview"
+            className="mt-4 w-full max-h-48 object-cover rounded-md"
+          />
+        )}
       </div>
-    </>
-  );
 
-  const volunteerFields = (
-    <>
-      {commonFields}
-      <label htmlFor="skills" className="bg-light w-[60%]">
-        Select skills:
-      </label>
-      <select
-        id="skills"
-        className="w-[100%] px-3 py-2 bglight"
-        onChange={(e) => setValue("skillName", e.target.value)}
-      >
-        {skills.map((optGroup, index) => (
-          <optgroup key={index} label={optGroup.label}>
-            {optGroup.options.map((option, index) => (
-              <option key={index} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </optgroup>
-        ))}
-      </select>
-      <CustomInputWithIcon
-        icon={FaWrench}
-        register={register("skillDescription")}
-        isTextarea
-        placeholder="Skill Description"
-      />
-      {errors.skillDescription && (
-        <p className="text-red-500 text-sm">
-          {errors.skillDescription.message}
-        </p>
+      {formType === "volunteer" && (
+        <>
+          <div className="col-span-full">
+            <label className="block text-sm font-medium mb-1">Select Skill</label>
+            <select
+              {...register("skillName")}
+              className="w-full p-2 border border-gray-300 rounded"
+            >
+              {skills.map((group, i) => (
+                <optgroup key={i} label={group.label}>
+                  {group.options.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </div>
+          <div className="col-span-full">
+            <CustomInputWithIcon
+              register={register("skillDescription")}
+              placeholder="Skill Description"
+              icon={FaWrench}
+              isTextarea
+            />
+            {errors.skillDescription && <p className="text-red-500">{errors.skillDescription.message}</p>}
+          </div>
+        </>
       )}
-    </>
-  );
 
-  const organizationFields = (
-    <>
-      {commonFields}
-      <label htmlFor="skills" className="bg-light w-[60%]">
-        Opportunity category:
-      </label>
-      <select
-        className="w-[100%] px-3 py-2 bglight"
-        onChange={(e) => setValue("categoryName", e.target.value)}
-      >
-        {opportunityCategories.map((option, index) => (
-          <option key={index} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-      <CustomInputWithIcon
-        icon={FaWrench}
-        register={register("categoryDescription")}
-        isTextarea={true}
-        placeholder="Description"
-      />
-      {errors.categoryDescription && (
-        <p className="text-red-500 text-sm">
-          {errors.categoryDescription.message}
-        </p>
+      {formType === "organization" && (
+        <>
+          <div className="col-span-full">
+            <label className="block text-sm font-medium mb-1">Select Category</label>
+            <select
+              {...register("categoryName")}
+              className="w-full p-2 border border-gray-300 rounded"
+            >
+              {opportunityCategories.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="col-span-full">
+            <CustomInputWithIcon
+              register={register("categoryDescription")}
+              placeholder="Category Description"
+              icon={FaWrench}
+              isTextarea
+            />
+            {errors.categoryDescription && <p className="text-red-500">{errors.categoryDescription.message}</p>}
+          </div>
+        </>
       )}
-    </>
-  );
 
-  return (
-    <>
-      <div className="m-1 p-2 flex flex-col justify-center items-center sm:max-w-[710px] bb">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {formType === "volunteer" && volunteerFields}
-          {formType === "organization" && organizationFields}
-          <button
-            type="submit"
-            className="bg-black text-white py-1"
-            disabled={isSubmitting}
-          >
-            Add Post
-          </button>
-        </form>
-      </div>
-    </>
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="col-span-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+      >
+        {isSubmitting ? "Submitting..." : "Add Post"}
+      </button>
+    </form>
   );
 };
 

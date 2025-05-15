@@ -1,23 +1,24 @@
+// CustomInput.jsx
+import React from "react";
 
 const CustomInput = ({
   register,
-  className,
-  type = 'text',
+  className = "",
+  type = "text",
   placeholder,
   onChange,
   isTextarea = false,
-  isPassword = false,
   passwordVisibility,
   ...props
-  
 }) => {
-
+  const baseStyles =
+    "flex-grow bg-transparent text-base placeholder-gray-500 outline-none";
 
   if (isTextarea) {
     return (
       <textarea
         {...register}
-        className={`bg-[#F0F8FF] w-[100%] text-lg outline-none ${className}`}
+        className={`${baseStyles} min-h-[6rem] resize-none ${className}`}
         placeholder={placeholder}
         onChange={onChange}
         {...props}
@@ -25,28 +26,11 @@ const CustomInput = ({
     );
   }
 
-if(type == "password"){
-  
-  return (
-    <div className="relative">
-      <input
-        {...register}
-        className={`bg-[#F0F8FF] w-[100%] text-lg outline-none ${className}`} autoComplete="new-password"
-        type={ passwordVisibility ? "text" : type}
-        placeholder={placeholder}
-        onChange={onChange}
-        {...props}
-      />
-      
-    </div>
-  );
-}
-
   return (
     <input
       {...register}
-      className={`bg-[#F0F8FF] w-[100%] text-lg outline-none ${className}`}
-      type={type}
+      type={type === "password" && !passwordVisibility ? "password" : "text"}
+      className={`${baseStyles} h-10 ${className}`}
       placeholder={placeholder}
       onChange={onChange}
       {...props}
