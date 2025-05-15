@@ -13,7 +13,7 @@ import { formSchema } from "../schema/FormSchema";
 import CustomInput from "./UI/CustomInput";
 import CustomInputWithIcon from "./UI/CustomInputWithIcon";
 import { opportunityCategories, skills } from "../utils/formConfig";
-import { submitForm } from "../utils/fetchVolunteerData";
+import { submitForm } from "../api/queries/volunteerPost";
 import { useUserContext } from "../context/AuthProvider";
 
 const FormComponent = ({ formType }) => {

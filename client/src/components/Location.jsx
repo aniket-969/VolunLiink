@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-import { fetchLocationDetails } from '../utils/fetchLocation';
+import { fetchLocationDetails } from '../api/queries/user';
 import { useUserContext } from '../context/AuthProvider';
 
 const Location = () => {

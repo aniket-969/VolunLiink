@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { FaCameraRetro } from "react-icons/fa";
 import { AiOutlineLoading } from "react-icons/ai";
-import { updateUserAvatar } from "../utils/fetchVolunteerData";
+import { updateUserAvatar} from "../api/queries/user"
 import toast from "react-hot-toast";
 import { validateImage } from "../utils/imageValidation";
 

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {
-  getUserPosts,
-  handlePostDelete,
   updateUserProfile,
-} from "../../utils/fetchVolunteerData";
+} from "../../api/queries/user";
+import { deleteUserPost,getUserPosts } from "../../api/queries/volunteerPost";
 import toast from "react-hot-toast";
 import { useUserContext } from "../../context/AuthProvider";
 import Card from "../../components/UI/Card";
@@ -58,7 +57,7 @@ const Profile = () => {
 
   const confirmDeletePost = async () => {
     if (postIdToDelete) {
-      const data = await handlePostDelete(postIdToDelete);
+      const data = await deleteUserPost(postIdToDelete);
       console.log(data.message);
       toast.success(data.message);
       fetchData();

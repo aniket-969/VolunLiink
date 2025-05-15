@@ -2,7 +2,7 @@ import "leaflet/dist/leaflet.css"
 import { MapContainer, Marker, TileLayer, Popup } from "react-leaflet"
 import { useUserContext } from "../context/AuthProvider"
 import { useEffect, useState } from "react"
-import { getMapData } from "../utils/fetchVolunteerData"
+import { getMapData } from "../api/queries/volunteerPost"
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { Icon } from "leaflet"
 import { Link } from "react-router-dom"

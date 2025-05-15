@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { changePasswordSchema } from '../schema/UserSchema';
-import { updateUserPassword } from '../utils/fetchVolunteerData';
+import { updateUserPassword} from "../api/queries/user"
 
 const ChangePasswordModal = ({ isOpen, onClose }) => {
   const { register, handleSubmit, formState: { errors } } = useForm({ resolver: zodResolver(changePasswordSchema) });

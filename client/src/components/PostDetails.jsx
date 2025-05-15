@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { getPosts } from '../utils/fetchVolunteerData';
+import { getPosts} from "../api/queries/volunteerPost"
 import Card from './UI/Card';
 
 const PostDetails = () => {

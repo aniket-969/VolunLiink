@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getPosts } from '../../utils/fetchVolunteerData';
+import { getPosts } from "../../api/queries/volunteerPost"
 import Location from '../../components/Location';
 import Card from '../../components/UI/Card';
 import Navbar from '../../components/Navbar';

@@ -1,5 +1,5 @@
 import { useContext, createContext, useEffect, useState } from "react";
-import { refreshTokens } from "../utils/fetchUserDetails";
+import { refreshTokens } from "../api/queries/user";
 import { jwtDecode } from "jwt-decode";
 
 const initialState = {
