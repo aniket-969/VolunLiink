@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 
 const Card = ({ post, handleDelete }) => {
-  console.log(post);
   const {
     _id,
     createdBy,
@@ -20,75 +19,87 @@ const Card = ({ post, handleDelete }) => {
     category,
     location,
   } = post;
-  return (
-    <div className="pop1 flex flex-col gap-4 mx-5 my-2 px-5 py-4 rounded-2xl">
-      <div className="flex items-center gap-5 justify-between">
-        {/* Post name and username */}
-        <div className="flex flex-col">
-          <div className="flex items-center text-sm md:text-lg max-w-[12rem]">
-            <p>{createdBy?.fullName.split(" ")[0]}</p>
-            <span className="mx-2 h-4 w-[2.5px] bg-dark"></span>
-            <p className="truncate">@{createdBy?.username}</p>
-          </div>
-          <p className="text-xs">{formatUpdatedAt(updatedAt)}</p>
-        </div>
 
-        {/* Post availability and delete button */}
-        <div className="text-xs flex flex-col gap-1 items-center">
+  return (
+    <div className="pop1 bg-white shadow-md hover:shadow-lg transition-shadow duration-200 flex flex-col md:flex-row gap-6 p-6 rounded-2xl mx-5 my-4">
+      {/* Image Section */}
+      <Link to={`/posts/${_id}`} className="flex-shrink-0 md:w-1/3">
+        <img
+          src={images?.[0] || "fallback-image-url.jpg"}
+          alt={title || "Post image"}
+          className="w-full h-48 md:h-full object-cover rounded-lg"
+        />
+      </Link>
+
+      {/* Content Section */}
+      <div className="flex-grow flex flex-col justify-between">
+        {/* Header */}
+        <div className="flex justify-between items-start">
+          <div>
+            <h2 className="text-lg md:text-xl font-semibold truncate">
+              {title}
+            </h2>
+            <div className="flex items-center text-sm text-gray-600 mt-1">
+              <span>{createdBy?.fullName.split(" ")[0]}</span>
+              <span className="mx-2 h-4 w-px bg-dark"></span>
+              <span className="truncate">@{createdBy?.username}</span>
+              <span className="mx-2">·</span>
+              <time>{formatUpdatedAt(updatedAt)}</time>
+            </div>
+          </div>
+
           {handleDelete && (
-            <button
-              onClick={() => handleDelete(_id)}
-              className="text-red-500 text-xl"
-            >
+            <button onClick={() => handleDelete(_id)} className="text-red-500 text-2xl">
               <MdOutlineDeleteOutline />
             </button>
           )}
-          {`${formatDate(startDate)} - ${formatDate(endDate)}`}
         </div>
-      </div>
 
-      <Link to={`/posts/${_id}`}>
-        {/* Post image */}
-        <img
-          src={images?.[0] || "fallback-image-url.jpg"}
-          className="w-full max-h-[16rem] my-2 rounded-xl sm:max-h-[25rem]"
-          alt={title || "Post image"}
-        />
+        {/* Description */}
+        <p className="mt-4 line-clamp-3 text-sm text-gray-700">
+          {description}
+        </p>
 
-        {/* Post description */}
-        <div className="mt-6">
+        {/* Skills & Category Badges */}
+        <div className="mt-4 flex flex-wrap gap-2">
+          {skills?.length > 0 &&
+            skills.map((s) => (
+              <span
+                key={s._id}
+                className="px-2 py-1 text-xs font-medium bg-blue-100 rounded-full"
+              >
+                {s.skillName}
+              </span>
+            ))}
+          {category?.length > 0 &&
+            category.map((c) => (
+              <span
+                key={c._id}
+                className="px-2 py-1 text-xs font-medium bg-green-100 rounded-full"
+              >
+                {c.categoryName}
+              </span>
+            ))}
+        </div>
+
+        {/* Footer */}
+        <div className="mt-6 flex flex-col md:flex-row md:justify-between md:items-center text-sm text-gray-600">
           <div>
-            <p className="text-base md:text-lg">{title}</p>
-            <p className="line-clamp-2 text-sm md:text-base">{description}</p>
-          </div>
-          <div className="text-sm md:text-base">
             <p>Email: {contactEmail}</p>
             <p>Phone: {contactPhone}</p>
           </div>
+          <div className="mt-2 md:mt-0">
+            <time>
+              {formatDate(startDate)} – {formatDate(endDate)}
+            </time>
+          </div>
         </div>
 
-        {/* Skills */}
-        {skills?.length > 0 && (
-          <p className="text-sm md:text-base">
-            <strong>Skills:</strong> {skills.map((s) => s.skillName).join(", ")}
-          </p>
-        )}
-
-        {/* Category */}
-        {category?.length > 0 && (
-          <p className="text-sm md:text-base">
-            <strong>Category:</strong>{" "}
-            {category.map((c) => c.categoryName).join(", ")}
-          </p>
-        )}
-        {/* Post location */}
-        <div className="flex justify-center items-center mt-3">
-          <p className="text-xs flex items-center justify-center w-[19rem]">
-            Posted from: {location?.road}, {location?.village},{" "}
-            {location?.county}, {location?.state}, {location?.country}
-          </p>
+        {/* Location */}
+        <div className="mt-4 text-xs text-gray-500">
+          Posted from: {location?.road}, {location?.village}, {location?.county}, {location?.state}, {location?.country}
         </div>
-      </Link>
+      </div>
     </div>
   );
 };
