@@ -20,6 +20,15 @@ const Card = ({ post, handleDelete }) => {
     location,
   } = post;
 
+  // Flexible date display
+  const start = startDate ? formatDate(startDate) : null;
+  const end = endDate ? formatDate(endDate) : null;
+  let dateDisplay;
+  if (start && end) dateDisplay = `${start} – ${end}`;
+  else if (start) dateDisplay = `From ${start}`;
+  else if (end) dateDisplay = `Until ${end}`;
+  else dateDisplay = "N/A";
+
   return (
     <div className="pop1 bg-white shadow-md hover:shadow-lg transition-shadow duration-200 flex flex-col md:flex-row gap-6 p-6 rounded-2xl mx-5 my-4">
       {/* Image Section */}
@@ -33,7 +42,7 @@ const Card = ({ post, handleDelete }) => {
 
       {/* Content Section */}
       <div className="flex-grow flex flex-col justify-between">
-        {/* Header */}
+        {/* Header: Title, meta, date, delete */}
         <div className="flex justify-between items-start">
           <div>
             <h2 className="text-lg md:text-xl font-semibold truncate">
@@ -48,11 +57,14 @@ const Card = ({ post, handleDelete }) => {
             </div>
           </div>
 
-          {handleDelete && (
-            <button onClick={() => handleDelete(_id)} className="text-red-500 text-2xl">
-              <MdOutlineDeleteOutline />
-            </button>
-          )}
+          <div className="flex flex-col items-end text-sm text-gray-600">
+            <time className="mb-2">{dateDisplay}</time>
+            {handleDelete && (
+              <button onClick={() => handleDelete(_id)} className="text-red-500 text-2xl">
+                <MdOutlineDeleteOutline />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Description */}
@@ -82,20 +94,14 @@ const Card = ({ post, handleDelete }) => {
             ))}
         </div>
 
-        {/* Footer */}
+        {/* Footer: Contact and location */}
         <div className="mt-6 flex flex-col md:flex-row md:justify-between md:items-center text-sm text-gray-600">
           <div>
             <p>Email: {contactEmail}</p>
             <p>Phone: {contactPhone}</p>
           </div>
-          <div className="mt-2 md:mt-0">
-            <time>
-              {formatDate(startDate)} – {formatDate(endDate)}
-            </time>
-          </div>
         </div>
 
-        {/* Location */}
         <div className="mt-4 text-xs text-gray-500">
           Posted from: {location?.road}, {location?.village}, {location?.county}, {location?.state}, {location?.country}
         </div>
