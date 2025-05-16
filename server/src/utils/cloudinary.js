@@ -3,7 +3,7 @@ import * as fsPromises from "fs/promises";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY, 
+  api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
@@ -16,13 +16,13 @@ const uploadOnCloudinary = async (localFilePath) => {
     });
 
     console.log("File uploaded", response.url);
-    await fsPromises.unlink(localFilePath); // Use fsPromises.unlink for asynchronous unlink
+    await fsPromises.unlink(localFilePath);
     return response;
   } catch (error) {
     console.error("Error during upload or unlink:", error);
-    await fsPromises.unlink(localFilePath); // Ensure the local file is deleted in case of an error
+    await fsPromises.unlink(localFilePath);
     return null;
   }
-};  
+};
 
 export { uploadOnCloudinary };

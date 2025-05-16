@@ -22,10 +22,10 @@ export const upload = multer({
         if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
           cb(null, true);  
         } else {
-          cb(new Error("Invalid file type. Only JPEG and PNG are allowed."), false);  // Reject the file
+          cb(new Error("Invalid file type. Only JPEG and PNG are allowed."), false);  
         }
       } else {
-        cb(new Error("Invalid field. Expected 'avatar' field."), false);  // Reject if field name doesn't match
+        cb(new Error("Invalid field. Expected 'avatar' field."), false);  
       }
     }
 })
