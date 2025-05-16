@@ -1,9 +1,11 @@
 import axios from "axios";
 
+const basePath = "http://localhost:9000/api/v1/users";
+
 const fetchUserDetails = async (userId) => {
   try {
     const userData = await axios.get(
-      `http://localhost:9000/api/v1/users/user?userId=${userId}`
+      `http://localhost:9000/api/v1/users/me?userId=${userId}`
     );
 
     console.log(userData);
@@ -11,28 +13,6 @@ const fetchUserDetails = async (userId) => {
   } catch (error) {
     console.log(error);
       return error.response.status
-  }
-};
-
-const refreshTokens = async () => {
-  try {
-      const response = await axios.post("http://localhost:9000/api/v1/users/refreshTokens", {}, {
-          withCredentials: true
-      });
-
-      console.log(response);
-      if (response.data.success) {
-          return response.data.data; 
-      }
-      
-      if (response.data.statusCode === 401) {
-          throw new Error("Unauthorized"); 
-      }
-      
-      return null; 
-  } catch (error) {
-      console.error(error.response?.data);
-      throw error.response;
   }
 };
 
@@ -59,6 +39,7 @@ async function fetchLocationDetails(latitude, longitude, apiKey) {
     return { error: "Error fetching address" };
   }
 }
+
 const updateUserProfile = async (data) => {
   try {
     const response = await axios.patch(
@@ -114,4 +95,4 @@ const updateUserPassword = async (data) => {
   }
 };
 
-export {fetchLocationDetails,fetchUserDetails,refreshTokens,updateUserAvatar,updateUserProfile,updateUserPassword}
+export {fetchLocationDetails,fetchUserDetails,updateUserAvatar,updateUserProfile,updateUserPassword}
