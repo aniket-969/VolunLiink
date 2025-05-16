@@ -5,7 +5,7 @@ const submitForm = async (data) => {
   console.log(data);
   try {
     const response = await axios.post(
-      "http://localhost:9000/api/v1/volunteers/volunteer-form",
+      "http://localhost:9000/api/v1/volunteers/posts",
       data,
       {
         withCredentials: true,
@@ -17,7 +17,6 @@ const submitForm = async (data) => {
     throw error.response;
   }
 };
-
 
 const getPosts = async (page = 1, limit = 5, filter = {}) => {
   try {
@@ -45,12 +44,12 @@ const getMapData = async (latitude, longitude) => {
   try {
     const params = new URLSearchParams({ latitude, longitude });
     const response = await axios.get(
-      `http://localhost:9000/api/v1/volunteers/map-location?${params.toString()}`
+      `http://localhost:9000/api/v1/volunteers/posts/map?${params.toString()}`
     );
     // console.log(response);
     if (response.data.success) {
       return response.data.data || [];
-    } 
+    }
     return [];
   } catch (error) {
     console.error("Error fetching map data", error);
@@ -61,7 +60,7 @@ const getMapData = async (latitude, longitude) => {
 const getUserPosts = async () => {
   try {
     const response = await axios.get(
-      `http://localhost:9000/api/v1/volunteers/userPost`,
+      `http://localhost:9000/api/v1/volunteers/posts/user`,
       { withCredentials: true }
     );
 
@@ -80,7 +79,7 @@ const deleteUserPost = async (postId) => {
     console.log(postId);
 
     const data = await axios.delete(
-      `http://localhost:9000/api/v1/volunteers/${postId}`,
+      `http://localhost:9000/api/v1/volunteers/posts/${postId}`,
       {
         withCredentials: true,
       }
@@ -92,4 +91,4 @@ const deleteUserPost = async (postId) => {
   }
 };
 
-export {deleteUserPost,getMapData,getPosts,getUserPosts,submitForm}
+export { deleteUserPost, getMapData, getPosts, getUserPosts, submitForm };
