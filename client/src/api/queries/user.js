@@ -1,36 +1,36 @@
+// api/queries/user.js
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const basePath = "http://localhost:9000/api/v1/users";
 
-const fetchUserDetails = async (userId) => {
-  try {
-    const userData = await axios.get(
-      `http://localhost:9000/api/v1/users/me?userId=${userId}`
-    );
 
-    console.log(userData);
-    return userData.data;
+export const fetchUserDetails = async () => {
+  try {
+    const response = await axios.get(
+      `${basePath}/me`,
+      { withCredentials: true }
+    );
+    return response.data;
   } catch (error) {
-    console.log(error);
-      return error.response.status
+    console.error(error.response?.data);
+    throw error.response;
   }
 };
 
-async function fetchLocationDetails(latitude, longitude, apiKey) {
+
+export async function fetchLocationDetails(latitude, longitude, apiKey) {
   try {
-    const response = await fetch(
+    const res = await fetch(
       `https://api.opencagedata.com/geocode/v1/json?key=${apiKey}&q=${latitude}+${longitude}&pretty=1`
-    ); 
-
-    const data = await response.json();
-
+    );
+    const data = await res.json();
     if (data.results.length > 0) {
-      const locationDetails = {
+      return {
         formattedAddress: data.results[0].formatted,
         components: data.results[0].components,
         geometry: data.results[0].geometry,
       };
-      return locationDetails;
     } else {
       return { error: "Address not found" };
     }
@@ -40,59 +40,50 @@ async function fetchLocationDetails(latitude, longitude, apiKey) {
   }
 }
 
-const updateUserProfile = async (data) => {
+
+export const updateUserProfile = async (data) => {
   try {
     const response = await axios.patch(
-      "http://localhost:9000/api/v1/users/update-account",
+      `${basePath}/profile`,
       data,
       { withCredentials: true }
     );
-    console.log(response);
-    if (response.data.success) {
-      return response.data.data;
-    }
-    return [];
+    return response.data.success ? response.data.data : [];
   } catch (error) {
-    console.error(error.response.data);
+    console.error(error.response?.data);
     throw error.response;
   }
 };
 
-const updateUserAvatar = async (data) => {
+
+export const updateUserAvatar = async (data) => {
   try {
     const response = await axios.patch(
-      "http://localhost:9000/api/v1/users/avatar",
+      `${basePath}/avatar`,
       data,
       { withCredentials: true }
     );
-    console.log(response);
-    if (response.data.success) {
-      return response.data.data;
-    }
-    return [];
+    return response.data.success ? response.data.data : [];
   } catch (error) {
-    console.error(error.response.data);
+    console.error(error.response?.data);
     throw error.response;
   }
 };
 
-const updateUserPassword = async (data) => {
+
+export const updateUserPassword = async (data) => {
   try {
-    const response = await axios.post(
-      "http://localhost:9000/api/v1/users/change-password",
+    const response = await axios.patch(
+      `${basePath}/password`,
       data,
       { withCredentials: true }
     );
-    console.log(response);
     if (response.data.success) {
       toast.success(response.data.message);
-    } 
-    return;
+    }
   } catch (error) {
-    console.error(error.response.data);
-    toast.error(error.response.data.message || "Error updating password");
+    console.error(error.response?.data);
+    toast.error(error.response?.data?.message || "Error updating password");
     throw error.response;
   }
 };
-
-export {fetchLocationDetails,fetchUserDetails,updateUserAvatar,updateUserProfile,updateUserPassword}
