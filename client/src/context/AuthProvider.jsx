@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
       ...prevUser,
       ...updatedUserData,
     }));
-  };
+  }; 
 
   const refreshAccessToken = async () => {
     const response = await refreshTokens();

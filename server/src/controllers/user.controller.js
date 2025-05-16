@@ -5,7 +5,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 
-const generateAccessAndRefreshTokens = async (userId) => { 
+const generateAccessAndRefreshTokens = async (userId) => {
   try {
     const user = await User.findById(userId);
     const accessToken = user.generateAccessToken();
@@ -159,8 +159,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 const refreshTokens = asyncHandler(async (req, res) => {
-  const incomingRefreshToken =
-    req.cookies.refreshToken 
+  const incomingRefreshToken = req.cookies.refreshToken;
 
   if (!incomingRefreshToken) {
     throw new ApiError(401, "unauthorized request");
