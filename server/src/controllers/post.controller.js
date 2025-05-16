@@ -225,12 +225,13 @@ const getPostData = asyncHandler(async (req, res) => {
 });
 
 const deleteVolunteerData = asyncHandler(async (req, res) => {
-  const deletedPost = await Post.findByIdAndDelete(req.params.id);
+  const deletedPost = await Post.findByIdAndDelete(req.params.postId);
   if (!deletedPost) {
     throw new ApiError(404, "Post not found");
   }
-  res.json({ message: "Post deleted successfully" });
+  return res.json(new ApiResponse(200, {}, "Post deleted successfully"));
 });
+
 
 const getNearestCoordinates = asyncHandler(async (req, res) => {
   console.log(req.query);
