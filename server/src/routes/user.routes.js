@@ -13,34 +13,28 @@ import { upload } from "./../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validator.middleware.js";
 import { loginSchema, userSchema } from "../../schema/UserSchema.js";
-
 const router = Router();
 
-router.route("/register").post(
-  upload.fields([
-    {
-      name: "avatar",
-      maxCount: 1,
-    },
-  ]),
+router.post(
+  "/",
+  upload.fields([{ name: "avatar", maxCount: 1 }]),
   validate(userSchema),
   registerUser
 );
 
-router.route("/login").post(validate(loginSchema), loginUser);
+router.post("/login", validate(loginSchema), loginUser);
 
-router.route("/logout").post(verifyJWT, logoutUser);
+router.post("/logout", verifyJWT, logoutUser);
 
-router.route("/refreshTokens").post(refreshTokens);
+router.post("/refresh", refreshTokens);
 
-router.route("/change-password").post(verifyJWT, changePassword);
+router.patch("/password", verifyJWT, changePassword);
 
-router.route("/update-account").patch(verifyJWT, updateAccountDetails);
- 
-router
-  .route("/avatar")
-  .patch(verifyJWT, upload.single("avatar"), updateUserAvatar);
+router.patch("/profile", verifyJWT, updateAccountDetails);
 
-router.route("/user").get(verifyJWT, getUserDetails);
+router.patch("/avatar", verifyJWT, upload.single("avatar"), updateUserAvatar);
+
+router.get("/me", verifyJWT, getUserDetails);
+
 
 export default router;
