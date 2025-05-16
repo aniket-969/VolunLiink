@@ -6,10 +6,11 @@ import { useNavigate } from "react-router-dom";
 import {
   FaEnvelope,
   FaPhoneAlt,
-  FaCommentDots,FaWrench
+  FaCommentDots,
+  FaWrench,
 } from "react-icons/fa";
 import { MdKeyboardAlt } from "react-icons/md";
-import { formSchema } from "../schema/FormSchema";
+import { organizationSchema, volunteerSchema } from "../schema/FormSchema";
 import CustomInput from "./UI/CustomInput";
 import CustomInputWithIcon from "./UI/CustomInputWithIcon";
 import { opportunityCategories, skills } from "../utils/formConfig";
@@ -22,33 +23,45 @@ const FormComponent = ({ formType }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fileName, setFileName] = useState("No file chosen");
   const [preview, setPreview] = useState(null);
+ const schema =
+    formType === "volunteer" ? volunteerSchema : organizationSchema;
 
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm({ resolver: zodResolver(formSchema) });
-
+  } = useForm({ resolver: zodResolver(schema) });
+  console.log(errors);
   const onSubmit = async (data) => {
+    console.log(data)
     try {
       setIsSubmitting(true);
       const formData = new FormData();
       // Append role-based fields
-      formData.append("role", formType === "volunteer" ? "Volunteer" : "Organization");
+      formData.append(
+        "role",
+        formType === "volunteer" ? "Volunteer" : "Organization"
+      );
 
       // Append skills or category
       if (formType === "volunteer" && data.skillName) {
-        formData.append("skills", JSON.stringify({
-          skillName: data.skillName,
-          description: data.skillDescription,
-        }));
+        formData.append(
+          "skills",
+          JSON.stringify({
+            skillName: data.skillName,
+            description: data.skillDescription,
+          })
+        );
       }
       if (formType === "organization" && data.categoryName) {
-        formData.append("category", JSON.stringify({
-          categoryName: data.categoryName,
-          description: data.categoryDescription,
-        }));
+        formData.append(
+          "category",
+          JSON.stringify({
+            categoryName: data.categoryName,
+            description: data.categoryDescription,
+          })
+        );
       }
 
       // Append location
@@ -58,7 +71,14 @@ const FormComponent = ({ formType }) => {
 
       // Append other fields
       Object.entries(data).forEach(([key, val]) => {
-        if (!["skillName", "skillDescription", "categoryName", "categoryDescription"].includes(key)) {
+        if (
+          ![
+            "skillName",
+            "skillDescription",
+            "categoryName",
+            "categoryDescription",
+          ].includes(key)
+        ) {
           formData.append(key, val);
         }
       });
@@ -77,13 +97,18 @@ const FormComponent = ({ formType }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="grid grid-cols-1 md:grid-cols-2 gap-6"
+    >
       <CustomInputWithIcon
         register={register("title")}
         placeholder="Title"
         icon={FaCommentDots}
       />
-      {errors.title && <p className="col-span-full text-red-500">{errors.title.message}</p>}
+      {errors.title && (
+        <p className="col-span-full text-red-500">{errors.title.message}</p>
+      )}
 
       <CustomInputWithIcon
         register={register("description")}
@@ -92,7 +117,9 @@ const FormComponent = ({ formType }) => {
         isTextarea
       />
       {errors.description && (
-        <p className="col-span-full text-red-500">{errors.description.message}</p>
+        <p className="col-span-full text-red-500">
+          {errors.description.message}
+        </p>
       )}
 
       <CustomInputWithIcon
@@ -100,33 +127,45 @@ const FormComponent = ({ formType }) => {
         placeholder="Email"
         icon={FaEnvelope}
       />
-      {errors.contactEmail && <p className="text-red-500">{errors.contactEmail.message}</p>}
+      {errors.contactEmail && (
+        <p className="text-red-500">{errors.contactEmail.message}</p>
+      )}
 
       <CustomInputWithIcon
         register={register("contactPhone")}
         placeholder="Phone"
         icon={FaPhoneAlt}
       />
-      {errors.contactPhone && <p className="text-red-500">{errors.contactPhone.message}</p>}
+      {errors.contactPhone && (
+        <p className="text-red-500">{errors.contactPhone.message}</p>
+      )}
 
       <div className="col-span-full grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Available From</label>
+          <label className="block text-sm font-medium mb-1">
+            Available From
+          </label>
           <input
             type="date"
             {...register("startDate")}
             className="w-full p-2 border border-gray-300 rounded"
           />
-          {errors.startDate && <p className="text-red-500 text-sm">{errors.startDate.message}</p>}
+          {errors.startDate && (
+            <p className="text-red-500 text-sm">{errors.startDate.message}</p>
+          )}
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Available Till</label>
+          <label className="block text-sm font-medium mb-1">
+            Available Till
+          </label>
           <input
             type="date"
             {...register("endDate")}
             className="w-full p-2 border border-gray-300 rounded"
           />
-          {errors.endDate && <p className="text-red-500 text-sm">{errors.endDate.message}</p>}
+          {errors.endDate && (
+            <p className="text-red-500 text-sm">{errors.endDate.message}</p>
+          )}
         </div>
       </div>
 
@@ -169,7 +208,9 @@ const FormComponent = ({ formType }) => {
       {formType === "volunteer" && (
         <>
           <div className="col-span-full">
-            <label className="block text-sm font-medium mb-1">Select Skill</label>
+            <label className="block text-sm font-medium mb-1">
+              Select Skill
+            </label>
             <select
               {...register("skillName")}
               className="w-full p-2 border border-gray-300 rounded"
@@ -192,7 +233,9 @@ const FormComponent = ({ formType }) => {
               icon={FaWrench}
               isTextarea
             />
-            {errors.skillDescription && <p className="text-red-500">{errors.skillDescription.message}</p>}
+            {errors.skillDescription && (
+              <p className="text-red-500">{errors.skillDescription.message}</p>
+            )}
           </div>
         </>
       )}
@@ -200,7 +243,9 @@ const FormComponent = ({ formType }) => {
       {formType === "organization" && (
         <>
           <div className="col-span-full">
-            <label className="block text-sm font-medium mb-1">Select Category</label>
+            <label className="block text-sm font-medium mb-1">
+              Select Category
+            </label>
             <select
               {...register("categoryName")}
               className="w-full p-2 border border-gray-300 rounded"
@@ -219,7 +264,11 @@ const FormComponent = ({ formType }) => {
               icon={FaWrench}
               isTextarea
             />
-            {errors.categoryDescription && <p className="text-red-500">{errors.categoryDescription.message}</p>}
+            {errors.categoryDescription && (
+              <p className="text-red-500">
+                {errors.categoryDescription.message}
+              </p>
+            )}
           </div>
         </>
       )}
