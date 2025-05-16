@@ -31,13 +31,6 @@ const volunteerForm = asyncHandler(async (req, res) => {
 
     const createdBy = req.user?._id;
     console.log("user id", createdBy);
-    if (
-      [title, description, contactEmail, startDate, endDate, role].some(
-        (field) => field?.trim() === ""
-      )
-    ) {
-      throw new ApiError(400, "All fields are required");
-    }
 
     console.log(req.files);
     const volunteerLocalPaths = req.files?.avatar?.map((file) => file.path);
@@ -57,8 +50,13 @@ const volunteerForm = asyncHandler(async (req, res) => {
 
     const imageUrls = avatar.map((image) => image.url);
     console.log("URL", imageUrls);
-const cleanedStartDate = req.body.startDate === "undefined" ? undefined : new Date(req.body.startDate);
-const cleanedEndDate = req.body.endDate === "undefined" ? undefined : new Date(req.body.endDate);
+    const cleanedStartDate = req.body.startDate
+      ? new Date(req.body.startDate)
+      : undefined;
+
+    const cleanedEndDate = req.body.endDate
+      ? new Date(req.body.endDate)
+      : undefined;
 
     const VolunteerData = await Post.create({
       title,
@@ -74,18 +72,20 @@ const cleanedEndDate = req.body.endDate === "undefined" ? undefined : new Date(r
       },
       contactEmail,
       contactPhone,
-       startDate: cleanedStartDate,
-  endDate: cleanedEndDate,
+      startDate: cleanedStartDate,
+      endDate: cleanedEndDate,
       images: imageUrls,
       role,
       skills: skills
         ? [{ skillName: skills.skillName, description: skills.description }]
         : undefined,
       category: category
-        ? [{
-            categoryName: category.categoryName,
-            description: category.description,
-          }]
+        ? [
+            {
+              categoryName: category.categoryName,
+              description: category.description,
+            },
+          ]
         : undefined,
       createdBy,
     });
@@ -191,7 +191,7 @@ const getUserVolunteerData = asyncHandler(async (req, res) => {
   }
 
   const userId = req.user?._id;
-console.log("This is userid",userId)
+  console.log("This is userid", userId);
   const skip = (page - 1) * limit;
   const userPosts = await Post.find({ createdBy: userId })
     .skip(skip)
@@ -231,7 +231,6 @@ const deleteVolunteerData = asyncHandler(async (req, res) => {
   }
   return res.json(new ApiResponse(200, {}, "Post deleted successfully"));
 });
-
 
 const getNearestCoordinates = asyncHandler(async (req, res) => {
   console.log(req.query);
