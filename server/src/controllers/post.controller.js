@@ -191,7 +191,7 @@ const getUserVolunteerData = asyncHandler(async (req, res) => {
   }
 
   const userId = req.user?._id;
-
+console.log("This is userid",userId)
   const skip = (page - 1) * limit;
   const userPosts = await Post.find({ createdBy: userId })
     .skip(skip)

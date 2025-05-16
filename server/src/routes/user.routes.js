@@ -13,6 +13,7 @@ import { upload } from "./../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validator.middleware.js";
 import { loginSchema, userSchema } from "../../schema/UserSchema.js";
+import { getUserVolunteerData } from "../controllers/post.controller.js";
 const router = Router();
 
 router.post(
@@ -35,6 +36,8 @@ router.patch("/profile", verifyJWT, updateAccountDetails);
 router.patch("/avatar", verifyJWT, upload.single("avatar"), updateUserAvatar);
 
 router.get("/me", verifyJWT, getUserDetails);
+ 
+router.get("/me/posts", verifyJWT, getUserVolunteerData);
 
 
 export default router;
