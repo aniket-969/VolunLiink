@@ -21,11 +21,9 @@ export const refreshTokens = async () => {
 
 export const loginUser = async (formData) => {
   try {
-    const response = await axios.post(
-      `${basePath}/login`,
-      formData,
-      { withCredentials: true }
-    );
+    const response = await axios.post(`${basePath}/login`, formData, {
+      withCredentials: true,
+    });
     if (response.data.success) {
       toast.success("Logged in successfully");
       return response.data;
@@ -57,14 +55,10 @@ export const logoutUser = async () => {
 
 export const registerUser = async (formData) => {
   try {
-    const response = await axios.post(
-      `${basePath}`,
-      formData,
-      {
-        withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" },
-      }
-    );
+    const response = await axios.post(`${basePath}`, formData, {
+      withCredentials: true,
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     if (response.data.success) {
       toast.success("Registered successfully");
       return response.data;
@@ -72,6 +66,21 @@ export const registerUser = async (formData) => {
   } catch (error) {
     console.error(error.response?.data);
     toast.error(error.response?.data?.message || "Registration failed");
+    throw error.response;
+  }
+};
+
+export const logOut = async () => {
+  const axiosConfig = {
+    withCredentials: true,
+  };
+
+  try {
+    const response = await axios.post(`${basePath}/logout`, {}, axiosConfig);
+    return response;
+  } catch (error) {
+    toast.error("error signing out user");
+    console.log(error);
     throw error.response;
   }
 };

@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { getPosts } from "../../api/queries/volunteerPost"
-import Location from '../../components/Location';
-import Card from '../../components/UI/Card';
-import Navbar from '../../components/Navbar';
-import { useInView } from 'react-intersection-observer';
-import Filter from '../../components/Filter';
-import Search from '../../components/Search';
-import Map from '../../components/Map';
-import { useUserContext } from '../../context/AuthProvider';
+import React, { useEffect, useState } from "react";
+import { getPosts } from "../../api/queries/volunteerPost";
+import Location from "../../components/Location";
+import Card from "../../components/UI/Card";
+import Navbar from "../../components/Navbar";
+import { useInView } from "react-intersection-observer";
+import Filter from "../../components/Filter";
+import Search from "../../components/Search";
+import Map from "../../components/Map";
+import { useUserContext } from "../../context/AuthProvider";
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
@@ -36,7 +36,7 @@ const Home = () => {
     const newPosts = await getPosts(next, 5, filter, latitude, longitude);
     if (newPosts?.length) {
       setPage(next);
-      setPosts(prev => [...prev, ...newPosts]);
+      setPosts((prev) => [...prev, ...newPosts]);
     }
   };
 
@@ -56,8 +56,8 @@ const Home = () => {
   return (
     <>
       <Navbar />
-      <section className='flex flex-col items-center'>
-        <div className='flex flex-col gap-2 md:max-w-[710px]'>
+      <section className="flex flex-col items-center">
+        <div className="flex flex-col gap-2 md:max-w-[710px]">
           {loading && (
             <div className="fixed inset-0 flex justify-center items-center bg-gray-500 bg-opacity-50 z-50">
               <p>Loading...</p>
@@ -72,30 +72,27 @@ const Home = () => {
           {latitude && longitude && (
             <button
               onClick={() => setIsMapOpen(true)}
-              className='my-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition'
+              className="block mx-auto my-4 w-[10rem] py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
             >
               View Map
             </button>
           )}
 
-          {posts.map(post => (
+          {posts.map((post) => (
             <Card key={post._id} post={post} />
           ))}
 
           {!loading && (
-            <div
-              ref={ref}
-              className='mt-16 flex items-center justify-center'
-            >
+            <div ref={ref} className="mt-16 flex items-center justify-center">
               <svg
-                aria-hidden='true'
-                className='h-10 w-10 animate-spin fill-sky-600 text-gray-200'
-                viewBox='0 0 100 101'
-                fill='none'
-                xmlns='http://www.w3.org/2000/svg'
+                aria-hidden="true"
+                className="h-10 w-10 animate-spin fill-sky-600 text-gray-200"
+                viewBox="0 0 100 101"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                <path d='M100 50.5908C100 78.2051 ...' fill='currentColor' />
-                <path d='M93.9676 39.0409 ...' fill='currentFill' />
+                <path d="M100 50.5908C100 78.2051 ..." fill="currentColor" />
+                <path d="M93.9676 39.0409 ..." fill="currentFill" />
               </svg>
             </div>
           )}
@@ -104,15 +101,15 @@ const Home = () => {
         {/* Map Modal */}
         {isMapOpen && (
           <div
-            className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50'
+            className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
             onClick={() => setIsMapOpen(false)}
           >
             <div
-              className='bg-white rounded-lg p-4 relative max-w-3xl w-full max-h-[80vh] overflow-auto'
-              onClick={e => e.stopPropagation()}
+              className="bg-white rounded-lg p-4 relative max-w-3xl w-full max-h-[80vh] overflow-auto"
+              onClick={(e) => e.stopPropagation()}
             >
               <button
-                className='absolute top-2 right-2 text-xl font-bold'
+                className="absolute top-2 right-2 text-xl font-bold"
                 onClick={() => setIsMapOpen(false)}
               >
                 &times;

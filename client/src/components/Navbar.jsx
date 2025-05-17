@@ -8,6 +8,7 @@ import MobileNavbar from './MobileNavbar';
 import { IoReorderThree } from "react-icons/io5";
 import { ImCross } from "react-icons/im";
 import { FaConnectdevelop } from "react-icons/fa6";
+import { logOut } from '../api/queries/auth';
 
 const Navbar = () => {
 
@@ -19,26 +20,19 @@ const Navbar = () => {
 
     const signOut = async () => {
 
-        const axiosConfig = {
-            withCredentials: true,
-        };
-
-        try {
-            const response = await axios.post("http://localhost:9000/api/v1/users/logout", {}, axiosConfig
-            )
-
-            toast.success(response.message)
+      const response = await logOut()
+      console.log(response)
+     
+      if(response.status = 200){
+         toast.success(response.data.message)
             setAccessToken(null)
             setUser(null)
             localStorage.removeItem("user")
             navigate("/sign-up")
+      }
+           
 
-        }
-
-        catch (error) {
-            toast.error("error signing out user")
-            console.log(error);
-        }
+      
     }
 
     return (
