@@ -4,7 +4,7 @@ import Location from "../../components/Location";
 
 const CreatePostPage = () => {
   const [formType, setFormType] = useState("volunteer");
-
+ 
   return (
     <section className="max-w-3xl mx-auto my-8 px-4">
       <h1 className="text-2xl font-bold text-center mb-6">Create a New Post</h1>

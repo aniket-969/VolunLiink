@@ -1,14 +1,12 @@
-// src/schema/FormSchema.js
 import { z } from "zod";
 
 const MAX_IMAGE_SIZE = 1 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png"];
 
-// turn blank strings into undefined so .min() only runs when there’s actual content
-const blankToUndefined = (val) =>
+const blankToUndefined = (val: any) =>
   typeof val === "string" && val.trim() === "" ? undefined : val;
 
-// common fields for both forms
+// common fields
 const baseSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(10, "Description must be at least 10 chars"),
@@ -16,17 +14,16 @@ const baseSchema = z.object({
   contactPhone: z
     .string()
     .optional()
-    .refine((v) => !v || /^\d{10}$/.test(v), "Phone number must be exactly 10 digits"),
+    .refine((v) => !v || /^\d{10}$/.test(v), "Phone must be 10 digits"),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
   avatar: z
     .instanceof(File)
-    .refine((f) => ALLOWED_IMAGE_TYPES.includes(f.type), {
-      message: "Invalid file type. Only JPEG and PNG are allowed.",
-    })
-    .refine((f) => f.size <= MAX_IMAGE_SIZE, {
-      message: `File size should be less than ${MAX_IMAGE_SIZE / 1024 / 1024} MB.`,
-    }),
+    .refine((f) => ALLOWED_IMAGE_TYPES.includes(f.type), "Only JPEG/PNG")
+    .refine(
+      (f) => f.size <= MAX_IMAGE_SIZE,
+      `< ${MAX_IMAGE_SIZE / 1024 / 1024}MB`
+    ),
   country: z.string().optional(),
   county: z.string().optional(),
   road: z.string().optional(),
@@ -34,36 +31,34 @@ const baseSchema = z.object({
   village: z.string().optional(),
 });
 
-// volunteer schema: only skill fields
+const skillObject = z.object({
+  skillName: z
+    .array(z.string().min(1, "Skill cannot be empty"))
+    .nonempty("Pick at least one skill"),
+  description: z.string().min(5, "Skill description is required"),
+});
+
+const categoryObject = z.object({
+  categoryName: z
+    .array(z.string().min(1, "Category cannot be empty"))
+    .nonempty("Pick at least one category"),
+  description: z.string().min(5, "Category description is required"),
+});
+
 export const volunteerSchema = baseSchema
   .extend({
-    skillName: z.preprocess(blankToUndefined, z.string().min(1, "Skill name is required")),
-    skillDescription: z.preprocess(
-      blankToUndefined,
-      z.string().min(5, "Skill description is required")
-    ),
+    skills: skillObject.optional(),
   })
-  .refine(
-    (data) => data.skillName && data.skillDescription,
-    {
-      message: "Both skill name and description are required",
-      path: ["skillDescription"],
-    }
-  );
+  .refine((data) => !!data.skills, {
+    message: "You must provide skills",
+    path: ["skills"],
+  });
 
-// organization schema: only category fields
 export const organizationSchema = baseSchema
   .extend({
-    categoryName: z.preprocess(blankToUndefined, z.string().min(1, "Category name is required")),
-    categoryDescription: z.preprocess(
-      blankToUndefined,
-      z.string().min(5, "Category description is required")
-    ),
+    category: categoryObject.optional(),
   })
-  .refine(
-    (data) => data.categoryName && data.categoryDescription,
-    {
-      message: "Both category name and description are required",
-      path: ["categoryDescription"],
-    }
-  );
+  .refine((data) => !!data.category, {
+    message: "You must provide a category",
+    path: ["category"],
+  });
