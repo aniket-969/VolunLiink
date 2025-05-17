@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback,Suspense } from "react";
 import { getPosts } from "../../api/queries/volunteerPost";
-import Location from "../../components/Location";
 import Card from "../../components/UI/Card";
 import Navbar from "../../components/Navbar";
 import { useInView } from "react-intersection-observer";
@@ -9,6 +8,7 @@ import { useUserContext } from "../../context/AuthProvider";
 const Filter = React.lazy(() => import("../../components/Filter"));
 const Search = React.lazy(() => import("../../components/Search"));
 const Map = React.lazy(() => import("../../components/Map"));
+const Location = React.lazy(()=>import("../../components/Location"))
 
 const PAGE_SIZE = 5;
 
@@ -80,17 +80,11 @@ const Home = () => {
               <div className="border-4 border-t-4 border-gray-200 h-12 w-12 rounded-full animate-spin"></div>
             </div>
           )}
-          <Suspense
-            fallback={
-              <div className="py-4 text-center text-gray-500">
-                Loading controls…
-              </div>
-            }
-          >
+         
             <Filter filter={filter} setFilter={setFilter} />
             <Search filter={filter} setFilter={setFilter} />
             <Location />
-          </Suspense>
+          
           {latitude && longitude && (
             <button
               onClick={() => setIsMapOpen(true)}
@@ -141,13 +135,8 @@ const Home = () => {
               >
                 &times;
               </button>
-              <Suspense
-                fallback={
-                  <div className="h-64 w-full animate-pulse bg-gray-100" />
-                }
-              >
+             
                 <Map />
-              </Suspense>
             </div>
           </div>
         )}
