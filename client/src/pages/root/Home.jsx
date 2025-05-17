@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { getPosts } from "../../api/queries/volunteerPost";
 import Location from "../../components/Location";
 import Card from "../../components/UI/Card";
@@ -9,58 +9,68 @@ import Search from "../../components/Search";
 import Map from "../../components/Map";
 import { useUserContext } from "../../context/AuthProvider";
 
+const PAGE_SIZE = 5;
+
 const Home = () => {
-  const [loading, setLoading] = useState(true);
-  const [posts, setPosts] = useState([]);
-  const [ref, inView] = useInView();
-  const [page, setPage] = useState(1);
-  const [filter, setFilter] = useState({});
+  const { location } = useUserContext();
+  const { latitude, longitude } = location || {};
+
+  const [posts, setPosts]       = useState([]);
+  const [page, setPage]         = useState(1);
+  const [loading, setLoading]   = useState(true);
+  const [hasMore, setHasMore]   = useState(true);
+  const [filter, setFilter]     = useState({});
   const [isMapOpen, setIsMapOpen] = useState(false);
 
-  const { location } = useUserContext();
-  const latitude = location?.latitude;
-  const longitude = location?.longitude;
+  const [ref, inView] = useInView({
+    // fire as soon as the sentinel is visible
+    threshold: 0,
+  });
 
-  const fetchPosts = async (page = 1, limit = 5, filter = {}) => {
-    const postData = await getPosts(page, limit, filter);
-    setPosts(postData);
-    setLoading(false);
-  };
+  const fetchPosts = useCallback(
+    async (pageToFetch = 1) => {
+      setLoading(true);
+      try {
+        const newPosts = await getPosts(pageToFetch, PAGE_SIZE, filter, latitude, longitude);
+        if (pageToFetch === 1) {
+          setPosts(newPosts);
+        } else {
+          setPosts(prev => [...prev, ...newPosts]);
+        }
+        // if we got fewer than PAGE_SIZE, there's no more data
+        setHasMore(newPosts.length === PAGE_SIZE);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [filter, latitude, longitude]
+  );
 
+  // initial + filter change
   useEffect(() => {
-    fetchPosts();
-  }, []);
+    setPage(1);
+    fetchPosts(1);
+  }, [fetchPosts]);
 
-  const loadMorePosts = async () => {
-    const next = page + 1;
-    const newPosts = await getPosts(next, 5, filter, latitude, longitude);
-    if (newPosts?.length) {
+  // infinite-scroll
+  useEffect(() => {
+    if (inView && !loading && hasMore) {
+      const next = page + 1;
       setPage(next);
-      setPosts((prev) => [...prev, ...newPosts]);
+      fetchPosts(next);
     }
-  };
-
-  useEffect(() => {
-    if (inView) loadMorePosts();
-  }, [inView]);
-
-  useEffect(() => {
-    if (Object.keys(filter).length > 0) {
-      (async () => {
-        await fetchPosts(1, 5, filter);
-        setPage(1);
-      })();
-    }
-  }, [filter]);
+  }, [inView, loading, hasMore, page, fetchPosts]);
 
   return (
     <>
       <Navbar />
+
       <section className="flex flex-col items-center">
         <div className="flex flex-col gap-2 md:max-w-[710px]">
-          {loading && (
+
+          {/* initial loading overlay */}
+          {loading && page === 1 && (
             <div className="fixed inset-0 flex justify-center items-center bg-gray-500 bg-opacity-50 z-50">
-              <p>Loading...</p>
               <div className="border-4 border-t-4 border-gray-200 h-12 w-12 rounded-full animate-spin"></div>
             </div>
           )}
@@ -78,24 +88,29 @@ const Home = () => {
             </button>
           )}
 
-          {posts.map((post) => (
+          {/* no posts found */}
+          {!loading && posts.length === 0 && (
+            <p className="col-span-full text-center text-gray-500 py-10">
+              No posts to show.
+            </p>
+          )}
+
+          {/* post cards */}
+          {posts.map(post => (
             <Card key={post._id} post={post} />
           ))}
 
-          {!loading && (
-            <div ref={ref} className="mt-16 flex items-center justify-center">
-              <svg
-                aria-hidden="true"
-                className="h-10 w-10 animate-spin fill-sky-600 text-gray-200"
-                viewBox="0 0 100 101"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M100 50.5908C100 78.2051 ..." fill="currentColor" />
-                <path d="M93.9676 39.0409 ..." fill="currentFill" />
-              </svg>
-            </div>
-          )}
+          {/* infinite-scroll sentinel or “no more” message */}
+          <div className="mt-8 flex justify-center items-center">
+            {loading && page > 1 ? (
+              <div className="animate-spin h-8 w-8 border-4 border-t-4 border-gray-200 rounded-full"></div>
+            ) : !hasMore ? (
+              <p className="text-gray-500 mb-5">No more posts to show.</p>
+            ) : (
+              //  inView ref
+              <div ref={ref} className="h-1 w-full"></div>
+            )}
+          </div>
         </div>
 
         {/* Map Modal */}
@@ -106,7 +121,7 @@ const Home = () => {
           >
             <div
               className="bg-white rounded-lg p-4 relative max-w-3xl w-full max-h-[80vh] overflow-auto"
-              onClick={(e) => e.stopPropagation()}
+              onClick={e => e.stopPropagation()}
             >
               <button
                 className="absolute top-2 right-2 text-xl font-bold"
