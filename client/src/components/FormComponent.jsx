@@ -220,15 +220,10 @@ const FormComponent = ({ formType }) => {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
           onClick={() => setModalOpen(false)}          >
           <div
-            className="relative bg-white p-4 rounded-md max-w-[90%] max-h-[90%]"
+            className="relative bg-white p-5 rounded-md max-w-[90%] max-h-[90%]"
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              className="absolute top-2 right-2 text-gray-600 hover:text-gray-900 text-2xl"
-              onClick={() => setModalOpen(false)}
-            >
-              &times;
-            </button>
+           
             <img
               src={preview}
               alt="Full Preview"
