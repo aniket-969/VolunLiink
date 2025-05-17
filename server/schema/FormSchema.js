@@ -15,12 +15,17 @@ const longitudeValidation = z
   });
 
 const skillValidation = z.object({
-  skillName: z.string().min(1, "Skill name is required"),
+  skillName: z
+    .array(z.string().min(1, "Skill name cannot be empty"))
+    .nonempty("At least one skill name is required"),
+
   description: z.string().min(5, "Skill description is required"),
 });
 
 const categoryValidation = z.object({
-  categoryName: z.string().min(1, "Category name is required"),
+  categoryName: z
+    .array(z.string().min(1, "Category name is required"))
+    .nonempty("At least one category name is required"),
   description: z.string().min(5, "Category description is required"),
 });
 
@@ -54,9 +59,13 @@ export const formSchema = commonSchema
     skills: skillValidation.optional(),
     category: categoryValidation.optional(),
   })
-  .refine((data) => data.skills || data.category, {
-    message: "Either skill or category must be provided",
+  // require at least one of skills or category to be present
+  .refine((data) => !!data.skills || !!data.category, {
+    message: "Either skills or category must be provided",
+    path: ["skills"], // field-level error placement
   })
+  // forbid providing both at once
   .refine((data) => !(data.skills && data.category), {
-    message: "You cannot provide both skill and category",
+    message: "You cannot provide both skills and category",
+    path: ["category"],
   });
