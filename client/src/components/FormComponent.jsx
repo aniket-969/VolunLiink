@@ -16,6 +16,8 @@ import CustomInputWithIcon from "./UI/CustomInputWithIcon";
 import { opportunityCategories, skills } from "../utils/formConfig";
 import { submitForm } from "../api/queries/volunteerPost";
 import { useUserContext } from "../context/AuthProvider";
+import {Controller} from "react-hook-form"
+import MultiSelect from "./UI/MultiSelect";
 
 const FormComponent = ({ formType }) => {
   const { location } = useUserContext();
@@ -30,6 +32,7 @@ const FormComponent = ({ formType }) => {
     register,
     handleSubmit,
     setValue,
+    control,
     formState: { errors },
   } = useForm({ resolver: zodResolver(schema) });
   console.log(errors);
@@ -168,7 +171,7 @@ const FormComponent = ({ formType }) => {
           )}
         </div>
       </div>
-
+{/* Upload image */}
       <div className="col-span-full">
         <label className="block text-sm font-medium mb-1">Upload Image</label>
         <div className="flex items-center gap-4">
@@ -205,27 +208,29 @@ const FormComponent = ({ formType }) => {
         )}
       </div>
 
+{/* Volunteer specific */}
       {formType === "volunteer" && (
         <>
-          <div className="col-span-full">
-            <label className="block text-sm font-medium mb-1">
-              Select Skill
-            </label>
-            <select
-              {...register("skillName")}
-              className="w-full p-2 border border-gray-300 rounded"
-            >
-              {skills.map((group, i) => (
-                <optgroup key={i} label={group.label}>
-                  {group.options.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
-          </div>
+         <div className="col-span-full">
+  <label className="block text-sm font-medium mb-1">Skills:</label>
+  <Controller
+    name="skillName"
+    control={control}
+    defaultValue={[]}
+    render={({ field }) => (
+      <MultiSelect
+        options={skills}
+        value={field.value}
+        onChange={field.onChange}
+        placeholder="Select skills"
+      />
+    )}
+  />
+  {errors.skillName && (
+    <p className="text-red-500 text-sm">{errors.skillName.message}</p>
+  )}
+</div>
+
           <div className="col-span-full">
             <CustomInputWithIcon
               register={register("skillDescription")}
@@ -242,21 +247,26 @@ const FormComponent = ({ formType }) => {
 
       {formType === "organization" && (
         <>
-          <div className="col-span-full">
-            <label className="block text-sm font-medium mb-1">
-              Select Category
-            </label>
-            <select
-              {...register("categoryName")}
-              className="w-full p-2 border border-gray-300 rounded"
-            >
-              {opportunityCategories.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
+       <div className="col-span-full">
+  <label className="block text-sm font-medium mb-1"> Category:</label>
+  <Controller
+    name="categoryName"
+    control={control}
+    defaultValue={[]}
+    render={({ field }) => (
+      <MultiSelect
+        options={[{ label: "Categories", options: opportunityCategories }]}
+        value={field.value}
+        onChange={field.onChange}
+        placeholder="Select categories"
+      />
+    )}
+  />
+  {errors.categoryName && (
+    <p className="text-red-500 text-sm">{errors.categoryName.message}</p>
+  )}
+</div>
+
           <div className="col-span-full">
             <CustomInputWithIcon
               register={register("categoryDescription")}
