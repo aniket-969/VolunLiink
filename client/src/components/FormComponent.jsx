@@ -25,6 +25,8 @@ const FormComponent = ({ formType }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fileName, setFileName] = useState("No file chosen");
   const [preview, setPreview] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
  const schema =
     formType === "volunteer" ? volunteerSchema : organizationSchema;
 
@@ -173,40 +175,71 @@ const FormComponent = ({ formType }) => {
       </div>
 {/* Upload image */}
       <div className="col-span-full">
-        <label className="block text-sm font-medium mb-1">Upload Image</label>
-        <div className="flex items-center gap-4">
-          <label
-            htmlFor="avatar"
-            className="px-4 py-2 bg-gray-100 border border-gray-300 rounded cursor-pointer hover:bg-gray-200"
+  <label className="block text-sm font-medium mb-1">
+    Upload Image
+  </label>
+  <div className="flex items-center gap-4">
+    <label
+      htmlFor="avatar"
+      className="px-4 py-2 bg-gray-100 border border-gray-300 rounded cursor-pointer hover:bg-gray-200"
+    >
+      Choose File
+      <input
+        id="avatar"
+        type="file"
+        accept="image/*"
+        {...register("avatar", {
+          onChange: (e) => {
+            const file = e.target.files[0];
+            if (file) {
+              setFileName(file.name);
+              setPreview(URL.createObjectURL(file));
+              setValue("avatar", file);
+            }
+          },
+        })}
+        className="hidden"
+      />
+    </label>
+    <span className="text-sm text-gray-600">{fileName}</span>
+  </div>
+
+  {preview && (
+    <div className="mt-4">
+      {/* thumbnail */}
+      <img
+        src={preview}
+        alt="Thumbnail Preview"
+        onClick={() => setModalOpen(true)}
+        className="w-16 h-16 object-cover rounded-md cursor-pointer border"
+      />
+
+      {/* modal */}
+      {modalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={() => setModalOpen(false)}          >
+          <div
+            className="relative bg-white p-4 rounded-md max-w-[90%] max-h-[90%]"
+            onClick={(e) => e.stopPropagation()}
           >
-            Choose File
-            <input
-              id="avatar"
-              type="file"
-              accept="image/*"
-              {...register("avatar", {
-                onChange: (e) => {
-                  const file = e.target.files[0];
-                  if (file) {
-                    setFileName(file.name);
-                    setPreview(URL.createObjectURL(file));
-                    setValue("avatar", file);
-                  }
-                },
-              })}
-              className="hidden"
+            <button
+              className="absolute top-2 right-2 text-gray-600 hover:text-gray-900 text-2xl"
+              onClick={() => setModalOpen(false)}
+            >
+              &times;
+            </button>
+            <img
+              src={preview}
+              alt="Full Preview"
+              className="max-w-full max-h-[80vh] object-contain rounded"
             />
-          </label>
-          <span className="text-sm text-gray-600">{fileName}</span>
+          </div>
         </div>
-        {preview && (
-          <img
-            src={preview}
-            alt="Preview"
-            className="mt-4 w-full max-h-48 object-cover rounded-md"
-          />
-        )}
-      </div>
+      )}
+    </div>
+  )}
+</div>
 
 {/* Volunteer specific */}
       {formType === "volunteer" && (
@@ -244,7 +277,7 @@ const FormComponent = ({ formType }) => {
           </div>
         </>
       )}
-
+{/* Organization specific */}
       {formType === "organization" && (
         <>
        <div className="col-span-full">
