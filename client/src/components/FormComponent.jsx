@@ -63,19 +63,11 @@ const FormComponent = ({ formType }) => {
         formData.append(key, val);
       });
 
-      // Append other fields
-      Object.entries(data).forEach(([key, val]) => {
-        if (
-          ![
-            "skillName",
-            "skillDescription",
-            "categoryName",
-            "categoryDescription",
-          ].includes(key)
-        ) {
-          formData.append(key, val);
-        }
-      });
+  Object.entries(data).forEach(([key, val]) => {
+    if (!["skills", "category"].includes(key)) {
+      formData.append(key, val);
+    }
+  });
 
       const res = await submitForm(formData);
       if (res.success) {
