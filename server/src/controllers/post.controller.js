@@ -7,101 +7,77 @@ import { Post } from "../models/post.model.js";
 const MAX_LIMIT = 50;
 
 const volunteerForm = asyncHandler(async (req, res) => {
-  try {
-    const {
-      title,
-      latitude,
-      longitude,
-      description,
-      contactEmail,
-      contactPhone,
-      startDate,
-      endDate,
-      role,
+  const {
+    title,
+    latitude,
+    longitude,
+    description,
+    contactEmail,
+    contactPhone,
+    startDate,
+    endDate,
+    role,
+    country,
+    county,
+    road,
+    state,
+    village,
+    skills,
+    category,
+  } = req.body;
+
+  const createdBy = req.user?._id;
+
+  // image upload
+  const localPaths = req.files?.avatar?.map(f => f.path) || [];
+  if (!localPaths.length) {
+    throw new ApiError(400, "At least one avatar file is required");
+  }
+  const uploads = await Promise.all(localPaths.map(uploadOnCloudinary));
+  const imageUrls = uploads.map(u => u.url);
+
+  const postData = {
+    title,
+    description,
+    location: {
+      type: "Point",
+      coordinates: [parseFloat(longitude), parseFloat(latitude)],
       country,
       county,
       road,
       state,
       village,
-      skills,
-      category,
-    } = req.body;
+    },
+    contactEmail,
+    contactPhone,
+    startDate: startDate ? new Date(startDate) : undefined,
+    endDate:   endDate   ? new Date(endDate)   : undefined,
+    images: imageUrls,
+    role,
+    createdBy,
+  };
 
-    console.log("This is vol body", req.body);
 
-    const createdBy = req.user?._id;
-    console.log("user id", createdBy);
-
-    console.log(req.files);
-    const volunteerLocalPaths = req.files?.avatar?.map((file) => file.path);
-
-    if (!volunteerLocalPaths || volunteerLocalPaths.length === 0) {
-      throw new ApiError(400, "At least one volunteer local file is required");
-    }
-
-    const avatar = await Promise.all(
-      volunteerLocalPaths.map((path) => uploadOnCloudinary(path))
-    );
-    console.log("This is avatar here 37", avatar);
-
-    if (!avatar) {
-      throw new ApiError(400, "Avatar file is required");
-    }
-
-    const imageUrls = avatar.map((image) => image.url);
-    console.log("URL", imageUrls);
-    const cleanedStartDate = req.body.startDate
-      ? new Date(req.body.startDate)
-      : undefined;
-
-    const cleanedEndDate = req.body.endDate
-      ? new Date(req.body.endDate)
-      : undefined;
-
-    const VolunteerData = await Post.create({
-      title,
-      description,
-      location: {
-        type: "Point",
-        coordinates: [parseFloat(longitude), parseFloat(latitude)],
-        country,
-        county,
-        road,
-        state,
-        village,
-      },
-      contactEmail,
-      contactPhone,
-      startDate: cleanedStartDate,
-      endDate: cleanedEndDate,
-      images: imageUrls,
-      role,
-      skills: skills
-        ? [{ skillName: skills.skillName, description: skills.description }]
-        : undefined,
-      category: category
-        ? [
-            {
-              categoryName: category.categoryName,
-              description: category.description,
-            },
-          ]
-        : undefined,
-      createdBy,
-    });
-    console.log("Vol", VolunteerData);
-    return res.json(
-      new ApiResponse(
-        201,
-        VolunteerData,
-        "Volunteer form submitted successfully"
-      )
-    );
-  } catch (error) {
-    console.log(error);
-    return res.json(new ApiError(401, error, "Error while creating post"));
+  if (skills) {
+    postData.skills = {
+      skillName: skills.skillName,    
+      description: skills.description,
+    };
   }
+
+  if (category) {
+    postData.category = {
+      categoryName: category.categoryName,
+      description: category.description,
+    };
+  }
+
+  const volunteerData = await Post.create(postData);
+  return res
+    .status(201)
+    .json(new ApiResponse(201, volunteerData, "Volunteer form submitted successfully"));
 });
+
 
 const getPosts = asyncHandler(async (req, res) => {
   const {
