@@ -42,7 +42,7 @@ const Navbar = () => {
         className="hidden sm:flex items-center gap-4"
       >
         <div className=" ">
-          <img
+          <img loading="lazy"
             src={
               user
                 ? user.avatar

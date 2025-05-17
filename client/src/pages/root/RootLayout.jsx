@@ -1,18 +1,19 @@
-import { Navigate, Outlet } from 'react-router-dom'
-import Navbar from '../../components/Navbar'
-import { useUserContext } from '../../context/AuthProvider'
- 
-const RootLayout = () => {
-  const { isAuthenticated } = useUserContext()
+// src/pages/root/RootLayout.jsx
+import React, { Suspense } from "react";
+import { Outlet } from "react-router-dom";
+import Navbar from "../../components/Navbar";
+
+export default function RootLayout() {
   return (
     <>
-      {isAuthenticated ? <>
-        <Navbar />
-        <Outlet />
-      </> : <Navigate to="/sign-up" />}
+     
+      <Navbar />
 
+      <div className="p-6 md:px-12">
+        <Suspense fallback={<div className="py-10 text-center">Loading page…</div>}>
+          <Outlet />
+        </Suspense>
+      </div>
     </>
-  )
+  );
 }
-
-export default RootLayout

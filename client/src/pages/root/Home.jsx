@@ -1,13 +1,14 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback,Suspense } from "react";
 import { getPosts } from "../../api/queries/volunteerPost";
 import Location from "../../components/Location";
 import Card from "../../components/UI/Card";
 import Navbar from "../../components/Navbar";
 import { useInView } from "react-intersection-observer";
-import Filter from "../../components/Filter";
-import Search from "../../components/Search";
-import Map from "../../components/Map";
 import { useUserContext } from "../../context/AuthProvider";
+
+const Filter = React.lazy(() => import("../../components/Filter"));
+const Search = React.lazy(() => import("../../components/Search"));
+const Map = React.lazy(() => import("../../components/Map"));
 
 const PAGE_SIZE = 5;
 
@@ -15,11 +16,11 @@ const Home = () => {
   const { location } = useUserContext();
   const { latitude, longitude } = location || {};
 
-  const [posts, setPosts]       = useState([]);
-  const [page, setPage]         = useState(1);
-  const [loading, setLoading]   = useState(true);
-  const [hasMore, setHasMore]   = useState(true);
-  const [filter, setFilter]     = useState({});
+  const [posts, setPosts] = useState([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
+  const [filter, setFilter] = useState({});
   const [isMapOpen, setIsMapOpen] = useState(false);
 
   const [ref, inView] = useInView({
@@ -31,11 +32,17 @@ const Home = () => {
     async (pageToFetch = 1) => {
       setLoading(true);
       try {
-        const newPosts = await getPosts(pageToFetch, PAGE_SIZE, filter, latitude, longitude);
+        const newPosts = await getPosts(
+          pageToFetch,
+          PAGE_SIZE,
+          filter,
+          latitude,
+          longitude
+        );
         if (pageToFetch === 1) {
           setPosts(newPosts);
         } else {
-          setPosts(prev => [...prev, ...newPosts]);
+          setPosts((prev) => [...prev, ...newPosts]);
         }
         // if we got fewer than PAGE_SIZE, there's no more data
         setHasMore(newPosts.length === PAGE_SIZE);
@@ -67,18 +74,23 @@ const Home = () => {
 
       <section className="flex flex-col items-center">
         <div className="flex flex-col gap-2 md:max-w-[710px]">
-
           {/* initial loading overlay */}
           {loading && page === 1 && (
             <div className="fixed inset-0 flex justify-center items-center bg-gray-500 bg-opacity-50 z-50">
               <div className="border-4 border-t-4 border-gray-200 h-12 w-12 rounded-full animate-spin"></div>
             </div>
           )}
-
-          <Filter filter={filter} setFilter={setFilter} />
-          <Search filter={filter} setFilter={setFilter} />
-          <Location />
-
+          <Suspense
+            fallback={
+              <div className="py-4 text-center text-gray-500">
+                Loading controls…
+              </div>
+            }
+          >
+            <Filter filter={filter} setFilter={setFilter} />
+            <Search filter={filter} setFilter={setFilter} />
+            <Location />
+          </Suspense>
           {latitude && longitude && (
             <button
               onClick={() => setIsMapOpen(true)}
@@ -96,7 +108,7 @@ const Home = () => {
           )}
 
           {/* post cards */}
-          {posts.map(post => (
+          {posts.map((post) => (
             <Card key={post._id} post={post} />
           ))}
 
@@ -121,7 +133,7 @@ const Home = () => {
           >
             <div
               className="bg-white rounded-lg p-4 relative max-w-3xl w-full max-h-[80vh] overflow-auto"
-              onClick={e => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
             >
               <button
                 className="absolute top-2 right-2 text-xl font-bold"
@@ -129,7 +141,13 @@ const Home = () => {
               >
                 &times;
               </button>
-              <Map />
+              <Suspense
+                fallback={
+                  <div className="h-64 w-full animate-pulse bg-gray-100" />
+                }
+              >
+                <Map />
+              </Suspense>
             </div>
           </div>
         )}

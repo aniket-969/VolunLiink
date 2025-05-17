@@ -15,26 +15,27 @@ const Card = ({ post, handleDelete }) => {
     description,
     contactEmail,
     contactPhone,
-    skills,       // now an object or undefined
-    category,     // now an object or undefined
+    skills, 
+    category, 
     location,
   } = post;
 
   // Date formatting …
   const start = startDate ? formatDate(startDate) : null;
-  const end   = endDate   ? formatDate(endDate)   : null;
+  const end = endDate ? formatDate(endDate) : null;
   let dateDisplay;
   if (start && end) dateDisplay = `${start} – ${end}`;
-  else if (start)  dateDisplay = `From ${start}`;
-  else if (end)    dateDisplay = `Until ${end}`;
-  else             dateDisplay = "N/A";
+  else if (start) dateDisplay = `From ${start}`;
+  else if (end) dateDisplay = `Until ${end}`;
+  else dateDisplay = "N/A";
 
   return (
     <div className="pop1 bg-white shadow-md hover:shadow-lg transition-shadow duration-200 flex flex-col md:flex-row gap-6 p-6 rounded-2xl mx-5 my-4">
       {/* Image */}
       <Link to={`/posts/${_id}`} className="flex-shrink-0 md:w-1/3">
         <img
-          src={images?.[0] || "fallback-image-url.jpg"}
+          src={images?.[0] || "fallback.jpg"}
+          loading="lazy"
           alt={title}
           className="w-full h-48 md:h-full object-cover rounded-lg"
         />
@@ -71,9 +72,7 @@ const Card = ({ post, handleDelete }) => {
         </div>
 
         {/* Description */}
-        <p className="mt-4 line-clamp-3 text-sm text-gray-700">
-          {description}
-        </p>
+        <p className="mt-4 line-clamp-3 text-sm text-gray-700">{description}</p>
 
         {/* Badges */}
         <div className="mt-4 flex flex-wrap gap-2">
@@ -107,7 +106,13 @@ const Card = ({ post, handleDelete }) => {
         {/* Location */}
         <div className="mt-4 text-xs text-gray-500">
           Posted from:{" "}
-          {[location?.road, location?.village, location?.county, location?.state, location?.country]
+          {[
+            location?.road,
+            location?.village,
+            location?.county,
+            location?.state,
+            location?.country,
+          ]
             .filter(Boolean)
             .join(", ")}
         </div>
