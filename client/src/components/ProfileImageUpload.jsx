@@ -41,7 +41,7 @@ if(!validateImage(file)){
             </figure>
 
             <i
-                className="absolute bottom-2 right-2 bg-gray-300 rounded-full text-black p-1 cursor-pointer hover:bg-gray-500"
+                className="absolute bottom-2 right-2 bg-gray-300 rounded-full text-black p-[0.3rem] cursor-pointer hover:bg-gray-500"
                 onClick={triggerFileInput}
                 title="Upload image"
             >
