@@ -20,7 +20,7 @@ import { Controller } from "react-hook-form";
 import MultiSelect from "./UI/MultiSelect";
 
 const FormComponent = ({ formType }) => {
-  const { location } = useUserContext();
+  const { location,user } = useUserContext();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fileName, setFileName] = useState("No file chosen");
@@ -45,6 +45,11 @@ const today = new Date().toISOString().split("T")[0]
 
   // form submit function
   const onSubmit = async (data) => {
+    if(!user){
+        
+      toast.error("Please login to create post");
+      return;
+      }
     console.log(data);
     try {
       setIsSubmitting(true);
@@ -82,8 +87,10 @@ const today = new Date().toISOString().split("T")[0]
       }
     } catch (e) {
       console.error(e);
-      toast.error("Submission failed.");
+      
+      toast.error(error?.data?.message);
     } finally {
+      console.log("setting to false")
       setIsSubmitting(false);
     }
   };

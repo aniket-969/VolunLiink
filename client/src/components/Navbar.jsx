@@ -23,6 +23,7 @@ const Navbar = () => {
       toast.error("Please sign up to access your profile");
     }
   };
+  
   const signOut = async () => {
     const response = await logOut();
     console.log(response);
