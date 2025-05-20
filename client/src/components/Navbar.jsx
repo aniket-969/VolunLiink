@@ -11,6 +11,7 @@ import { FaConnectdevelop } from "react-icons/fa6";
 import { logOut } from "../api/queries/auth";
 import { makeCloudinaryUrl } from "./../utils/cloudinary";
 
+const guestUrl ="https://res.cloudinary.com/dgyduqoht/image/upload/v1708522002/guestf_zqgvly.png"
 const Navbar = () => {
   const navigate = useNavigate();
 
