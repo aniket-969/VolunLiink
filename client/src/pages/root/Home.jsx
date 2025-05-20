@@ -16,7 +16,7 @@ const Map = React.lazy(() => import("../../components/Map"));
 const Navbar = React.lazy(() => import("../../components/Navbar"));
 
 const PAGE_SIZE = 5;
-const POLL_INTERVAL = 30000; // 30s
+const POLL_INTERVAL = 60000; // 30s
 
 export default function Home() {
   const { location } = useUserContext();
