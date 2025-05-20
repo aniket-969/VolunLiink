@@ -2,12 +2,14 @@ import React from "react";
 import { formatDate, formatUpdatedAt } from "../../utils/date";
 import { Link } from "react-router-dom";
 import { MdOutlineDeleteOutline } from "react-icons/md";
-import { makeCloudinaryUrl } from "./../../utils/cloudinary";
+import { makeCloudinaryUrl } from "../../utils/cloudinary";
 
-const MAX_CARD_WIDTH = 710; 
-const FALLBACK_IMG = "fallback.jpg";
+const SMALL_CARD_WIDTH = 360;  // mobile / full-width fallback
+const MED_CARD_WIDTH   = 240;  // desktop card slot (~207px rendered)
+const LARGE_CARD_WIDTH = 710;  // maximum container size
+const FALLBACK_IMG     = "fallback.jpg";
 
-const Card = ({ post, handleDelete }) => {
+function Card({ post, handleDelete }) {
   const {
     _id,
     createdBy,
@@ -24,7 +26,7 @@ const Card = ({ post, handleDelete }) => {
     location,
   } = post;
 
-  // Date formatting …
+  // Format start/end dates
   const start = startDate ? formatDate(startDate) : null;
   const end = endDate ? formatDate(endDate) : null;
   let dateDisplay;
@@ -33,30 +35,43 @@ const Card = ({ post, handleDelete }) => {
   else if (end) dateDisplay = `Until ${end}`;
   else dateDisplay = "N/A";
 
-  const rawUrl = images?.[0] || FALLBACK_IMG;
-  const cardImgUrl = makeCloudinaryUrl(rawUrl, {
-    width: MAX_CARD_WIDTH,
-    crop: "fill",
-  });
+  //  Cloudinary URLs for different sizes
+  const rawUrl     = images?.[0] || FALLBACK_IMG;
+ // mobile / full-width
+const smallUrl = makeCloudinaryUrl(rawUrl, {
+  width:   360,
+  format:  "auto",
+  quality: "auto",
+});
 
-  const smallImgUrl = makeCloudinaryUrl(rawUrl, {
-    width: 360,
-    crop: "fill",
-  });
+// desktop card slot (~207px, rounded up to 240)
+const medUrl   = makeCloudinaryUrl(rawUrl, {
+  width:   MED_CARD_WIDTH,
+  format:  "auto",
+  quality: "auto",
+});
+
+// fallback for very large screens
+const largeUrl = makeCloudinaryUrl(rawUrl, {
+  width:   LARGE_CARD_WIDTH,
+  format:  "auto",
+  quality: "auto",
+});
 
   return (
     <div className="pop1 bg-white shadow-md hover:shadow-lg transition-shadow duration-200 flex flex-col md:flex-row gap-6 p-6 rounded-2xl mx-5 my-4">
       {/* Image */}
       <Link to={`/posts/${_id}`} className="flex-shrink-0 md:w-1/3">
         <img
-          src={cardImgUrl}
-          srcSet={`${smallImgUrl} 360w, ${cardImgUrl} ${MAX_CARD_WIDTH}w`}
-          sizes="(max-width: 768px) 100vw, 33vw"
+          src={smallUrl}
+          srcSet={`${smallUrl} ${SMALL_CARD_WIDTH}w, ${medUrl} ${MED_CARD_WIDTH}w, ${largeUrl} ${LARGE_CARD_WIDTH}w`}
+          sizes="(max-width: 768px) 100vw, 240px"
           loading="lazy"
           alt={title}
           className="w-full h-48 md:h-full object-cover rounded-lg"
         />
       </Link>
+
       {/* Content */}
       <div className="flex-grow flex flex-col justify-between">
         {/* Header */}
@@ -100,7 +115,6 @@ const Card = ({ post, handleDelete }) => {
               {skill}
             </span>
           ))}
-
           {category?.categoryName?.map((cat, idx) => (
             <span
               key={`${cat}-${idx}`}
@@ -121,20 +135,13 @@ const Card = ({ post, handleDelete }) => {
 
         {/* Location */}
         <div className="mt-4 text-xs text-gray-500">
-          Posted from:{" "}
-          {[
-            location?.road,
-            location?.village,
-            location?.county,
-            location?.state,
-            location?.country,
-          ]
+          Posted from: {[location?.road, location?.village, location?.county, location?.state, location?.country]
             .filter(Boolean)
             .join(", ")}
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default React.memo(Card);
