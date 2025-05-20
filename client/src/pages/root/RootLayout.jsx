@@ -1,9 +1,8 @@
-// src/pages/root/RootLayout.jsx
+
 import React, { Suspense } from "react";
 import { Outlet } from "react-router-dom";
-// import Navbar from "../../components/Navbar";
+import Navbar from "../../components/Navbar";
 
-const Navbar = React.lazy(()=>import("../../components/Navbar"))
 export default function RootLayout() {
   return (
     <>

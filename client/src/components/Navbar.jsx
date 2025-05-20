@@ -17,13 +17,6 @@ const Navbar = () => {
 
   const [show, setShow] = useState(true);
 
- const handleProfileClick = (e) => {
-    if (!isAuthenticated) {
-      e.preventDefault();       
-      toast.error("Please sign up to access your profile");
-    }
-  };
-
   const signOut = async () => {
     const response = await logOut();
     console.log(response);
@@ -45,21 +38,17 @@ const Navbar = () => {
       </Link>
 
       <Link
-        to={`/profile/${user?._id}`} onClick={handleProfileClick}
+        to={`/profile/${user ? user._id : "123"}`}
         className="hidden sm:flex items-center gap-4"
       >
-        <div className=" ">
-          <img loading="lazy"
-            src={
-              user
-                ? user.avatar
-                : "https://res.cloudinary.com/dgyduqoht/image/upload/v1708522002/guestf_zqgvly.png"
-            }
-            alt=""  width={60}             
-  height={60}    
-            className="image--cover   "
-          />
-        </div>
+        <img
+          src={user?.avatar || guestUrl}
+          alt="Your avatar"
+          width={60}
+          height={60}
+          className="w-[60px] h-[60px] rounded-full object-cover block"
+          loading="lazy"
+        />
 
         <h3 className="font-medium">{user ? user.fullName : "Guest"}</h3>
       </Link>
@@ -79,7 +68,7 @@ const Navbar = () => {
         </Link>
         <Link
           className="relative w-fit block after:block after:absolute after:h-[2px] after:bg-blue-500 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left "
-          to={`/profile/${user?._id}`} onClick={handleProfileClick}
+          to={`/profile/${user ? user._id : "123"}`}
         >
           Profile
         </Link>
