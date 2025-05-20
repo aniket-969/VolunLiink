@@ -9,12 +9,15 @@ import { IoReorderThree } from "react-icons/io5";
 import { ImCross } from "react-icons/im";
 import { FaConnectdevelop } from "react-icons/fa6";
 import { logOut } from "../api/queries/auth";
+import { makeCloudinaryUrl } from "./../utils/cloudinary";
 
 const Navbar = () => {
   const navigate = useNavigate();
 
   const { isAuthenticated, setAccessToken, user, setUser } = useUserContext();
-
+  const avatarUrl = user?.avatar
+    ? makeCloudinaryUrl(user.avatar, { width: 60, height: 60 })
+    : guestUrl;
   const [show, setShow] = useState(true);
 
   const signOut = async () => {
@@ -42,7 +45,7 @@ const Navbar = () => {
         className="hidden sm:flex items-center gap-4"
       >
         <img
-          src={user?.avatar || guestUrl}
+          src={avatarUrl}
           alt="Your avatar"
           width={60}
           height={60}

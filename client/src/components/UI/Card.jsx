@@ -2,6 +2,10 @@ import React from "react";
 import { formatDate, formatUpdatedAt } from "../../utils/date";
 import { Link } from "react-router-dom";
 import { MdOutlineDeleteOutline } from "react-icons/md";
+import { makeCloudinaryUrl } from "./../../utils/cloudinary";
+
+const MAX_CARD_WIDTH = 710; 
+const FALLBACK_IMG = "fallback.jpg";
 
 const Card = ({ post, handleDelete }) => {
   const {
@@ -15,8 +19,8 @@ const Card = ({ post, handleDelete }) => {
     description,
     contactEmail,
     contactPhone,
-    skills, 
-    category, 
+    skills,
+    category,
     location,
   } = post;
 
@@ -29,18 +33,30 @@ const Card = ({ post, handleDelete }) => {
   else if (end) dateDisplay = `Until ${end}`;
   else dateDisplay = "N/A";
 
+  const rawUrl = images?.[0] || FALLBACK_IMG;
+  const cardImgUrl = makeCloudinaryUrl(rawUrl, {
+    width: MAX_CARD_WIDTH,
+    crop: "fill",
+  });
+
+  const smallImgUrl = makeCloudinaryUrl(rawUrl, {
+    width: 360,
+    crop: "fill",
+  });
+
   return (
     <div className="pop1 bg-white shadow-md hover:shadow-lg transition-shadow duration-200 flex flex-col md:flex-row gap-6 p-6 rounded-2xl mx-5 my-4">
       {/* Image */}
       <Link to={`/posts/${_id}`} className="flex-shrink-0 md:w-1/3">
         <img
-          src={images?.[0] || "fallback.jpg"}
+          src={cardImgUrl}
+          srcSet={`${smallImgUrl} 360w, ${cardImgUrl} ${MAX_CARD_WIDTH}w`}
+          sizes="(max-width: 768px) 100vw, 33vw"
           loading="lazy"
           alt={title}
           className="w-full h-48 md:h-full object-cover rounded-lg"
         />
       </Link>
-
       {/* Content */}
       <div className="flex-grow flex flex-col justify-between">
         {/* Header */}
