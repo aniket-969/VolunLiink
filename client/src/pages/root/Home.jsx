@@ -3,67 +3,70 @@ import { getPosts } from "../../api/queries/volunteerPost";
 import Card from "../../components/UI/Card";
 import { useInView } from "react-intersection-observer";
 import { useUserContext } from "../../context/AuthProvider";
+import { useDebounce } from "../../hooks/useDebounce";
+
 import FilterSkeleton from "../../components/UI/skeleton/filter";
 import SearchSkeleton from "../../components/UI/skeleton/search";
 import { LocationSkeleton } from "../../components/UI/skeleton/locationSkeleton";
 import CardSkeleton from "../../components/UI/skeleton/card";
 import { FaChevronDown } from "react-icons/fa";
 
-const Filter = React.lazy(() => import("../../components/Filter"));
-const Search = React.lazy(() => import("../../components/Search"));
+const Filter   = React.lazy(() => import("../../components/Filter"));
+const Search   = React.lazy(() => import("../../components/Search"));
 const Location = React.lazy(() => import("../../components/Location"));
-const Map = React.lazy(() => import("../../components/Map"));
-const Navbar = React.lazy(() => import("../../components/Navbar"));
+const Map      = React.lazy(() => import("../../components/Map"));
+const Navbar   = React.lazy(() => import("../../components/Navbar"));
 
-const PAGE_SIZE = 5;
-const POLL_INTERVAL = 60000; // 30s
+const PAGE_SIZE     = 5;
+const POLL_INTERVAL = 60000; // 60s
 
 export default function Home() {
   const { location } = useUserContext();
   const { latitude, longitude } = location || {};
 
-  const [posts, setPosts] = useState([]);
-  const [newPosts, setNewPosts] = useState([]);
-  const [showNewButton, setShowNewButton] = useState(false);
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [hasMore, setHasMore] = useState(true);
-  const [filter, setFilter] = useState({});
-  const [isMapOpen, setIsMapOpen] = useState(false);
-  const [ref, inView] = useInView({ threshold: 0 });
+  // 1) Keep the “raw” filter state directly updated by the UI
+  const [rawFilter, setRawFilter] = useState({});
 
-  // Fetch posts for given page
+  // 2) Debounce it by 300ms
+  const debouncedFilter = useDebounce(rawFilter, 300);
+
+  const [posts, setPosts]         = useState([]);
+  const [newPosts, setNewPosts]   = useState([]);
+  const [showNewButton, setShowNewButton] = useState(false);
+  const [page, setPage]           = useState(1);
+  const [loading, setLoading]     = useState(true);
+  const [hasMore, setHasMore]     = useState(true);
+  const [isMapOpen, setIsMapOpen] = useState(false);
+  const [ref, inView]             = useInView({ threshold: 0 });
+
+  // 3) Fetcher uses the *debounced* filter
   const fetchPosts = useCallback(
-    async (pageToFetch = 1, targetSetter = setPosts) => {
+    async (pageToFetch = 1, setter = setPosts) => {
       setLoading(true);
       try {
         const fetched = await getPosts(
           pageToFetch,
           PAGE_SIZE,
-          filter,
+          debouncedFilter,
           latitude,
           longitude
         );
-        if (pageToFetch === 1) {
-          targetSetter(fetched);
-        } else {
-          targetSetter(prev => [...prev, ...fetched]);
-        }
+        setter(pageToFetch === 1 ? fetched : prev => [...prev, ...fetched]);
         setHasMore(fetched.length === PAGE_SIZE);
       } finally {
         setLoading(false);
       }
     },
-    [filter, latitude, longitude]
+    [debouncedFilter, latitude, longitude]
   );
 
-  // Initial + filter change
+  // When the debounced filter (or location) changes, reload page 1
   useEffect(() => {
     setPage(1);
     fetchPosts(1, setPosts);
   }, [fetchPosts]);
 
-  // Infinite scroll
+  // infinite-scroll
   useEffect(() => {
     if (inView && !loading && hasMore) {
       const next = page + 1;
@@ -72,19 +75,19 @@ export default function Home() {
     }
   }, [inView, loading, hasMore, page, fetchPosts]);
 
-  // Poll for new posts
+  // polling for brand-new posts (also uses debouncedFilter)
   useEffect(() => {
-    const interval = setInterval(async () => {
+    const iv = setInterval(async () => {
       if (!loading) {
-        const fetched = await getPosts(1, PAGE_SIZE, filter, latitude, longitude);
-        if (fetched.length && fetched[0]._id !== posts[0]?._id) {
+        const fetched = await getPosts(1, PAGE_SIZE, debouncedFilter, latitude, longitude);
+        if (fetched[0]?._id !== posts[0]?._id) {
           setNewPosts(fetched);
           setShowNewButton(true);
         }
       }
     }, POLL_INTERVAL);
-    return () => clearInterval(interval);
-  }, [filter, latitude, longitude, loading, posts]);
+    return () => clearInterval(iv);
+  }, [debouncedFilter, latitude, longitude, loading, posts]);
 
   const handleLoadNew = () => {
     setPosts(newPosts);
@@ -94,23 +97,25 @@ export default function Home() {
 
   return (
     <>
-      <Suspense fallback={<div className="h-16 w-full bg-gray-100 animate-pulse" />}>  
+      <Suspense fallback={<div className="h-16 w-full bg-gray-100 animate-pulse" />}>
         <Navbar />
       </Suspense>
+
       <section className="flex flex-col items-center">
         <div className="flex flex-col gap-2 md:max-w-[710px] w-full">
           {loading && page === 1 && (
             <div className="fixed inset-0 flex justify-center items-center bg-gray-500 bg-opacity-50 z-50">
-              <div className="border-4 border-t-4 border-gray-200 h-12 w-12 rounded-full animate-spin"></div>
+              <div className="border-4 border-t-4 border-gray-200 h-12 w-12 rounded-full animate-spin" />
             </div>
           )}
 
+          {/* 4) Pass the rawFilter into your Filter/Search UIs */}
           <Suspense fallback={<FilterSkeleton />}>
-            <Filter filter={filter} setFilter={setFilter} />
+            <Filter filter={rawFilter} setFilter={setRawFilter} />
           </Suspense>
 
           <Suspense fallback={<SearchSkeleton />}>
-            <Search filter={filter} setFilter={setFilter} />
+            <Search filter={rawFilter} setFilter={setRawFilter} />
           </Suspense>
 
           <Suspense fallback={<LocationSkeleton />}>
@@ -133,8 +138,7 @@ export default function Home() {
               onClick={handleLoadNew}
               className="flex items-center gap-2 mx-auto mb-4 px-4 py-2 bg-green-500 text-white rounded-full"
             >
-              New posts
-              <FaChevronDown />
+              New posts <FaChevronDown />
             </button>
           )}
 
@@ -148,11 +152,11 @@ export default function Home() {
 
           <div className="mt-8 flex justify-center items-center">
             {loading && page > 1 ? (
-              <div className="animate-spin h-8 w-8 border-4 border-t-4 border-gray-200 rounded-full"></div>
+              <div className="animate-spin h-8 w-8 border-4 border-t-4 border-gray-200 rounded-full" />
             ) : !hasMore ? (
               <p className="text-gray-500 mb-5">No more posts to show.</p>
             ) : (
-              <div ref={ref} className="h-1 w-full"></div>
+              <div ref={ref} className="h-1 w-full" />
             )}
           </div>
         </div>
