@@ -31,7 +31,7 @@ const Filter = ({ filter, setFilter }) => {
   }
 
   return (
-    <div className='flex mt-5 b justify-center items-center gap-3'>
+    <div className='flex mt-5 b justify-center items-center gap-3 min-h-[34px]'>
       <label >Filter by :</label>
       <select className='bl p-1.5 text-sm bg-white w-[50%] ' onChange={handleChange}>
         <option >Default</option>

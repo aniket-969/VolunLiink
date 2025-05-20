@@ -23,7 +23,7 @@ const Navbar = () => {
       toast.error("Please sign up to access your profile");
     }
   };
-  
+
   const signOut = async () => {
     const response = await logOut();
     console.log(response);
@@ -55,8 +55,9 @@ const Navbar = () => {
                 ? user.avatar
                 : "https://res.cloudinary.com/dgyduqoht/image/upload/v1708522002/guestf_zqgvly.png"
             }
-            alt=""
-            className="image--cover  w-[60px] h-[60px] "
+            alt=""  width={60}             
+  height={60}    
+            className="image--cover   "
           />
         </div>
 

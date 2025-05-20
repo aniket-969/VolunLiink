@@ -1,15 +1,17 @@
-import React, { useEffect, useState, useCallback,Suspense } from "react";
+import React, { useEffect, useState, useCallback, Suspense } from "react";
 import { getPosts } from "../../api/queries/volunteerPost";
 import Card from "../../components/UI/Card";
-// import Navbar from "../../components/Navbar";
 import { useInView } from "react-intersection-observer";
 import { useUserContext } from "../../context/AuthProvider";
+import FilterSkeleton from "../../components/UI/skeleton/filter";
+import SearchSkeleton from "../../components/UI/skeleton/search";
+import { LocationSkeleton } from "./../../components/UI/skeleton/locationSkeleton";
 
 const Filter = React.lazy(() => import("../../components/Filter"));
 const Search = React.lazy(() => import("../../components/Search"));
 const Map = React.lazy(() => import("../../components/Map"));
-const Location = React.lazy(()=>import("../../components/Location"))
-const Navbar = React.lazy(()=>import("../../components/Navbar"))
+const Location = React.lazy(() => import("../../components/Location"));
+const Navbar = React.lazy(() => import("../../components/Navbar"));
 
 const PAGE_SIZE = 5;
 
@@ -81,18 +83,25 @@ const Home = () => {
               <div className="border-4 border-t-4 border-gray-200 h-12 w-12 rounded-full animate-spin"></div>
             </div>
           )}
-         
+          <Suspense fallback={<FilterSkeleton />}>
             <Filter filter={filter} setFilter={setFilter} />
+          </Suspense>
+          <Suspense fallback={<SearchSkeleton />}>
             <Search filter={filter} setFilter={setFilter} />
+          </Suspense>
+
+          <Suspense fallback={<LocationSkeleton />}>
             <Location />
-          
+          </Suspense>
+
           {latitude && longitude && (
-            <button
-              onClick={() => setIsMapOpen(true)}
-              className="block mx-auto my-4 w-[10rem] py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+            <Suspense
+              fallback={
+                <div className="h-[36px] w-[160px] bg-gray-200 animate-pulse rounded mx-auto my-4" />
+              }
             >
-              View Map
-            </button>
+              <button>View Map</button>
+            </Suspense>
           )}
 
           {/* no posts found */}
@@ -136,8 +145,8 @@ const Home = () => {
               >
                 &times;
               </button>
-             
-                <Map />
+
+              <Map />
             </div>
           </div>
         )}
