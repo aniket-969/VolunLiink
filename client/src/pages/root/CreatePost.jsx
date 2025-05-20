@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import FormComponent from "../../components/FormComponent";
 import Location from "../../components/Location";
-
+ 
 const CreatePostPage = () => {
   const [formType, setFormType] = useState("volunteer");
  

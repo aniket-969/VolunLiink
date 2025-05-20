@@ -26,10 +26,14 @@ const FormComponent = ({ formType }) => {
   const [fileName, setFileName] = useState("No file chosen");
   const [preview, setPreview] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [startDateValue, setStartDateValue] = useState("");
+const [endDateValue, setEndDateValue] = useState("");
 
+const today = new Date().toISOString().split("T")[0]
   const schema =
     formType === "volunteer" ? volunteerSchema : organizationSchema;
 
+    // react-hook-form with zod setup
   const {
     register,
     handleSubmit,
@@ -38,6 +42,8 @@ const FormComponent = ({ formType }) => {
     formState: { errors },
   } = useForm({ resolver: zodResolver(schema) });
   console.log(errors);
+
+  // form submit function
   const onSubmit = async (data) => {
     console.log(data);
     try {
@@ -126,37 +132,44 @@ const FormComponent = ({ formType }) => {
         <p className="text-red-500">{errors.contactPhone.message}</p>
       )}
 
+{/* Dates */}
       <div className="col-span-full grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">
-            Available From
-          </label>
-          <input
-            type="date"
-            {...register("startDate")}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-          {errors.startDate && (
-            <p className="text-red-500 text-sm">{errors.startDate.message}</p>
-          )}
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">
-            Available Till
-          </label>
-          <input
-            type="date"
-            {...register("endDate")}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-          {errors.endDate && (
-            <p className="text-red-500 text-sm">{errors.endDate.message}</p>
-          )}
-        </div>
+       <div>
+    <label className="block text-sm font-medium mb-1">Available From</label>
+    <input
+      type="date"
+      {...register("startDate")}
+      min={today}
+      max={endDateValue || undefined}
+      value={startDateValue}
+      onChange={(e) => setStartDateValue(e.target.value)}
+      className="w-full p-2 border border-gray-300 rounded"
+    />
+    {errors.startDate && (
+      <p className="text-red-500 text-sm">{errors.startDate.message}</p>
+    )}
+  </div>
+
+  {/* END DATE */}
+  <div>
+    <label className="block text-sm font-medium mb-1">Available Till</label>
+    <input
+      type="date"
+      {...register("endDate")}
+      min={startDateValue || today}
+      value={endDateValue}
+      onChange={(e) => setEndDateValue(e.target.value)}
+      className="w-full p-2 border border-gray-300 rounded"
+    />
+    {errors.endDate && (
+      <p className="text-red-500 text-sm">{errors.endDate.message}</p>
+    )}
+  </div>
       </div>
       {/* Upload image */}
       <div className="col-span-full">
         <label className="block text-sm font-medium mb-1">Upload Image</label>
+
         <div className="flex items-center gap-4">
           <label
             htmlFor="avatar"
@@ -183,6 +196,7 @@ const FormComponent = ({ formType }) => {
           <span className="text-sm text-gray-600">{fileName}</span>
         </div>
 
+{/* image preview */}
         {preview && (
           <div className="mt-4">
             {/* thumbnail */}
