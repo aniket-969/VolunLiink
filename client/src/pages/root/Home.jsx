@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback,Suspense } from "react";
 import { getPosts } from "../../api/queries/volunteerPost";
 import Card from "../../components/UI/Card";
-import Navbar from "../../components/Navbar";
+// import Navbar from "../../components/Navbar";
 import { useInView } from "react-intersection-observer";
 import { useUserContext } from "../../context/AuthProvider";
 
@@ -9,6 +9,7 @@ const Filter = React.lazy(() => import("../../components/Filter"));
 const Search = React.lazy(() => import("../../components/Search"));
 const Map = React.lazy(() => import("../../components/Map"));
 const Location = React.lazy(()=>import("../../components/Location"))
+const Navbar = React.lazy(()=>import("../../components/Navbar"))
 
 const PAGE_SIZE = 5;
 

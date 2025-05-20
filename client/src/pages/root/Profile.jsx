@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import {
   updateUserProfile,
 } from "../../api/queries/user";
-import { deleteUserPost,getUserPosts } from "../../api/queries/volunteerPost";
+import { deleteUserPost, getUserPosts } from "../../api/queries/volunteerPost";
 import toast from "react-hot-toast";
 import { useUserContext } from "../../context/AuthProvider";
 import Card from "../../components/UI/Card";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import ProfileImageUpload from "../../components/ProfileImageUpload";
 import ChangePasswordModal from "../../components/ChangePasswordModal";
+import { FaEdit, FaKey } from "react-icons/fa";
 
 const Profile = () => {
   const [posts, setPosts] = useState([]);
@@ -28,8 +29,8 @@ const Profile = () => {
   };
 
   const handleSaveChanges = async () => {
-    if (!editedFullName || !editedFullName) {
-      toast.error("Field can't be empty");
+    if (!editedFullName.trim() || !editedUsername.trim()) {
+      toast.error("Fields can't be empty");
       return;
     }
 
@@ -39,15 +40,18 @@ const Profile = () => {
       setIsEditing(false);
       return;
     }
-    const updatedUser = {
-      fullName: editedFullName,
-      username: editedUsername,
-    };
-    const userResponse = await updateUserProfile(updatedUser);
-    console.log(userResponse);
-    updateUser(userResponse);
-    setIsEditing(false);
-    toast.success("Profile Updated");
+
+    try {
+      const updated = await updateUserProfile({
+        fullName: editedFullName,
+        username: editedUsername,
+      });
+      updateUser(updated);
+      toast.success("Profile updated!");
+      setIsEditing(false);
+    } catch {
+      toast.error("Failed to update profile");
+    }
   };
 
   const handleDelete = (postId) => {
@@ -56,11 +60,14 @@ const Profile = () => {
   };
 
   const confirmDeletePost = async () => {
-    if (postIdToDelete) {
-      const data = await deleteUserPost(postIdToDelete);
-      console.log(data.message);
-      toast.success(data.message);
+    if (!postIdToDelete) return;
+    try {
+      const res = await deleteUserPost(postIdToDelete);
+      toast.success(res.message);
       fetchData();
+    } catch {
+      toast.error("Failed to delete post");
+    } finally {
       setConfirmDeleteModalOpen(false);
     }
   };
@@ -75,91 +82,107 @@ const Profile = () => {
     fetchData();
   }, []);
 
-  // console.log(posts);
-
   return (
-    <>
-      <section className="my-5 flex flex-col items-center">
-        <div className="flex flex-col items-center gap-3 my-6 justify-center ">
-
-          <ProfileImageUpload user={user} updateUser={updateUser} />
-          <div className="flex justify-center items-center flex-col gap-2">
+    <section className="my-6 max-w-2xl mx-auto px-4">
+      <div className="bg-white shadow rounded-lg p-6 flex flex-col items-center">
+        <ProfileImageUpload user={user} updateUser={updateUser} />
+        <div className="mt-4 flex items-start space-x-6 w-full">
+          {/* User Info & Actions */}
+          <div className="flex-1">
             {isEditing ? (
-              <>
+              <div className="space-y-2">
                 <input
                   type="text"
                   value={editedFullName}
                   onChange={(e) => setEditedFullName(e.target.value)}
-                  className="border rounded p-1"
+                  className="w-full border p-2 rounded focus:outline-none"
                 />
                 <input
                   type="text"
                   value={editedUsername}
                   onChange={(e) => setEditedUsername(e.target.value)}
-                  className="border rounded p-1"
+                  className="w-full border p-2 rounded focus:outline-none"
                 />
-              </>
-            ) : (
-              <>
-              <div>
-                <p>{user.fullName}</p>
-                <p>@{user.username}</p>
-              </div>
-                
-              </>
-            )}
-           
-            {isEditing ? (
-              <div>
-                <button
-                  onClick={handleSaveChanges}
-                  className="bg-blue-500 text-white p-2 rounded"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={handleEditToggle}
-                  className="bg-red-500 text-white p-2 rounded"
-                >
-                  Cancel
-                </button>
               </div>
             ) : (
-              <button
-                onClick={handleEditToggle}
-                className="bg-green-500 text-white p-2 rounded"
-              >
-                Edit
-              </button>
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-800">
+                  {user.fullName}
+                </h2>
+                <p className="text-sm text-gray-500">@{user.username}</p>
+              </div>
             )}
-             <p className="text-[#4361ee] font-semibold text-sm cursor-pointer" onClick={() => setIsChangePasswordOpen(true)}>
-              Change Password?
-            </p>
-            <ChangePasswordModal
-              isOpen={isChangePasswordOpen}
-              onClose={() => setIsChangePasswordOpen(false)}
-            />
+            <div className="mt-3 flex items-center space-x-4">
+              {isEditing ? (
+                <>  
+                  <button
+                    onClick={handleSaveChanges}
+                    className="px-4 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={handleEditToggle}
+                    className="px-4 py-1 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300"
+                  >
+                    Cancel
+                  </button>
+                </>
+              ) : (
+                <>                  
+                  <button
+                    onClick={handleEditToggle}
+                    className="flex items-center space-x-1 text-blue-600 text-sm hover:underline"
+                  >
+                    <FaEdit size={16} />
+                    <span>Edit</span>
+                  </button>
+                  <button
+                    onClick={() => setIsChangePasswordOpen(true)}
+                    className="flex items-center space-x-1 text-red-600 text-sm hover:underline"
+                  >
+                    <FaKey size={16} />
+                    <span>Change Password</span>
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
+      </div>
 
+      {/* User Posts List */}
+      <section className="mt-8">
         {loading ? (
-          <p>Loading...</p>
+          <p className="text-center text-gray-500">Loading posts...</p>
         ) : posts.length ? (
-          <div className="flex flex-col gap-2  md:max-w-[710px]">
+          <div className="space-y-4">
             {posts.map((post) => (
-              <Card post={post} key={post._id} handleDelete={handleDelete} />
+              <Card
+                key={post._id}
+                post={post}
+                handleDelete={() => handleDelete(post._id)}
+              />
             ))}
           </div>
         ) : (
-          <p>You have no posts to show</p>
+          <p className="text-center text-gray-500">
+            You have no posts to show.
+          </p>
         )}
       </section>
+
+      {/* Modals */}
       <ConfirmationModal
         isOpen={confirmDeleteModalOpen}
         onClose={() => setConfirmDeleteModalOpen(false)}
         onConfirm={confirmDeletePost}
       />
-    </>
+      <ChangePasswordModal
+        isOpen={isChangePasswordOpen}
+        onClose={() => setIsChangePasswordOpen(false)}
+      />
+    </section>
   );
 };
 
