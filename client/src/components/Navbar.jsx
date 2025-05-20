@@ -17,6 +17,12 @@ const Navbar = () => {
 
   const [show, setShow] = useState(true);
 
+ const handleProfileClick = (e) => {
+    if (!isAuthenticated) {
+      e.preventDefault();       
+      toast.error("Please sign up to access your profile");
+    }
+  };
   const signOut = async () => {
     const response = await logOut();
     console.log(response);
@@ -38,7 +44,7 @@ const Navbar = () => {
       </Link>
 
       <Link
-        to={`/profile/${user ? user._id : "123"}`}
+        to={`/profile/${user?._id}`} onClick={handleProfileClick}
         className="hidden sm:flex items-center gap-4"
       >
         <div className=" ">
@@ -71,7 +77,7 @@ const Navbar = () => {
         </Link>
         <Link
           className="relative w-fit block after:block after:absolute after:h-[2px] after:bg-blue-500 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left "
-          to={`/profile/${user ? user._id : "123"}`}
+          to={`/profile/${user?._id}`} onClick={handleProfileClick}
         >
           Profile
         </Link>
