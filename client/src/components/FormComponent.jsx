@@ -82,13 +82,13 @@ const today = new Date().toISOString().split("T")[0]
 
       const res = await submitForm(formData);
       if (res.success) {
-        toast.success(res.message || "Post created!");
+        toast.success(res.message || "Post created successfully!");
         navigate("/");
       }
     } catch (e) {
       console.error(e);
       
-      toast.error(error?.data?.message);
+      toast.error(error?.data?.message || "Failed to create post . Please try again");
     } finally {
       console.log("setting to false")
       setIsSubmitting(false);
