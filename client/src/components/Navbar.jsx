@@ -11,10 +11,10 @@ import { FaConnectdevelop } from "react-icons/fa6";
 import { logOut } from "../api/queries/auth";
 import { makeCloudinaryUrl } from "./../utils/cloudinary";
 
-const guestUrl ="https://res.cloudinary.com/dgyduqoht/image/upload/v1708522002/guestf_zqgvly.png"
+const guestUrl = "https://res.cloudinary.com/dgyduqoht/image/upload/v1708522002/guestf_zqgvly.png";
+
 const Navbar = () => {
   const navigate = useNavigate();
-
   const { isAuthenticated, setAccessToken, user, setUser } = useUserContext();
   const avatarUrl = user?.avatar
     ? makeCloudinaryUrl(user.avatar, { width: 60, height: 60 })
@@ -25,7 +25,7 @@ const Navbar = () => {
     const response = await logOut();
     console.log(response);
 
-    if ((response.status = 200)) {
+    if (response.status === 200) {
       toast.success(response.data.message);
       setAccessToken(null);
       setUser(null);
@@ -34,16 +34,24 @@ const Navbar = () => {
     }
   };
 
+  const handleProtectedNav = (path) => {
+    if (!user) {
+      toast.error("Please login to create post or see profile");
+      return;
+    }
+    navigate(path);
+  };
+
   return (
     <div className="flex items-center justify-between gap-2 bg-[#F0F8FF] mx-1 my-0.5 shadow-md px-8 py-2 md:py-4 lg:px-14 ">
-      <Link to={`/`} className="flex gap-2 items-center">
-        <FaConnectdevelop className="text-2xl text-blue-800  " />
-        <h1 className=" font-bold text-2xl text-blue-800  ">VolunLink</h1>
+      <Link to="/" className="flex gap-2 items-center">
+        <FaConnectdevelop className="text-2xl text-blue-800" />
+        <h1 className="font-bold text-2xl text-blue-800">VolunLink</h1>
       </Link>
 
-      <Link
-        to={`/profile/${user ? user._id : "123"}`}
-        className="hidden sm:flex items-center gap-4"
+      <div
+        className="hidden sm:flex items-center gap-4 cursor-pointer"
+        onClick={() => handleProtectedNav(`/profile/${user?._id}`)}
       >
         <img
           src={avatarUrl}
@@ -53,44 +61,44 @@ const Navbar = () => {
           className="w-[60px] h-[60px] rounded-full object-cover block"
           loading="lazy"
         />
-
         <h3 className="font-medium">{user ? user.fullName : "Guest"}</h3>
-      </Link>
+      </div>
 
-      <nav className="hidden md:flex md:items-center md:justify-between  md:gap-4 font-medium lg:gap-6 ">
+      <nav className="hidden md:flex md:items-center md:justify-between md:gap-4 font-medium lg:gap-6">
         <Link
           to="/"
-          className="relative w-fit block after:block after:absolute after:h-[2px] after:bg-blue-500 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left "
+          className="relative w-fit block after:block after:absolute after:h-[2px] after:bg-blue-500 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left"
         >
           Home
         </Link>
-        <Link
-          className="relative w-fit block after:block after:absolute after:h-[2px] after:bg-blue-500 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left "
-          to="/create-post"
+        <button
+          onClick={() => handleProtectedNav("/create-post")}
+          className="relative w-fit block after:block after:absolute after:h-[2px] after:bg-blue-500 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left"
         >
           Create
-        </Link>
-        <Link
-          className="relative w-fit block after:block after:absolute after:h-[2px] after:bg-blue-500 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left "
-          to={`/profile/${user ? user._id : "123"}`}
+        </button>
+        <button
+          onClick={() => handleProtectedNav(`/profile/${user?._id}`)}
+          className="relative w-fit block after:block after:absolute after:h-[2px] after:bg-blue-500 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left"
         >
           Profile
-        </Link>
+        </button>
       </nav>
 
       {show ? (
-        <div className=" md:hidden">
+        <div className="md:hidden">
           <IoReorderThree
-            className="text-3xl "
+            className="text-3xl"
             onClick={() => setShow(false)}
           />
         </div>
       ) : (
         <div className="shadow-xl bg-black text-white flex flex-col justify-center items-center opacity-80 h-[50%] w-[100%] p-1 absolute top-0 left-0 gap-4 md:hidden z-[100]">
-          <ImCross onClick={() => setShow(true)} className="text-xl " />{" "}
+          <ImCross onClick={() => setShow(true)} className="text-xl" />
           <MobileNavbar show={show} />
         </div>
       )}
+
       {isAuthenticated ? (
         <button
           className="hidden md:block bg-dark text-white py-2 px-4 rounded-[1.5rem]"

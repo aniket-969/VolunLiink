@@ -1,65 +1,82 @@
 import React from 'react'
-import axios from 'axios';
-import toast from 'react-hot-toast';
+import axios from 'axios'
+import toast from 'react-hot-toast'
 import { Link, useNavigate } from 'react-router-dom'
-import { useUserContext } from '../context/AuthProvider';
+import { useUserContext } from '../context/AuthProvider'
 
-const MobileNavbar = (prop) => {
-
+const MobileNavbar = ({ show }) => {
   const navigate = useNavigate()
-
-  const { user,isAuthenticated, setAccessToken,setUser } = useUserContext()
+  const { user, isAuthenticated, setAccessToken, setUser } = useUserContext()
 
   const signOut = async () => {
-
-    const axiosConfig = {
-      withCredentials: true,
-    };
+    const axiosConfig = { withCredentials: true }
 
     try {
-      const response = await axios.post("http://localhost:9000/api/v1/users/logout", {}, axiosConfig
+      const response = await axios.post(
+        'http://localhost:9000/api/v1/users/logout',
+        {},
+        axiosConfig
       )
 
-      console.log(response)
       toast.success(response.data.message)
       setUser(null)
       setAccessToken(null)
-      navigate("/")
-    }
-
-    catch (error) {
-      if (error.response.status === 401) {
-        
-        toast.error("Unauthorized")
-       
+      navigate('/')
+    } catch (error) {
+      if (error.response?.status === 401) {
+        toast.error('Unauthorized')
       }
-
-      console.log(error);
+      console.error(error)
     }
   }
 
+  // Show toast if unauthenticated when trying to view profile
+  const handleProfileClick = (e) => {
+    if (!isAuthenticated) {
+      e.preventDefault()
+      toast.error('Please login to view profile')
+    }
+  }
+
+  // Show toast if unauthenticated when trying to create a post
+  const handleCreatePostClick = (e) => {
+    if (!isAuthenticated) {
+      e.preventDefault()
+      toast.error('Please login to create post')
+    }
+  }
+
+  if (show) {
+    return null
+  }
+
   return (
-    <>
-      {prop.show ? (
-        <></>
+    <nav className="flex flex-col justify-center items-center gap-3 w-full">
+      <Link to="/">Home</Link>
+
+      <Link to={`/profile/${user?._id}`} onClick={handleProfileClick}>
+        Profile
+      </Link>
+
+      <Link to="/create-post" onClick={handleCreatePostClick}>
+        Create Post
+      </Link>
+
+      {isAuthenticated ? (
+        <button
+          className="bg-dark text-white font-semibold py-2 px-6 rounded-[3rem] text-sm"
+          onClick={signOut}
+        >
+          Sign Out
+        </button>
       ) : (
-        <nav className=" flex flex-col justify-center items-center gap-3 w-full ">
-          <Link to="/">Home</Link>
-
-          <Link to={`/profile/${user?._id}`} >
-            Profile
-          </Link>
-
-          <Link to={"/create-post"}>CreatePost</Link>
-          {
-            isAuthenticated ? <button className=" bg-dark text-white font-semibold py-2 px-6  rounded-[3rem] text-sm" onClick={signOut}>SignOut</button> :
-              <Link to='/sign-up'><button className=" bg-dark text-white font-semibold py-2 px-6  rounded-[3rem] text-sm" >SignUp</button>
-              </Link>
-          }
-
-        </nav>
+        <Link to="/sign-up">
+          <button className="bg-dark text-white font-semibold py-2 px-6 rounded-[3rem] text-sm">
+            Sign Up
+          </button>
+        </Link>
       )}
-    </>
+    </nav>
   )
 }
 
