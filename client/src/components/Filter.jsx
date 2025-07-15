@@ -29,7 +29,7 @@ const Filter = ({ filter, setFilter }) => {
         break;
     }
   }
-
+ 
   return (
     <div className='flex mt-5 b justify-center items-center gap-3 min-h-[34px]'>
       <label >Filter by :</label>

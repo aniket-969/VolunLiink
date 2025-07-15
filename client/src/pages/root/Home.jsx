@@ -3,70 +3,67 @@ import { getPosts } from "../../api/queries/volunteerPost";
 import Card from "../../components/UI/Card";
 import { useInView } from "react-intersection-observer";
 import { useUserContext } from "../../context/AuthProvider";
-import { useDebounce } from "../../hooks/useDebounce";
-
 import FilterSkeleton from "../../components/UI/skeleton/filter";
 import SearchSkeleton from "../../components/UI/skeleton/search";
 import { LocationSkeleton } from "../../components/UI/skeleton/locationSkeleton";
 import CardSkeleton from "../../components/UI/skeleton/card";
 import { FaChevronDown } from "react-icons/fa";
 
-const Filter   = React.lazy(() => import("../../components/Filter"));
-const Search   = React.lazy(() => import("../../components/Search"));
+const Filter = React.lazy(() => import("../../components/Filter"));
+const Search = React.lazy(() => import("../../components/Search"));
 const Location = React.lazy(() => import("../../components/Location"));
-const Map      = React.lazy(() => import("../../components/Map"));
-const Navbar   = React.lazy(() => import("../../components/Navbar"));
+const Map = React.lazy(() => import("../../components/Map"));
+const Navbar = React.lazy(() => import("../../components/Navbar"));
 
-const PAGE_SIZE     = 5;
-const POLL_INTERVAL = 60000; // 60s
+const PAGE_SIZE = 5;
+const POLL_INTERVAL = 30000; // 30s
 
 export default function Home() {
   const { location } = useUserContext();
   const { latitude, longitude } = location || {};
 
-  // 1) Keep the “raw” filter state directly updated by the UI
-  const [rawFilter, setRawFilter] = useState({});
-
-  // 2) Debounce it by 300ms
-  const debouncedFilter = useDebounce(rawFilter, 300);
-
-  const [posts, setPosts]         = useState([]);
-  const [newPosts, setNewPosts]   = useState([]);
+  const [posts, setPosts] = useState([]);
+  const [newPosts, setNewPosts] = useState([]);
   const [showNewButton, setShowNewButton] = useState(false);
-  const [page, setPage]           = useState(1);
-  const [loading, setLoading]     = useState(true);
-  const [hasMore, setHasMore]     = useState(true);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
+  const [filter, setFilter] = useState({});
   const [isMapOpen, setIsMapOpen] = useState(false);
-  const [ref, inView]             = useInView({ threshold: 0 });
+  const [ref, inView] = useInView({ threshold: 0 });
 
-  // 3) Fetcher uses the *debounced* filter
+  // Fetch posts for given page
   const fetchPosts = useCallback(
-    async (pageToFetch = 1, setter = setPosts) => {
+    async (pageToFetch = 1, targetSetter = setPosts) => {
       setLoading(true);
       try {
         const fetched = await getPosts(
           pageToFetch,
           PAGE_SIZE,
-          debouncedFilter,
+          filter,
           latitude,
           longitude
         );
-        setter(pageToFetch === 1 ? fetched : prev => [...prev, ...fetched]);
+        if (pageToFetch === 1) {
+          targetSetter(fetched);
+        } else {
+          targetSetter(prev => [...prev, ...fetched]);
+        }
         setHasMore(fetched.length === PAGE_SIZE);
       } finally {
         setLoading(false);
       }
     },
-    [debouncedFilter, latitude, longitude]
+    [filter, latitude, longitude]
   );
 
-  // When the debounced filter (or location) changes, reload page 1
+  // Initial + filter change
   useEffect(() => {
     setPage(1);
     fetchPosts(1, setPosts);
   }, [fetchPosts]);
 
-  // infinite-scroll
+  // Infinite scroll
   useEffect(() => {
     if (inView && !loading && hasMore) {
       const next = page + 1;
@@ -75,19 +72,19 @@ export default function Home() {
     }
   }, [inView, loading, hasMore, page, fetchPosts]);
 
-  // polling for brand-new posts (also uses debouncedFilter)
+  // Poll for new posts
   useEffect(() => {
-    const iv = setInterval(async () => {
+    const interval = setInterval(async () => {
       if (!loading) {
-        const fetched = await getPosts(1, PAGE_SIZE, debouncedFilter, latitude, longitude);
-        if (fetched[0]?._id !== posts[0]?._id) {
+        const fetched = await getPosts(1, PAGE_SIZE, filter, latitude, longitude);
+        if (fetched.length && fetched[0]._id !== posts[0]?._id) {
           setNewPosts(fetched);
           setShowNewButton(true);
         }
       }
     }, POLL_INTERVAL);
-    return () => clearInterval(iv);
-  }, [debouncedFilter, latitude, longitude, loading, posts]);
+    return () => clearInterval(interval);
+  }, [filter, latitude, longitude, loading, posts]);
 
   const handleLoadNew = () => {
     setPosts(newPosts);
@@ -97,25 +94,23 @@ export default function Home() {
 
   return (
     <>
-      <Suspense fallback={<div className="h-16 w-full bg-gray-100 animate-pulse" />}>
+      <Suspense fallback={<div className="h-16 w-full bg-gray-100 animate-pulse" />}>  
         <Navbar />
       </Suspense>
-
       <section className="flex flex-col items-center">
         <div className="flex flex-col gap-2 md:max-w-[710px] w-full">
           {loading && page === 1 && (
             <div className="fixed inset-0 flex justify-center items-center bg-gray-500 bg-opacity-50 z-50">
-              <div className="border-4 border-t-4 border-gray-200 h-12 w-12 rounded-full animate-spin" />
+              <div className="border-4 border-t-4 border-gray-200 h-12 w-12 rounded-full animate-spin"></div>
             </div>
           )}
 
-          {/* 4) Pass the rawFilter into your Filter/Search UIs */}
           <Suspense fallback={<FilterSkeleton />}>
-            <Filter filter={rawFilter} setFilter={setRawFilter} />
+            <Filter filter={filter} setFilter={setFilter} />
           </Suspense>
 
           <Suspense fallback={<SearchSkeleton />}>
-            <Search filter={rawFilter} setFilter={setRawFilter} />
+            <Search filter={filter} setFilter={setFilter} />
           </Suspense>
 
           <Suspense fallback={<LocationSkeleton />}>
@@ -138,7 +133,8 @@ export default function Home() {
               onClick={handleLoadNew}
               className="flex items-center gap-2 mx-auto mb-4 px-4 py-2 bg-green-500 text-white rounded-full"
             >
-              New posts <FaChevronDown />
+              New posts
+              <FaChevronDown />
             </button>
           )}
 
@@ -152,11 +148,11 @@ export default function Home() {
 
           <div className="mt-8 flex justify-center items-center">
             {loading && page > 1 ? (
-              <div className="animate-spin h-8 w-8 border-4 border-t-4 border-gray-200 rounded-full" />
+              <div className="animate-spin h-8 w-8 border-4 border-t-4 border-gray-200 rounded-full"></div>
             ) : !hasMore ? (
               <p className="text-gray-500 mb-5">No more posts to show.</p>
             ) : (
-              <div ref={ref} className="h-1 w-full" />
+              <div ref={ref} className="h-1 w-full"></div>
             )}
           </div>
         </div>
