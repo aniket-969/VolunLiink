@@ -17,6 +17,7 @@ export const submitForm = async (data) => {
 };
 
 export const getPosts = async (page = 1, limit = 5, filter = {}) => {
+  console.log(filter)
   try {
     const params = new URLSearchParams({ page, limit, ...filter });
     const response = await axios.get(
